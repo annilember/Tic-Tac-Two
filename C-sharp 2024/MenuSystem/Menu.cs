@@ -4,11 +4,28 @@ public class Menu
 {
     private string MenuHeader { get; set; }
     private static string _menuDivider = "======================";
-    private List<MenuItem> MenuItems { get; set; } // comment from the lecture:
-    // if this is public, then anybody can add anything here directly and might add an empty MenuItem
-    // or if you keep it public you should add a checkup somewhere!
-
-    public Menu(string menuHeader, List<MenuItem> menuItems)
+    private List<MenuItem> MenuItems { get; set; }
+    private MenuItem _menuItemExit = new MenuItem()
+    {
+        Shortcut = "E",
+        Title = "Exit",
+        MenuItemAction = null
+    };
+    private MenuItem _menuItemReturn = new MenuItem()
+    {
+        Shortcut = "R",
+        Title = "Return",
+        MenuItemAction = null
+    };
+    private MenuItem _menuItemReturnMain = new MenuItem()
+    {
+        Shortcut = "M",
+        Title = "Return to Main Menu",
+        MenuItemAction = null
+    };
+    private EMenuLevel _menuLevel { get; set; }
+    
+    public Menu(EMenuLevel menuLevel, string menuHeader, List<MenuItem> menuItems)
     {
         if (string.IsNullOrWhiteSpace(menuHeader))
         {
@@ -23,11 +40,59 @@ public class Menu
         }
         
         MenuItems = menuItems;
+        
+        _menuLevel = menuLevel;
+        
+        if (_menuLevel != EMenuLevel.Main)
+        {
+            MenuItems.Add(_menuItemReturn);
+        }
+        if (_menuLevel == EMenuLevel.Deep)
+        {
+            MenuItems.Add(_menuItemReturnMain);
+        }
+        MenuItems.Add(_menuItemExit);
+        
+        //TODO! Validate menuItems for shortcut conflict!
     }
 
-    public void Run()
+    public string Run()
     {
         Console.Clear();
+        //TODO! Implement main menu loop!
+
+        do
+        {
+            var menuItem = DisplayMenuGetUserChoice();
+            var menuReturnValue = "";
+        
+            if (menuItem.MenuItemAction != null)
+            {
+                menuReturnValue = menuItem.MenuItemAction();
+            }
+            
+            if (menuItem.Shortcut == "R")
+            {
+                return menuItem.Shortcut;
+            }
+            
+            if (menuItem.Shortcut == "E" || menuReturnValue == "E")
+            {
+                return "E";
+            }
+            
+            if ((menuItem.Shortcut == "M" || menuReturnValue == "M") && _menuLevel != EMenuLevel.Main)
+            {
+                return menuItem.Shortcut;
+            }
+
+            //return menuItem.Shortcut;
+            
+        } while (true);
+    }
+
+    private MenuItem DisplayMenuGetUserChoice()
+    {
         var userInput = "";
 
         do
@@ -44,25 +109,18 @@ public class Menu
             else
             {
                 userInput = userInput.ToUpper();
-
-                var userInputOk = false;
                 
                 foreach (var menuItem in MenuItems)
                 {
                     if (menuItem.Shortcut.ToUpper() != userInput) continue;
-                    userInputOk = true;
-                    break;
+                    return menuItem;
                 }
-
-                if (userInputOk == false)
-                {
-                    userInput = "";
-                    Console.WriteLine("Please choose a valid option.");
-                    Console.WriteLine();
-                }
+                
+                Console.WriteLine("Please choose a valid option.");
+                Console.WriteLine();
             }
             
-        } while (string.IsNullOrWhiteSpace(userInput));
+        } while (true);
     }
 
     private void DrawMenu()

@@ -1,17 +1,49 @@
 ﻿// An example of bad design, fine for UI prototyping.
 using MenuSystem;
 
-var mainMenu = new Menu("TIC-TAC-TOE", [
+var deepMenu = new Menu(
+    EMenuLevel.Deep,
+    "TIC-TAC-TOE Deep stuff...", [
+    new MenuItem()
+    {
+        Shortcut = "Y",
+        Title = "Why is the question.",
+        MenuItemAction = DummyMethod
+    }
+]);
+var optionsMenu = new Menu(
+    EMenuLevel.Secondary,
+    "TIC-TAC-TOE Options", [
+    new MenuItem()
+    {
+        Shortcut = "X",
+        Title = "X Starts",
+        MenuItemAction = deepMenu.Run
+    },
+
     new MenuItem()
     {
         Shortcut = "O",
-        Title = "Options"
+        Title = "O Starts",
+        MenuItemAction = DummyMethod
+    }
+]);
+
+var mainMenu = new Menu(
+    EMenuLevel.Main,
+    "TIC-TAC-TOE", [
+    new MenuItem()
+    {
+        Shortcut = "O",
+        Title = "Options",
+        MenuItemAction = optionsMenu.Run
     },
 
     new MenuItem()
     {
         Shortcut = "N",
-        Title = "New Game"
+        Title = "New Game",
+        MenuItemAction = DummyMethod
     }
 ]);
 
@@ -20,33 +52,9 @@ mainMenu.Run();
 return;
 // ============================================
 
-static void MenuStart()
+string DummyMethod()
 {
-    Console.Clear();
-    Console.WriteLine("TIC-TAC-TOE");
-    Console.WriteLine("------------------");
-}
-
-static void MenuMain()
-{
-    MenuStart();
-    Console.WriteLine("O) Options");
-    Console.WriteLine("N) New Game");
-    Console.WriteLine("L) Load Game");
-    Console.WriteLine("E) Exit");
-    MenuEnd();
-}
-
-static void MenuOptions()
-{
-    MenuStart();
-    Console.WriteLine("Choose symbol for player one (X)");
-    Console.WriteLine("Choose symbol for player two (O)");
-    MenuEnd();
-}
-
-static void MenuEnd()
-{
-    Console.WriteLine();
-    Console.Write(">");
+    Console.Write("Press any key to exit...");
+    Console.ReadKey();
+    return "Dummy";
 }
