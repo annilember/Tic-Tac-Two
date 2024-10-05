@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameBrain", "GameBrain\Game
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleUI", "ConsoleUI\ConsoleUI.csproj", "{6E3832A0-4ACD-4E6A-9803-E3162AB48FFE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAL", "DAL\DAL.csproj", "{BEB42244-8983-40BA-ACF1-9F8C12B06FD7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,5 +37,9 @@ Global
 		{6E3832A0-4ACD-4E6A-9803-E3162AB48FFE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6E3832A0-4ACD-4E6A-9803-E3162AB48FFE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6E3832A0-4ACD-4E6A-9803-E3162AB48FFE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BEB42244-8983-40BA-ACF1-9F8C12B06FD7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BEB42244-8983-40BA-ACF1-9F8C12B06FD7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BEB42244-8983-40BA-ACF1-9F8C12B06FD7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BEB42244-8983-40BA-ACF1-9F8C12B06FD7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
