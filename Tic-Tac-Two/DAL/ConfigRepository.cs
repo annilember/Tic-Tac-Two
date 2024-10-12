@@ -15,6 +15,10 @@ public class ConfigRepository
             Name = "Big board",
             BoardSizeWidth = 10,
             BoardSizeHeight = 10,
+            GridSizeWidth = 4,
+            GridSizeHeight = 4,
+            GridStartPosX = 3,
+            GridStartPosY = 3,
             WinCondition = 4,
             MovePieceAfterNMoves = 3
         }

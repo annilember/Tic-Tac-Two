@@ -1,3 +1,4 @@
+using ConsoleUI;
 using DAL;
 using GameBrain;
 using MenuSystem;
@@ -31,7 +32,16 @@ public static class GameController
         {
             ConsoleUI.Visualizer.DrawBoard(gameInstance);
     
-            Console.Write("Give me coordinates <x,y> or save:");
+            Console.Write("Give me coordinates <");
+            Console.ForegroundColor = Visualizer.XAxisColor;
+            Console.Write("x");
+            Console.ResetColor();
+            Console.Write(",");
+            Console.ForegroundColor = Visualizer.YAxisColor;
+            Console.Write("y");
+            Console.ResetColor();
+            Console.Write("> or save:");
+            
             var input = Console.ReadLine()!;
             var inputSplit = input.Split(',');
             var inputX = int.Parse(inputSplit[0]);
