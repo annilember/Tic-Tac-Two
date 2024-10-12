@@ -11,6 +11,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "!Solution Items", "!Solutio
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameBrain", "GameBrain\GameBrain.csproj", "{3F1A1D31-0820-474C-855D-7D2B0072D2DB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleUI", "ConsoleUI\ConsoleUI.csproj", "{E2532977-003C-439C-907E-8EDD8A839064}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAL", "DAL\DAL.csproj", "{7AB025C4-B505-4DAD-B3B7-0B5F0F8FF062}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,5 +33,13 @@ Global
 		{3F1A1D31-0820-474C-855D-7D2B0072D2DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3F1A1D31-0820-474C-855D-7D2B0072D2DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3F1A1D31-0820-474C-855D-7D2B0072D2DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E2532977-003C-439C-907E-8EDD8A839064}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E2532977-003C-439C-907E-8EDD8A839064}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E2532977-003C-439C-907E-8EDD8A839064}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E2532977-003C-439C-907E-8EDD8A839064}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7AB025C4-B505-4DAD-B3B7-0B5F0F8FF062}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7AB025C4-B505-4DAD-B3B7-0B5F0F8FF062}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7AB025C4-B505-4DAD-B3B7-0B5F0F8FF062}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7AB025C4-B505-4DAD-B3B7-0B5F0F8FF062}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
