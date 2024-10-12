@@ -28,10 +28,16 @@ public static class GameController
         // ask input again, validate input
         // is game over?
 
+        var errorMessage = "";
+
         do
         {
-            ConsoleUI.Visualizer.DrawBoard(gameInstance);
-    
+            Visualizer.DrawBoard(gameInstance);
+            
+            Console.WriteLine("'s turn!");
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(errorMessage);
+            Console.ResetColor();
             Console.Write("Give me coordinates <");
             Console.ForegroundColor = Visualizer.XAxisColor;
             Console.Write("x");
@@ -44,9 +50,31 @@ public static class GameController
             
             var input = Console.ReadLine()!;
             var inputSplit = input.Split(',');
-            var inputX = int.Parse(inputSplit[0]);
-            var inputY = int.Parse(inputSplit[1]);
-            gameInstance.MakeAMove(inputX, inputY);
+            if (!int.TryParse(inputSplit[0], out var inputX))
+            {
+                errorMessage = "Insert valid X coordinate!";
+                continue;
+            }
+            if (!int.TryParse(inputSplit[1], out var inputY))
+            {
+                errorMessage = "Insert valid Y coordinate!";
+                continue;
+            }
+
+            try
+            {
+                if (!gameInstance.MakeAMove(inputX, inputY))
+                {
+                    errorMessage = "Space occupied! Try again!";
+                    continue;
+                }
+            }
+            catch (Exception)
+            {
+                errorMessage = "Invalid coordinates! Please stay inside the board!";
+                continue;
+            }
+            errorMessage = "";
             
         } while (true);
     

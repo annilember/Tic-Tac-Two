@@ -4,7 +4,7 @@ public class TicTacTwoBrain
 {
     private EGamePiece[,] _gameBoard;
     
-    private Boolean[,] _gameGrid;
+    private bool[,] _gameGrid;
     private EGamePiece _nextMoveBy { get; set; } = EGamePiece.X;
 
     private GameConfiguration _gameConfiguration;
@@ -13,7 +13,7 @@ public class TicTacTwoBrain
     {
         _gameConfiguration = gameConfiguration;
         _gameBoard = new EGamePiece[_gameConfiguration.BoardSizeWidth, _gameConfiguration.BoardSizeHeight];
-        _gameGrid = new Boolean[_gameConfiguration.BoardSizeWidth, _gameConfiguration.BoardSizeHeight];
+        _gameGrid = new bool[_gameConfiguration.BoardSizeWidth, _gameConfiguration.BoardSizeHeight];
     }
 
     public EGamePiece[,] GameBoard
@@ -40,7 +40,7 @@ public class TicTacTwoBrain
         return copyOfBoard;
     }
     
-    public Boolean[,] GameGrid
+    public bool[,] GameGrid
     {
         get => GetGrid();
         private set => _gameGrid = value;
@@ -52,9 +52,9 @@ public class TicTacTwoBrain
     private int GridStartPosX => _gameConfiguration.GridStartPosX;
     private int GridStartPosY => _gameConfiguration.GridStartPosY;
     
-    private Boolean[,] GetGrid()
+    private bool[,] GetGrid()
     {
-        var grid = new Boolean[DimX, DimY];
+        var grid = new bool[DimX, DimY];
         
         for (var x = 0; x < DimX; x++)
         {
@@ -85,7 +85,7 @@ public class TicTacTwoBrain
         }
 
         _gameBoard[x, y] = _nextMoveBy;
-        
+    
         _nextMoveBy = _nextMoveBy == EGamePiece.X ? EGamePiece.O : EGamePiece.X;
 
         return true;

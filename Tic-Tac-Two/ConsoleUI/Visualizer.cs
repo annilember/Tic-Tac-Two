@@ -10,6 +10,7 @@ public static class Visualizer
     
     public static void DrawBoard(TicTacTwoBrain gameInstance)
     {
+        Console.Clear();
         DrawBoardBeginning(gameInstance);
         DrawBoardMain(gameInstance);
         DrawBoardEnd(gameInstance);
@@ -22,10 +23,6 @@ public static class Visualizer
             EGamePiece.X => "X",
             _ => " "
         };
-
-    // private static ConsoleColor DisplayGrid(TicTacTwoBrain gameInstance)
-    // {
-    // }
 
     private static void DrawBoardBeginning(TicTacTwoBrain gameInstance)
     {
