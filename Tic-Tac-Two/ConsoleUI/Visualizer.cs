@@ -4,16 +4,34 @@ namespace ConsoleUI;
 
 public static class Visualizer
 {
-    public static ConsoleColor XAxisColor = ConsoleColor.Green;
-    public static ConsoleColor YAxisColor = ConsoleColor.Blue;
-    public static ConsoleColor GridColor = ConsoleColor.DarkYellow;
-    
+    private const ConsoleColor XAxisColor = ConsoleColor.Green;
+    private const ConsoleColor YAxisColor = ConsoleColor.Blue;
+    private const ConsoleColor GridColor = ConsoleColor.DarkYellow;
+    private const ConsoleColor ErrorMessageColor = ConsoleColor.Red;
+
     public static void DrawBoard(TicTacTwoBrain gameInstance)
     {
         Console.Clear();
         DrawBoardBeginning(gameInstance);
         DrawBoardMain(gameInstance);
         DrawBoardEnd(gameInstance);
+    }
+
+    public static void WriteInstructions(string errorMessage)
+    {
+        Console.WriteLine("Someone's turn!");
+        Console.ForegroundColor = ErrorMessageColor;
+        Console.WriteLine(errorMessage);
+        Console.ResetColor();
+        Console.Write("Give me coordinates <");
+        Console.ForegroundColor = XAxisColor;
+        Console.Write("x");
+        Console.ResetColor();
+        Console.Write(",");
+        Console.ForegroundColor = YAxisColor;
+        Console.Write("y");
+        Console.ResetColor();
+        Console.Write("> or save:");
     }
     
     private static string DrawGamePiece(EGamePiece piece) =>
@@ -57,11 +75,11 @@ public static class Visualizer
             Console.Write(" \u2551");
             for (int x = 0; x < gameInstance.DimX; x++)
             {
-                if (gameInstance.GameGrid[x, y])
+                if (gameInstance.GameGrid[x][y])
                 {
                     Console.BackgroundColor = GridColor;
                 }
-                Console.Write(" " + DrawGamePiece(gameInstance.GameBoard[x, y]) + " ");
+                Console.Write(" " + DrawGamePiece(gameInstance.GameBoard[x][y]) + " ");
                 Console.ResetColor();
                 Console.Write("\u2551");
             }

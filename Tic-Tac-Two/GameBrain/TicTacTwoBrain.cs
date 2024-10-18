@@ -2,98 +2,153 @@
 
 public class TicTacTwoBrain
 {
-    private EGamePiece[,] _gameBoard;
-    
-    private bool[,] _gameGrid;
-    private EGamePiece _nextMoveBy { get; set; } = EGamePiece.X;
 
-    private GameConfiguration _gameConfiguration;
+    private readonly GameState _gameState;
 
     public TicTacTwoBrain(GameConfiguration gameConfiguration)
     {
-        _gameConfiguration = gameConfiguration;
-        _gameBoard = new EGamePiece[_gameConfiguration.BoardSizeWidth, _gameConfiguration.BoardSizeHeight];
-        _gameGrid = new bool[_gameConfiguration.BoardSizeWidth, _gameConfiguration.BoardSizeHeight];
+        var gameBoard = new EGamePiece[gameConfiguration.BoardSizeWidth][];
+        var gameGrid = new bool[gameConfiguration.BoardSizeWidth][];
+        var gridEndPosX = gameConfiguration.GridStartPosX + gameConfiguration.GridSizeWidth;
+        var gridEndPosY = gameConfiguration.GridStartPosY + gameConfiguration.GridSizeHeight;
+        
+        for (var x = 0; x < gameBoard.Length; x++)
+        {
+            gameBoard[x] = new EGamePiece[gameConfiguration.BoardSizeHeight];
+            gameGrid[x] = new bool[gameConfiguration.BoardSizeHeight];
+
+            for (int y = 0; y < gameGrid[x].Length; y++)
+            {
+                if (x >= gameConfiguration.GridStartPosX && 
+                    x < gridEndPosX && 
+                    y >= gameConfiguration.GridStartPosY && 
+                    y < gridEndPosY)
+                {
+                    gameGrid[x][y] = true;
+                } 
+            }
+        }
+        
+        _gameState = new GameState(gameConfiguration, 
+            gameBoard, 
+            gameGrid);
     }
 
-    public EGamePiece[,] GameBoard
+    public string GetGameStateJson()
     {
-        get => GetBoard();
-        private set => _gameBoard = value;
+        return _gameState.ToString();
+    }
+
+    public string GetGameConfigName()
+    {
+        return _gameState.GameConfiguration.Name;
     }
     
-    public int DimX => _gameBoard.GetLength(0);
-    public int DimY => _gameBoard.GetLength(1);
-
-    private EGamePiece[,] GetBoard()
+    public EGamePiece[][] GameBoard
     {
-        var copyOfBoard = new EGamePiece[DimX, DimY];
+        get => GetBoard();
+        private set => _gameState.GameBoard = value;
+    }
+    
+    public bool[][] GameGrid
+    {
+        get => GetGrid();
+        private set => _gameState.GameGrid = value;
+    }
+    
+    public int DimX => _gameState.GameBoard.Length;
+    public int DimY => _gameState.GameBoard[0].Length;
+
+    private EGamePiece[][] GetBoard()
+    {
+        var copyOfBoard = new EGamePiece[DimX][];
         
         for (var x = 0; x < DimX; x++)
         {
+            copyOfBoard[x] = new EGamePiece[DimY];
             for (var y = 0; y < DimY; y++)
             {
-                copyOfBoard[x, y] = _gameBoard[x, y];
+                copyOfBoard[x][y] = _gameState.GameBoard[x][y];
             }
         }
         
         return copyOfBoard;
     }
     
-    public bool[,] GameGrid
+    private bool[][] GetGrid()
     {
-        get => GetGrid();
-        private set => _gameGrid = value;
-    }
-
-    private int DimXGrid => _gameConfiguration.GridSizeWidth;
-    private int DimYGrid => _gameConfiguration.GridSizeHeight;
-
-    private int GridStartPosX => _gameConfiguration.GridStartPosX;
-    private int GridStartPosY => _gameConfiguration.GridStartPosY;
-    
-    private bool[,] GetGrid()
-    {
-        var grid = new bool[DimX, DimY];
+        var copyOfGrid = new bool[DimX][];
         
         for (var x = 0; x < DimX; x++)
         {
+            copyOfGrid[x] = new bool[DimY];
             for (var y = 0; y < DimY; y++)
             {
-                var endPosGridX = GridStartPosX + DimXGrid;
-                var endPosGridY = GridStartPosY + DimYGrid;
-                
-                if (x >= GridStartPosX && 
-                    x < endPosGridX && 
-                    y >= GridStartPosY && 
-                    y < endPosGridY)
-                {
-                    grid[x, y] = true;
-                }
-                else grid[x, y] = false;
+                copyOfGrid[x][y] = _gameState.GameGrid[x][y];
             }
         }
-        return grid;
+        return copyOfGrid;
     }
 
     
     public bool MakeAMove(int x, int y)
     {
-        if (_gameBoard[x, y] != EGamePiece.Empty)
+        if (_gameState.GameBoard[x][y] != EGamePiece.Empty)
         {
             return false;
         }
 
-        _gameBoard[x, y] = _nextMoveBy;
+        _gameState.GameBoard[x][y] = _gameState.NextMoveBy;
     
-        _nextMoveBy = _nextMoveBy == EGamePiece.X ? EGamePiece.O : EGamePiece.X;
+        _gameState.NextMoveBy = _gameState.NextMoveBy == EGamePiece.X ? EGamePiece.O : EGamePiece.X;
+
+        return true;
+    }
+
+    private bool MoveGrid(int gridStartPosX, int gridStartPosY)
+    {
+        // TODO: add conditions when false.
+        // Should I make a combo method that is used for initializing AND moving?
+        
+        var endPosGridX = gridStartPosX + _gameState.GameConfiguration.GridSizeWidth;
+        var endPosGridY = gridStartPosY + _gameState.GameConfiguration.GridSizeHeight;
+        
+        for (var x = 0; x < DimX; x++)
+        {
+            for (var y = 0; y < DimY; y++)
+            {
+                if (x >= gridStartPosX && 
+                    x < endPosGridX && 
+                    y >= gridStartPosY && 
+                    y < endPosGridY)
+                {
+                    _gameState.GameGrid[x][y] = true;
+                }
+                else
+                {
+                    _gameState.GameGrid[x][y] = false;
+                }
+            }
+        }
 
         return true;
     }
 
     public void ResetGame()
     {
-        _gameBoard = new EGamePiece[DimX, DimY];
-        _nextMoveBy = EGamePiece.X;
+        // TODO: correctly initialize grid.
+        // Can I use constructor for making this easier???
+        var gameBoard = new EGamePiece[_gameState.GameConfiguration.BoardSizeWidth][];
+        var gameGrid = new bool[_gameState.GameConfiguration.BoardSizeWidth][];
+        
+        for (var i = 0; i < gameBoard.Length; i++)
+        {
+            gameBoard[i] = new EGamePiece[_gameState.GameConfiguration.BoardSizeHeight];
+            gameGrid[i] = new bool[_gameState.GameConfiguration.BoardSizeHeight];
+        }
+        
+        _gameState.GameBoard = gameBoard;
+        _gameState.GameGrid = gameGrid;
+        _gameState.NextMoveBy = EGamePiece.X;
     }
 }

@@ -2,7 +2,7 @@
 
 namespace DAL;
 
-public class ConfigRepository
+public class ConfigRepositoryHardCoded: IConfigRepository
 {
     private List<GameConfiguration> _gameConfigurations = new List<GameConfiguration>()
     {
@@ -32,5 +32,10 @@ public class ConfigRepository
     public GameConfiguration GetConfigurationByName(string name)
     {
         return _gameConfigurations.Single(c => c.Name == name);
+    }
+
+    public string Test()
+    {
+        return "Hello World!";
     }
 }
