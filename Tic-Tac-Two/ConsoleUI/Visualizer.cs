@@ -108,4 +108,10 @@ public static class Visualizer
         }
         Console.WriteLine("\u255d");
     }
+
+    public static void DisplayGameOverMessage()
+    {
+        Console.WriteLine(VisualizerHelper.GameOverMessage);
+        Console.WriteLine("Press <R> to return to main menu:");
+    }
 }

@@ -25,28 +25,46 @@ public static class GameController
         
         
         // main loop of gameplay
-        // draw the board again
         // add whose turn it is
-        // is game over?
 
         var errorMessage = "";
         // var winner = EGamePiece.Empty;
-
+        var input = "";
+        
         do
         {
             Visualizer.DrawBoard(gameInstance);
             // Console.WriteLine($"{winner} wins!");
             Visualizer.WriteInstructions(errorMessage);
-            var input = HandleInput(gameInstance, Console.ReadLine()!);
+            input = HandleInput(gameInstance, Console.ReadLine()!);
             if (input == "R") break;
             errorMessage = input;
             // check if game is over
             // winner = gameInstance.CheckForWinner();
 
         } while (gameInstance.CheckForWinner() == EGamePiece.Empty);
-    
+
+        input = "";
+        
+        do
+        {
+            Visualizer.DrawBoard(gameInstance);
+            Visualizer.DisplayGameOverMessage();
+            input = HandleInput2(gameInstance, Console.ReadLine()!);
+        } while (input == "");
+
         // Console.WriteLine($"{gameInstance.CheckForWinner()} wins!");
         return "R";
+    }
+
+    private static string HandleInput2(TicTacTwoBrain gameInstance, string input)
+    {
+        if (input.Equals("r", StringComparison.InvariantCultureIgnoreCase))
+        {
+            return "R";
+        }
+
+        return "";
     }
 
     private static string HandleInput(TicTacTwoBrain gameInstance, string input)
