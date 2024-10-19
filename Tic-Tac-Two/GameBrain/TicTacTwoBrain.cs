@@ -132,13 +132,13 @@ public class TicTacTwoBrain
                 countColStrike = CountRowOrColumnStrike(player, countColStrike, y, x);
                 if (countRowStrike == _gameState.GameConfiguration.WinCondition ||
                     countColStrike == _gameState.GameConfiguration.WinCondition ||
-                    CheckDiagonalStreaks2(player, x, y))
+                    CheckDiagonalStreaks(player, x, y, (i) => i + 1) ||
+                    CheckDiagonalStreaks(player, x, y, (i) => i - 1)) 
                 {
                     return true;
                 }
             }
         }
-        // return CheckDiagonalStreaks(player);
         return false;
     }
 
@@ -153,31 +153,8 @@ public class TicTacTwoBrain
 
         return countStrike;
     }
-
-    private bool CheckDiagonalStreaks(EGamePiece player)
-    {
-        int countStrike = 0;
-        int xBasis = 1;
-        EGamePiece digonalLast = EGamePiece.Empty;
-
-        for (int yBasis = 0; yBasis < DimY; yBasis++)
-        {
-            // siin alustab uue diagonaali kontrollimist
-            int x = xBasis;
-            int y = yBasis;
-            
-            while (_gameState.GameGrid[x][y])
-            {
-                if (_gameState.GameBoard[x][y] == player) countStrike++;
-                if (countStrike == _gameState.GameConfiguration.WinCondition) return true;
-                x++;
-                y++;
-            }
-        }
-        return false;
-    }
-
-    private bool CheckDiagonalStreaks2(EGamePiece player, int x, int y)
+    
+    private bool CheckDiagonalStreaks(EGamePiece player, int x, int y, Func<int, int> action)
     {
         int countStrike = 0;
         while (_gameState.GameGrid[x][y])
@@ -185,7 +162,7 @@ public class TicTacTwoBrain
             if (_gameState.GameBoard[x][y] == player) countStrike++;
             if (countStrike == _gameState.GameConfiguration.WinCondition) return true;
             x++;
-            y++;
+            y = action(y);
         }
 
         return false;
