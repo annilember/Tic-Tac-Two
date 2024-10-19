@@ -20,6 +20,7 @@ public class ConfigRepositoryHardCoded: IConfigRepository
             GridStartPosX = 3,
             GridStartPosY = 3,
             WinCondition = 3,
+            MoveGridAfterNMoves = 3,
             MovePieceAfterNMoves = 3
         }
     };

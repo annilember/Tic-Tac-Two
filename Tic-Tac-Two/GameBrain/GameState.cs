@@ -7,6 +7,8 @@ public class GameState
     public bool[][] GameGrid { get; set; }
     
     public EGamePiece NextMoveBy { get; set; } = EGamePiece.X;
+    
+    public int RoundNumber { get; set; } = 0;
 
     public GameConfiguration GameConfiguration { get; set; }
 

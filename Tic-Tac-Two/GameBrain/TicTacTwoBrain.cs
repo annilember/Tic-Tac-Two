@@ -99,10 +99,26 @@ public class TicTacTwoBrain
         }
 
         _gameState.GameBoard[x][y] = _gameState.NextMoveBy;
+
+        if (_gameState.NextMoveBy == EGamePiece.O)
+        {
+            _gameState.RoundNumber++;
+        }
     
         _gameState.NextMoveBy = _gameState.NextMoveBy == EGamePiece.X ? EGamePiece.O : EGamePiece.X;
 
         return true;
+    }
+    
+    public int RoundNumber
+    {
+        get => GetRoundNumber();
+        private set => _gameState.RoundNumber = value;
+    }
+
+    private int GetRoundNumber()
+    {
+        return _gameState.RoundNumber;
     }
 
     public EGamePiece CheckForWinner()
