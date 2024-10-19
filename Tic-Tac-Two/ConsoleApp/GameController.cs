@@ -36,6 +36,12 @@ public static class GameController
             Visualizer.DrawBoard(gameInstance);
             // Console.WriteLine($"{winner} wins!");
             Console.WriteLine($"Round number: {gameInstance.RoundNumber}");
+
+            if (gameInstance.CanMoveGrid())
+            {
+                Console.WriteLine("Can move grid!!!");
+            }
+            
             Visualizer.WriteInstructions(errorMessage);
             input = HandleInput(gameInstance, Console.ReadLine()!);
             if (input == "R") break;

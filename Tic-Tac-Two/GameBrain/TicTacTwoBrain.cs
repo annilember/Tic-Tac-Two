@@ -184,6 +184,11 @@ public class TicTacTwoBrain
         return false;
     }
 
+    public bool CanMoveGrid()
+    {
+        return RoundNumber > _gameState.GameConfiguration.MoveGridAfterNMoves;
+    }
+
     private bool MoveGrid(int gridStartPosX, int gridStartPosY)
     {
         // TODO: add conditions when false.
