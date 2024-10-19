@@ -4,10 +4,7 @@ namespace ConsoleUI;
 
 public static class Visualizer
 {
-    private const ConsoleColor XAxisColor = ConsoleColor.Green;
-    private const ConsoleColor YAxisColor = ConsoleColor.Blue;
-    private const ConsoleColor GridColor = ConsoleColor.DarkYellow;
-    private const ConsoleColor ErrorMessageColor = ConsoleColor.Red;
+
 
     public static void DrawBoard(TicTacTwoBrain gameInstance)
     {
@@ -20,15 +17,15 @@ public static class Visualizer
     public static void WriteInstructions(string errorMessage)
     {
         Console.WriteLine("Someone's turn!");
-        Console.ForegroundColor = ErrorMessageColor;
+        Console.ForegroundColor = VisualizerHelper.ErrorMessageColor;
         Console.WriteLine(errorMessage);
         Console.ResetColor();
         Console.Write("Give me coordinates <");
-        Console.ForegroundColor = XAxisColor;
+        Console.ForegroundColor = VisualizerHelper.XAxisColor;
         Console.Write("x");
         Console.ResetColor();
         Console.Write(",");
-        Console.ForegroundColor = YAxisColor;
+        Console.ForegroundColor = VisualizerHelper.YAxisColor;
         Console.Write("y");
         Console.ResetColor();
         Console.Write("> or save:");
@@ -45,7 +42,7 @@ public static class Visualizer
     private static void DrawBoardBeginning(TicTacTwoBrain gameInstance)
     {
         Console.Write("  ");
-        Console.ForegroundColor = XAxisColor;
+        Console.ForegroundColor = VisualizerHelper.XAxisColor;
         for (int x = 0; x < gameInstance.DimX; x++)
         {
             Console.Write($"  {x} ");
@@ -69,7 +66,7 @@ public static class Visualizer
     {
         for (int y = 0; y < gameInstance.DimY; y++)
         {
-            Console.ForegroundColor = YAxisColor;
+            Console.ForegroundColor = VisualizerHelper.YAxisColor;
             Console.Write($"{y}");
             Console.ResetColor();
             Console.Write(" \u2551");
@@ -77,7 +74,7 @@ public static class Visualizer
             {
                 if (gameInstance.GameGrid[x][y])
                 {
-                    Console.BackgroundColor = GridColor;
+                    Console.BackgroundColor = VisualizerHelper.GridColor;
                 }
                 Console.Write(" " + DrawGamePiece(gameInstance.GameBoard[x][y]) + " ");
                 Console.ResetColor();
