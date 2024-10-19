@@ -64,11 +64,11 @@ public class Menu
 
     public string Run()
     {
-        Console.Clear();
         //TODO! Implement main menu loop!
 
         do
         {
+            Console.Clear();
             var menuItem = DisplayMenuGetUserChoice();
             var menuReturnValue = "";
         
@@ -93,6 +93,11 @@ public class Menu
             }
 
             //return menuItem.Shortcut;
+
+            if (menuReturnValue == "R")
+            {
+                continue;
+            }
             
             if (!string.IsNullOrWhiteSpace(menuReturnValue))
             {

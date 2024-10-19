@@ -30,21 +30,22 @@ public static class GameController
         // is game over?
 
         var errorMessage = "";
-        var winner = EGamePiece.Empty;
+        // var winner = EGamePiece.Empty;
 
         do
         {
             Visualizer.DrawBoard(gameInstance);
-            Console.WriteLine($"{winner} wins!");
+            // Console.WriteLine($"{winner} wins!");
             Visualizer.WriteInstructions(errorMessage);
             var input = Console.ReadLine()!;
             errorMessage = HandleInput(gameInstance, input);
             // check if game is over
-            winner = gameInstance.CheckForWinner();
+            // winner = gameInstance.CheckForWinner();
 
-        } while (true);
+        } while (gameInstance.CheckForWinner() == EGamePiece.Empty);
     
-        return "";
+        // Console.WriteLine($"{gameInstance.CheckForWinner()} wins!");
+        return "R";
     }
 
     private static string HandleInput(TicTacTwoBrain gameInstance, string input)
