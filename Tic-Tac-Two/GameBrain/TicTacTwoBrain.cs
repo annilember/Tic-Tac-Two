@@ -105,6 +105,62 @@ public class TicTacTwoBrain
         return true;
     }
 
+    public EGamePiece CheckForWinner()
+    {
+        if (CheckForWinnerByPlayer(EGamePiece.X))
+        {
+            return EGamePiece.X;
+        }
+        if (CheckForWinnerByPlayer(EGamePiece.O))
+        {
+            return EGamePiece.O;
+        }
+
+        return EGamePiece.Empty;
+    }
+
+    private bool CheckForWinnerByPlayer(EGamePiece player)
+    {
+        int countRowStrike = 0;
+        int countColStrike = 0;
+        int countDiagonalStrike = 1;
+        EGamePiece digonalLast = EGamePiece.Empty;
+        for (int x = 0; x < DimX; x++)
+        {
+            for (int y = 0; y < DimY; y++)
+            {
+                countRowStrike = CountRowOrColumnStrike(player, countRowStrike, x, y);
+                countColStrike = CountRowOrColumnStrike(player, countColStrike, y, x);
+                if (countRowStrike == _gameState.GameConfiguration.WinCondition || 
+                    countColStrike == _gameState.GameConfiguration.WinCondition)
+                {
+                    return true;
+                }
+
+                if (_gameState.GameGrid[x][y] && _gameState.GameGrid[x + 1][y + 1])
+                {
+                    if (_gameState.GameBoard[y][x] == player && _gameState.GameBoard[x + 1][y + 1] == player)
+                    {
+                        countDiagonalStrike++;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private int CountRowOrColumnStrike(EGamePiece player, int countStrike, int x, int y)
+    {
+        if (_gameState.GameGrid[x][y])
+        {
+            if (_gameState.GameBoard[x][y] == player) countStrike++;
+            else countStrike = 0;
+        }
+        else countStrike = 0;
+
+        return countStrike;
+    }
+
     private bool MoveGrid(int gridStartPosX, int gridStartPosY)
     {
         // TODO: add conditions when false.

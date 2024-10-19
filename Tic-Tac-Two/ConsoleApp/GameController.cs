@@ -30,13 +30,17 @@ public static class GameController
         // is game over?
 
         var errorMessage = "";
+        var winner = EGamePiece.Empty;
 
         do
         {
             Visualizer.DrawBoard(gameInstance);
+            Console.WriteLine($"{winner} wins!");
             Visualizer.WriteInstructions(errorMessage);
             var input = Console.ReadLine()!;
             errorMessage = HandleInput(gameInstance, input);
+            // check if game is over
+            winner = gameInstance.CheckForWinner();
 
         } while (true);
     
@@ -45,6 +49,8 @@ public static class GameController
 
     private static string HandleInput(TicTacTwoBrain gameInstance, string input)
     {
+        // TODO: separate 2 functionalities if can - input validation and making a move.
+        
         var errorMessage = "";
         
         if (input.Equals("save", StringComparison.InvariantCultureIgnoreCase))
