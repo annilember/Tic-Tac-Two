@@ -123,29 +123,22 @@ public class TicTacTwoBrain
     {
         int countRowStrike = 0;
         int countColStrike = 0;
-        int countDiagonalStrike = 1;
-        EGamePiece digonalLast = EGamePiece.Empty;
+
         for (int x = 0; x < DimX; x++)
         {
             for (int y = 0; y < DimY; y++)
             {
                 countRowStrike = CountRowOrColumnStrike(player, countRowStrike, x, y);
                 countColStrike = CountRowOrColumnStrike(player, countColStrike, y, x);
-                if (countRowStrike == _gameState.GameConfiguration.WinCondition || 
-                    countColStrike == _gameState.GameConfiguration.WinCondition)
+                if (countRowStrike == _gameState.GameConfiguration.WinCondition ||
+                    countColStrike == _gameState.GameConfiguration.WinCondition ||
+                    CheckDiagonalStreaks2(player, x, y))
                 {
                     return true;
                 }
-
-                if (_gameState.GameGrid[x][y] && _gameState.GameGrid[x + 1][y + 1])
-                {
-                    if (_gameState.GameBoard[y][x] == player && _gameState.GameBoard[x + 1][y + 1] == player)
-                    {
-                        countDiagonalStrike++;
-                    }
-                }
             }
         }
+        // return CheckDiagonalStreaks(player);
         return false;
     }
 
@@ -159,6 +152,43 @@ public class TicTacTwoBrain
         else countStrike = 0;
 
         return countStrike;
+    }
+
+    private bool CheckDiagonalStreaks(EGamePiece player)
+    {
+        int countStrike = 0;
+        int xBasis = 1;
+        EGamePiece digonalLast = EGamePiece.Empty;
+
+        for (int yBasis = 0; yBasis < DimY; yBasis++)
+        {
+            // siin alustab uue diagonaali kontrollimist
+            int x = xBasis;
+            int y = yBasis;
+            
+            while (_gameState.GameGrid[x][y])
+            {
+                if (_gameState.GameBoard[x][y] == player) countStrike++;
+                if (countStrike == _gameState.GameConfiguration.WinCondition) return true;
+                x++;
+                y++;
+            }
+        }
+        return false;
+    }
+
+    private bool CheckDiagonalStreaks2(EGamePiece player, int x, int y)
+    {
+        int countStrike = 0;
+        while (_gameState.GameGrid[x][y])
+        {
+            if (_gameState.GameBoard[x][y] == player) countStrike++;
+            if (countStrike == _gameState.GameConfiguration.WinCondition) return true;
+            x++;
+            y++;
+        }
+
+        return false;
     }
 
     private bool MoveGrid(int gridStartPosX, int gridStartPosY)
