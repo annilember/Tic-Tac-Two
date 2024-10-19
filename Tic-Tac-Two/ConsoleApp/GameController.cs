@@ -36,51 +36,55 @@ public static class GameController
             Visualizer.DrawBoard(gameInstance);
             Visualizer.WriteInstructions(errorMessage);
             var input = Console.ReadLine()!;
+            errorMessage = HandleInput(gameInstance, input);
 
-            if (input.Equals("save", StringComparison.InvariantCultureIgnoreCase))
-            {
-                GameRepository.SaveGame(
-                    gameInstance.GetGameStateJson(), 
-                    gameInstance.GetGameConfigName()
-                );
-            }
-            else
-            {
-                var inputSplit = input.Split(',');
-                if (inputSplit.Length != 2)
-                {
-                    errorMessage = "One number for X and one number for Y please!";
-                    continue;
-                }
-                if (!int.TryParse(inputSplit[0], out var inputX))
-                {
-                    errorMessage = "Insert valid X coordinate!";
-                    continue;
-                }
-                if (!int.TryParse(inputSplit[1], out var inputY))
-                {
-                    errorMessage = "Insert valid Y coordinate!";
-                    continue;
-                }
-                
-                try
-                {
-                    if (!gameInstance.MakeAMove(inputX, inputY))
-                    {
-                        errorMessage = "Space occupied! Try again!";
-                        continue;
-                    }
-                }
-                catch (Exception)
-                {
-                    errorMessage = "Invalid coordinates! Please stay inside the board!";
-                    continue;
-                }
-                errorMessage = "";
-            }
         } while (true);
     
         return "";
+    }
+
+    private static string HandleInput(TicTacTwoBrain gameInstance, string input)
+    {
+        var errorMessage = "";
+        
+        if (input.Equals("save", StringComparison.InvariantCultureIgnoreCase))
+        {
+            GameRepository.SaveGame(
+                gameInstance.GetGameStateJson(), 
+                gameInstance.GetGameConfigName()
+            );
+        }
+        else
+        {
+            var inputSplit = input.Split(',');
+            if (inputSplit.Length != 2)
+            {
+                return "One number for X and one number for Y please!";
+            }
+            if (!int.TryParse(inputSplit[0], out var inputX))
+            {
+                return "Insert valid X coordinate!";
+            }
+            if (!int.TryParse(inputSplit[1], out var inputY))
+            {
+                return "Insert valid Y coordinate!";
+            }
+                
+            try
+            {
+                if (!gameInstance.MakeAMove(inputX, inputY))
+                {
+                    return "Space occupied! Try again!";
+                }
+            }
+            catch (Exception)
+            {
+                return "Invalid coordinates! Please stay inside the board!";
+            }
+            errorMessage = "";
+        }
+
+        return errorMessage;
     }
 
     private static string ChooseConfiguration()

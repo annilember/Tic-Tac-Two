@@ -4,8 +4,7 @@ namespace ConsoleUI;
 
 public static class Visualizer
 {
-
-
+    
     public static void DrawBoard(TicTacTwoBrain gameInstance)
     {
         Console.Clear();
