@@ -37,8 +37,9 @@ public static class GameController
             Visualizer.DrawBoard(gameInstance);
             // Console.WriteLine($"{winner} wins!");
             Visualizer.WriteInstructions(errorMessage);
-            var input = Console.ReadLine()!;
-            errorMessage = HandleInput(gameInstance, input);
+            var input = HandleInput(gameInstance, Console.ReadLine()!);
+            if (input == "R") break;
+            errorMessage = input;
             // check if game is over
             // winner = gameInstance.CheckForWinner();
 
@@ -60,6 +61,10 @@ public static class GameController
                 gameInstance.GetGameStateJson(), 
                 gameInstance.GetGameConfigName()
             );
+        }
+        else if (input.Equals("r", StringComparison.InvariantCultureIgnoreCase))
+        {
+            return "R";
         }
         else
         {

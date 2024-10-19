@@ -27,7 +27,7 @@ public static class Visualizer
         Console.ForegroundColor = VisualizerHelper.YAxisColor;
         Console.Write("y");
         Console.ResetColor();
-        Console.Write("> or save:");
+        Console.Write(">, <save> or return <R> to main menu:");
     }
     
     private static string DrawGamePiece(EGamePiece piece) =>
