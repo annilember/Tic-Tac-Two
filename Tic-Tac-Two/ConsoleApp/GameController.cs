@@ -64,6 +64,13 @@ public static class GameController
         return "";
     }
 
+    private static string HandleInputCoordinates(TicTacTwoBrain gameInstance, string input)
+    {
+
+
+        return input;
+    }
+    
     private static string HandleInput(TicTacTwoBrain gameInstance, string input)
     {
         // TODO: separate 2 functionalities if can - input validation and making a move.
@@ -80,6 +87,10 @@ public static class GameController
         else if (input.Equals("r", StringComparison.InvariantCultureIgnoreCase))
         {
             return "R";
+        }
+        else if (input.Equals("p", StringComparison.InvariantCultureIgnoreCase) && gameInstance.CanMovePiece())
+        {
+            MovePieceMode(gameInstance);
         }
         else if (input.Equals("g", StringComparison.InvariantCultureIgnoreCase) && gameInstance.CanMoveGrid())
         {
@@ -100,13 +111,23 @@ public static class GameController
             {
                 return "Insert valid Y coordinate!";
             }
-                
+            
             try
             {
-                if (!gameInstance.MakeAMove(inputX, inputY))
+                if (gameInstance.MovePieceModeOn)
+                {
+                    if (!gameInstance.RemovePiece(inputX, inputY))
+                    {
+                        return $"Coordinates <{inputX},{inputY}> do not contain your piece! Choose again!";
+                    }
+                    gameInstance.DeActivateMovePieceMode();
+                    return "R";
+                    
+                } else if (!gameInstance.MakeAMove(inputX, inputY))
                 {
                     return "Space occupied! Try again!";
                 }
+                
             }
             catch (Exception)
             {
@@ -118,6 +139,21 @@ public static class GameController
         return errorMessage;
     }
 
+    private static void MovePieceMode(TicTacTwoBrain gameInstance)
+    {
+        gameInstance.ActivateMovePieceMode();
+        do
+        {
+            Visualizer.DrawBoard(gameInstance);
+            Visualizer.WriteMovePieceModeInstructions();
+            var input = HandleInput(gameInstance, Console.ReadLine()!);
+            if (input == "R") break;
+            var errorMessage = input;
+            Console.WriteLine(errorMessage);
+            
+        } while (true);
+    }
+    
     private static void MoveGridMode(TicTacTwoBrain gameInstance)
     {
         gameInstance.ActivateMoveGridMode();

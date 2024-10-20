@@ -195,6 +195,14 @@ public class TicTacTwoBrain
 
         return true;
     }
+    
+    public bool RemovePiece(int x, int y)
+    {
+        if (_gameState.GameBoard[x][y] != _gameState.NextMoveBy) return false;
+        _gameState.GameBoard[x][y] = EGamePiece.Empty;
+        return true;
+
+    }
 
     private void CountAsMove()
     {
@@ -287,6 +295,32 @@ public class TicTacTwoBrain
     public bool CanMoveGrid()
     {
         return GameRoundNumber > GameState.GameConfiguration.MoveGridAfterNMoves;
+    }
+    
+    public bool CanMovePiece()
+    {
+        return GameRoundNumber > GameState.GameConfiguration.MovePieceAfterNMoves;
+    }
+    
+    public bool MovePieceModeOn
+    {
+        get => GetMovePieceModeOn();
+        set => _gameState.MovePieceModeOn = value;
+    }
+    
+    private bool GetMovePieceModeOn()
+    {
+        return _gameState.MovePieceModeOn;
+    }
+    
+    public void ActivateMovePieceMode()
+    {
+        _gameState.MovePieceModeOn = true;
+    }
+    
+    public void DeActivateMovePieceMode()
+    {
+        _gameState.MovePieceModeOn = false;
     }
 
     public void MoveGrid(EMoveGridDirection direction)

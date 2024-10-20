@@ -8,6 +8,8 @@ public class GameState
 
     public bool MoveGridModeOn { get; set; } = false;
     
+    public bool MovePieceModeOn { get; set; } = false;
+    
     public int GridStartPosX { get; set; }
     public int GridStartPosY { get; set; }
     

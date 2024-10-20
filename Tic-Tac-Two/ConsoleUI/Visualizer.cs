@@ -27,12 +27,19 @@ public static class Visualizer
         Console.ForegroundColor = VisualizerHelper.YAxisColor;
         Console.Write("y");
         Console.ResetColor();
-        Console.Write($">, <save>{WriteGridMovingInstructions(gameInstance)} or return <R> to main menu:");
+        Console.Write($">, <save>{WriteConditionalInstructions(gameInstance)} or return <R> to main menu:");
     }
 
-    private static string WriteGridMovingInstructions(TicTacTwoBrain gameInstance)
+    private static string WriteConditionalInstructions(TicTacTwoBrain gameInstance)
     {
-        return gameInstance.CanMoveGrid() ? ", move grid <G>" : "";
+        var pieceMovingInstructions = gameInstance.CanMovePiece() ? ", move piece <P>" : "";
+        var gridMovingInstructions = gameInstance.CanMoveGrid() ? ", move grid <G>" : "";
+        return pieceMovingInstructions + gridMovingInstructions;
+    }
+    
+    public static void WriteMovePieceModeInstructions()
+    {
+        Console.Write("Give me coordinates of the piece you want to move <x,y>:");
     }
     
     public static void WriteMoveGridModeInstructions()
