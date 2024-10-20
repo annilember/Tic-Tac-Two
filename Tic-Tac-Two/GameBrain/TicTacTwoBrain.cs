@@ -282,7 +282,6 @@ public class TicTacTwoBrain
 
     public void MoveGrid(EMoveGridDirection direction)
     {
-        var lowerBoundX = GridMovingAreaTest;
         var startPosX = _gameState.GridStartPosX;
         var startPosY = _gameState.GridStartPosY;
         var endPosX = startPosX + GameState.GameConfiguration.GridSizeWidth;
@@ -340,6 +339,8 @@ public class TicTacTwoBrain
         
         _gameState.GameBoard = gameBoard;
         _gameState.GameGrid = gameGrid;
+        _gameState.GridStartPosX = GameState.GameConfiguration.GridStartPosX;
+        _gameState.GridStartPosY = GameState.GameConfiguration.GridStartPosY;
         _gameState.NextMoveBy = EGamePiece.X;
     }
 }
