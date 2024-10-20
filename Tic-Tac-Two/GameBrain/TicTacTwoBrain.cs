@@ -10,6 +10,8 @@ public class TicTacTwoBrain
         var gameGrid = InitializeGrid(gameConfiguration);
         var gridStartPosX = gameConfiguration.GridStartPosX;
         var gridStartPosY = gameConfiguration.GridStartPosY;
+        var numberOfPiecesLeftX = gameConfiguration.NumberOfPieces;
+        var numberOfPiecesLeftO = gameConfiguration.NumberOfPieces;
         
         for (var x = 0; x < gameBoard.Length; x++)
         {
@@ -20,7 +22,9 @@ public class TicTacTwoBrain
             gameBoard, 
             gameGrid,
             gridStartPosX,
-            gridStartPosY);
+            gridStartPosY,
+            numberOfPiecesLeftX,
+            numberOfPiecesLeftO);
         
         GridMovingAreaTest = GetGridMovingArea();
     }
@@ -182,7 +186,21 @@ public class TicTacTwoBrain
     private int GridMovingUpperBoundX { get; set; }
     private int GridMovingUpperBoundY { get; set; }
 
-
+    public EGamePiece GetNextMoveBy()
+    {
+        return _gameState.NextMoveBy;
+    }
+        
+    public bool HasGamePiece(EGamePiece piece)
+    {
+        return piece switch
+        {
+            EGamePiece.X => _gameState.NumberOfPiecesLeftX > 0,
+            EGamePiece.O => _gameState.NumberOfPiecesLeftO > 0,
+            _ => false
+        };
+    }
+    
     public bool MakeAMove(int x, int y)
     {
         if (_gameState.GameBoard[x][y] != EGamePiece.Empty)
@@ -191,6 +209,16 @@ public class TicTacTwoBrain
         }
         _gameState.GameBoard[x][y] = _gameState.NextMoveBy;
         
+        switch (_gameState.NextMoveBy)
+        {
+            case EGamePiece.X:
+                _gameState.NumberOfPiecesLeftX--;
+                break;
+            case EGamePiece.O:
+                _gameState.NumberOfPiecesLeftO--;
+                break;
+        }
+
         CountAsMove();
 
         return true;
@@ -200,6 +228,16 @@ public class TicTacTwoBrain
     {
         if (_gameState.GameBoard[x][y] != _gameState.NextMoveBy) return false;
         _gameState.GameBoard[x][y] = EGamePiece.Empty;
+        
+        switch (_gameState.NextMoveBy)
+        {
+            case EGamePiece.X:
+                _gameState.NumberOfPiecesLeftX++;
+                break;
+            case EGamePiece.O:
+                _gameState.NumberOfPiecesLeftO++;
+                break;
+        }
         return true;
 
     }
@@ -386,5 +424,7 @@ public class TicTacTwoBrain
         _gameState.GridStartPosY = GameState.GameConfiguration.GridStartPosY;
         _gameState.NextMoveBy = EGamePiece.X;
         _gameState.GameRoundNumber = 1;
+        _gameState.NumberOfPiecesLeftX = GameState.GameConfiguration.NumberOfPieces;
+        _gameState.NumberOfPiecesLeftO = GameState.GameConfiguration.NumberOfPieces;
     }
 }

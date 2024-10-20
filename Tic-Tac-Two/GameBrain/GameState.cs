@@ -15,6 +15,9 @@ public class GameState
     
     public EGamePiece NextMoveBy { get; set; } = EGamePiece.X;
     
+    public int NumberOfPiecesLeftX { get; set; }
+    public int NumberOfPiecesLeftO { get; set; }
+    
     public int GameRoundNumber { get; set; } = 1;
 
     public static GameConfiguration GameConfiguration { get; set; }
@@ -24,7 +27,9 @@ public class GameState
         EGamePiece[][] gameBoard, 
         bool[][] gameGrid, 
         int gridStartPosX, 
-        int gridStartPosY
+        int gridStartPosY,
+        int numberOfPiecesLeftX,
+        int numberOfPiecesLeftO
         )
     {
         GameConfiguration = gameConfiguration;
@@ -32,6 +37,8 @@ public class GameState
         GameGrid = gameGrid;
         GridStartPosX = gridStartPosX;
         GridStartPosY = gridStartPosY;
+        NumberOfPiecesLeftX = numberOfPiecesLeftX;
+        NumberOfPiecesLeftO = numberOfPiecesLeftO;
     }
 
     public override string ToString()

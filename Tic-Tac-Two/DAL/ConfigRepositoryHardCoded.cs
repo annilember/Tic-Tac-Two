@@ -19,6 +19,7 @@ public class ConfigRepositoryHardCoded: IConfigRepository
             GridSizeHeight = 4,
             GridStartPosX = 3,
             GridStartPosY = 3,
+            NumberOfPieces = 6,
             WinCondition = 3,
             MoveGridAfterNMoves = 3,
             MovePieceAfterNMoves = 3

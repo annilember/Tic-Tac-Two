@@ -122,8 +122,14 @@ public static class GameController
                     }
                     gameInstance.DeActivateMovePieceMode();
                     return "R";
-                    
-                } else if (!gameInstance.MakeAMove(inputX, inputY))
+                }
+
+                if (!gameInstance.HasGamePiece(gameInstance.GetNextMoveBy()))
+                {
+                    return "Not enough pieces to make a move! You can move a piece, or move grid.";
+                }
+                
+                if (!gameInstance.MakeAMove(inputX, inputY))
                 {
                     return "Space occupied! Try again!";
                 }
