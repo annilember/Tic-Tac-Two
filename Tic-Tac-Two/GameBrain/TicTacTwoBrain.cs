@@ -8,31 +8,71 @@ public class TicTacTwoBrain
     public TicTacTwoBrain(GameConfiguration gameConfiguration)
     {
         var gameBoard = new EGamePiece[gameConfiguration.BoardSizeWidth][];
-        var gameGrid = new bool[gameConfiguration.BoardSizeWidth][];
-        var gridEndPosX = gameConfiguration.GridStartPosX + gameConfiguration.GridSizeWidth;
-        var gridEndPosY = gameConfiguration.GridStartPosY + gameConfiguration.GridSizeHeight;
+        var gameGrid = InitializeGrid(gameConfiguration);
+        var gameGridMovingArea = InitializeGridMovingArea(gameConfiguration);
         
         for (var x = 0; x < gameBoard.Length; x++)
         {
             gameBoard[x] = new EGamePiece[gameConfiguration.BoardSizeHeight];
-            gameGrid[x] = new bool[gameConfiguration.BoardSizeHeight];
+        }
+        
+        _gameState = new GameState(gameConfiguration, 
+            gameBoard, 
+            gameGrid,
+            gameGridMovingArea);
+    }
+
+    private bool[][] InitializeGrid(GameConfiguration gameConfiguration)
+    {
+        return CreateGrid(gameConfiguration.BoardSizeWidth,
+            gameConfiguration.BoardSizeHeight,
+            gameConfiguration.GridSizeWidth,
+            gameConfiguration.GridSizeHeight,
+            gameConfiguration.GridStartPosX,
+            gameConfiguration.GridStartPosY);
+    }
+    
+    private bool[][] InitializeGridMovingArea(GameConfiguration gameConfiguration)
+    {
+        int gridDimX = gameConfiguration.GridSizeWidth + 2;
+        int gridDimY = gameConfiguration.GridSizeHeight + 2;
+        int startPosX = gameConfiguration.GridStartPosX - 1;
+        int startPosY = gameConfiguration.GridStartPosY - 1;
+        
+        return CreateGrid(
+            gameConfiguration.BoardSizeWidth,
+            gameConfiguration.BoardSizeHeight, 
+            gridDimX, 
+            gridDimY, 
+            startPosX, 
+            startPosY);
+    }
+    
+    private bool[][] CreateGrid(int boardDimX, int boardDimY, int gridDimX, int gridDimY, int startPosX, int startPosY)
+    {
+        var gameGrid = new bool[boardDimX][];
+        var gridEndPosX = startPosX + gridDimX;
+        var gridEndPosY = startPosY + gridDimY;
+        
+        for (var x = 0; x < gameGrid.Length; x++)
+        {
+            gameGrid[x] = new bool[boardDimY];
 
             for (int y = 0; y < gameGrid[x].Length; y++)
             {
-                if (x >= gameConfiguration.GridStartPosX && 
+                if (x >= startPosX && 
                     x < gridEndPosX && 
-                    y >= gameConfiguration.GridStartPosY && 
+                    y >= startPosY && 
                     y < gridEndPosY)
                 {
                     gameGrid[x][y] = true;
                 } 
             }
         }
-        
-        _gameState = new GameState(gameConfiguration, 
-            gameBoard, 
-            gameGrid);
+
+        return gameGrid;
     }
+    
 
     public string GetGameStateJson()
     {
@@ -54,6 +94,23 @@ public class TicTacTwoBrain
     {
         get => GetGrid();
         private set => _gameState.GameGrid = value;
+    }
+    
+    public bool MoveGridModeOn
+    {
+        get => GetMoveGridModeOn();
+        set => _gameState.MoveGridModeOn = value;
+    }
+
+    private bool GetMoveGridModeOn()
+    {
+        return _gameState.MoveGridModeOn;
+    }
+    
+    public bool[][] GameGridMovingArea
+    {
+        get => GetGridMovingArea();
+        private set => _gameState.GameGridMovingArea = value;
     }
     
     public int DimX => _gameState.GameBoard.Length;
@@ -88,6 +145,15 @@ public class TicTacTwoBrain
             }
         }
         return copyOfGrid;
+    }
+    
+    private bool[][] GetGridMovingArea()
+    {
+        int gridDimX = _gameState.GameConfiguration.GridSizeWidth + 2;
+        int gridDimY = _gameState.GameConfiguration.GridSizeHeight + 2;
+        int startPosX = _gameState.GameConfiguration.GridStartPosX - 1;
+        int startPosY = _gameState.GameConfiguration.GridStartPosY - 1;
+        return CreateGrid(DimX, DimY, gridDimX, gridDimY, startPosX, startPosY);
     }
 
     
@@ -220,15 +286,13 @@ public class TicTacTwoBrain
 
     public void ResetGame()
     {
-        // TODO: correctly initialize grid.
         // Can I use constructor for making this easier???
         var gameBoard = new EGamePiece[_gameState.GameConfiguration.BoardSizeWidth][];
-        var gameGrid = new bool[_gameState.GameConfiguration.BoardSizeWidth][];
+        var gameGrid = InitializeGrid(_gameState.GameConfiguration);
         
         for (var i = 0; i < gameBoard.Length; i++)
         {
             gameBoard[i] = new EGamePiece[_gameState.GameConfiguration.BoardSizeHeight];
-            gameGrid[i] = new bool[_gameState.GameConfiguration.BoardSizeHeight];
         }
         
         _gameState.GameBoard = gameBoard;

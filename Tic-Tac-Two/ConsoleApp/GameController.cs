@@ -36,13 +36,8 @@ public static class GameController
             Visualizer.DrawBoard(gameInstance);
             // Console.WriteLine($"{winner} wins!");
             Console.WriteLine($"Round number: {gameInstance.RoundNumber}");
-
-            if (gameInstance.CanMoveGrid())
-            {
-                Console.WriteLine("Can move grid!!!");
-            }
             
-            Visualizer.WriteInstructions(errorMessage);
+            Visualizer.WriteInstructions(gameInstance, errorMessage);
             input = HandleInput(gameInstance, Console.ReadLine()!);
             if (input == "R") break;
             errorMessage = input;
@@ -91,6 +86,10 @@ public static class GameController
         {
             return "R";
         }
+        else if (input.Equals("g", StringComparison.InvariantCultureIgnoreCase))
+        {
+            MoveGridMode(gameInstance);
+        }
         else
         {
             var inputSplit = input.Split(',');
@@ -120,6 +119,85 @@ public static class GameController
             }
             errorMessage = "";
         }
+
+        return errorMessage;
+    }
+
+    private static void MoveGridMode(TicTacTwoBrain gameInstance)
+    {
+        // gameInstance.MoveGridModeOn peaks muutma kuskil teises kohas?? turvalisemalt?
+        gameInstance.MoveGridModeOn = true;
+        var input = "";
+        
+        do
+        {
+            Visualizer.DrawBoard(gameInstance);
+            Visualizer.WriteMoveGridModeInstructions();
+            // input = HandleMoveGridModeInput(gameInstance, Console.ReadLine()!);
+
+            while (true)
+            {
+                var key = Console.ReadKey(true).Key;
+                switch(key)
+                {
+                    
+                    case ConsoleKey.RightArrow:
+                        Console.WriteLine("Right");
+                        break;
+                    case ConsoleKey.LeftArrow:
+                        Console.WriteLine("Left");
+                        break;
+                    case ConsoleKey.UpArrow:
+                        Console.WriteLine("Up");
+                        break;
+                    case ConsoleKey.DownArrow:
+                        Console.WriteLine("Down");
+                        break;
+                    case ConsoleKey.Enter:
+                        Console.WriteLine("Enter");
+                        gameInstance.MoveGridModeOn = false;
+                        return;
+                    default:
+                        // HandleMoveGridModeInput(gameInstance, key);
+                        break;
+                }
+            }
+
+            
+        } while (true);
+        return;
+    }
+    
+    private static string HandleMoveGridModeInput(TicTacTwoBrain gameInstance, string input)
+    {
+        var errorMessage = "";
+        
+        var inputSplit = input.Split(',');
+        if (inputSplit.Length != 2)
+        {
+            return "One number for X and one number for Y please!";
+        }
+        if (!int.TryParse(inputSplit[0], out var inputX))
+        {
+            return "Insert valid X coordinate!";
+        }
+        if (!int.TryParse(inputSplit[1], out var inputY))
+        {
+            return "Insert valid Y coordinate!";
+        }
+            
+        try
+        {
+            if (!gameInstance.MakeAMove(inputX, inputY))
+            {
+                return "Space occupied! Try again!";
+            }
+        }
+        catch (Exception)
+        {
+            return "Invalid coordinates! Please stay inside the board!";
+        }
+        errorMessage = "";
 
         return errorMessage;
     }

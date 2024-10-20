@@ -13,7 +13,7 @@ public static class Visualizer
         DrawBoardEnd(gameInstance);
     }
 
-    public static void WriteInstructions(string errorMessage)
+    public static void WriteInstructions(TicTacTwoBrain gameInstance, string errorMessage)
     {
         Console.WriteLine("Someone's turn!");
         Console.ForegroundColor = VisualizerHelper.ErrorMessageColor;
@@ -27,7 +27,17 @@ public static class Visualizer
         Console.ForegroundColor = VisualizerHelper.YAxisColor;
         Console.Write("y");
         Console.ResetColor();
-        Console.Write(">, <save> or return <R> to main menu:");
+        Console.Write($">, <save>{WriteGridMovingInstructions(gameInstance)} or return <R> to main menu:");
+    }
+
+    private static string WriteGridMovingInstructions(TicTacTwoBrain gameInstance)
+    {
+        return gameInstance.CanMoveGrid() ? ", move grid <G>" : "";
+    }
+    
+    public static void WriteMoveGridModeInstructions()
+    {
+        Console.Write("Move grid with arrow keys and press <Enter> to lock position:");
     }
     
     private static string DrawGamePiece(EGamePiece piece) =>
@@ -71,6 +81,10 @@ public static class Visualizer
             Console.Write(" \u2551");
             for (int x = 0; x < gameInstance.DimX; x++)
             {
+                if (gameInstance.MoveGridModeOn && gameInstance.GameGridMovingArea[x][y])
+                {
+                    Console.BackgroundColor = VisualizerHelper.GridAllowedMoveAreaColor;
+                }
                 if (gameInstance.GameGrid[x][y])
                 {
                     Console.BackgroundColor = VisualizerHelper.GridColor;
