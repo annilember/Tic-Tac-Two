@@ -228,8 +228,8 @@ public class TicTacTwoBrain
 
     private bool CheckForWinnerByPlayer(EGamePiece player)
     {
-        int countRowStrike = 0;
-        int countColStrike = 0;
+        var countRowStrike = 0;
+        var countColStrike = 0;
 
         for (int x = 0; x < DimX; x++)
         {
@@ -263,16 +263,21 @@ public class TicTacTwoBrain
     
     private bool CheckDiagonalStreaks(EGamePiece player, int x, int y, Func<int, int> action)
     {
-        int countStrike = 0;
-        while (_gameState.GameGrid[x][y])
+        var countStrike = 0;
+        while (true)
         {
-            if (_gameState.GameBoard[x][y] == player) countStrike++;
-            if (countStrike == GameState.GameConfiguration.WinCondition) return true;
-            x++;
-            y = action(y);
+            try
+            {
+                if (_gameState.GameGrid[x][y] && _gameState.GameBoard[x][y] == player) countStrike++;
+                if (countStrike == GameState.GameConfiguration.WinCondition) return true;
+                x++;
+                y = action(y);
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
         }
-
-        return false;
     }
 
     public bool CanMoveGrid()
