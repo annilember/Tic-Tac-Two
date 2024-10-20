@@ -13,7 +13,7 @@ public class GameState
     
     public EGamePiece NextMoveBy { get; set; } = EGamePiece.X;
     
-    public int RoundNumber { get; set; } = 1;
+    public int GameRoundNumber { get; set; } = 1;
 
     public static GameConfiguration GameConfiguration { get; set; }
 

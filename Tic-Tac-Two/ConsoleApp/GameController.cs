@@ -33,7 +33,7 @@ public static class GameController
         do
         {
             Visualizer.DrawBoard(gameInstance);
-            Console.WriteLine($"Round number: {gameInstance.RoundNumber}");
+            Console.WriteLine($"Round number: {gameInstance.GameRoundNumber}");
             
             Visualizer.WriteInstructions(gameInstance, errorMessage);
             input = HandleInput(gameInstance, Console.ReadLine()!);

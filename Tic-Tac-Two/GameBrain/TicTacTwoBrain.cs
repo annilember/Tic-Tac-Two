@@ -104,6 +104,7 @@ public class TicTacTwoBrain
     public void DeActivateMoveGridMode()
     {
         _gameState.MoveGridModeOn = false;
+        CountAsMove();
     }
 
     public bool[][] GridMovingAreaTest { get; set; }
@@ -188,28 +189,31 @@ public class TicTacTwoBrain
         {
             return false;
         }
-
         _gameState.GameBoard[x][y] = _gameState.NextMoveBy;
-
-        if (_gameState.NextMoveBy == EGamePiece.O)
-        {
-            _gameState.RoundNumber++;
-        }
-    
-        _gameState.NextMoveBy = _gameState.NextMoveBy == EGamePiece.X ? EGamePiece.O : EGamePiece.X;
+        
+        CountAsMove();
 
         return true;
     }
+
+    private void CountAsMove()
+    {
+        if (_gameState.NextMoveBy == EGamePiece.O)
+        {
+            _gameState.GameRoundNumber++;
+        }
+        _gameState.NextMoveBy = _gameState.NextMoveBy == EGamePiece.X ? EGamePiece.O : EGamePiece.X;
+    }
     
-    public int RoundNumber
+    public int GameRoundNumber
     {
         get => GetRoundNumber();
-        private set => _gameState.RoundNumber = value;
+        private set => _gameState.GameRoundNumber = value;
     }
 
     private int GetRoundNumber()
     {
-        return _gameState.RoundNumber;
+        return _gameState.GameRoundNumber;
     }
 
     public EGamePiece CheckForWinner()
@@ -282,7 +286,7 @@ public class TicTacTwoBrain
 
     public bool CanMoveGrid()
     {
-        return RoundNumber > GameState.GameConfiguration.MoveGridAfterNMoves;
+        return GameRoundNumber > GameState.GameConfiguration.MoveGridAfterNMoves;
     }
 
     public void MoveGrid(EMoveGridDirection direction)
@@ -347,5 +351,6 @@ public class TicTacTwoBrain
         _gameState.GridStartPosX = GameState.GameConfiguration.GridStartPosX;
         _gameState.GridStartPosY = GameState.GameConfiguration.GridStartPosY;
         _gameState.NextMoveBy = EGamePiece.X;
+        _gameState.GameRoundNumber = 1;
     }
 }
