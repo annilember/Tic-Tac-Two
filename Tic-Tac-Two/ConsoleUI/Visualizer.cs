@@ -81,7 +81,7 @@ public static class Visualizer
             Console.Write(" \u2551");
             for (int x = 0; x < gameInstance.DimX; x++)
             {
-                if (gameInstance.MoveGridModeOn && gameInstance.GameGridMovingArea[x][y])
+                if (gameInstance.MoveGridModeOn && gameInstance.GridMovingAreaTest[x][y])
                 {
                     Console.BackgroundColor = VisualizerHelper.GridAllowedMoveAreaColor;
                 }

@@ -28,38 +28,33 @@ public static class GameController
         // add whose turn it is
 
         var errorMessage = "";
-        // var winner = EGamePiece.Empty;
         var input = "";
         
         do
         {
             Visualizer.DrawBoard(gameInstance);
-            // Console.WriteLine($"{winner} wins!");
             Console.WriteLine($"Round number: {gameInstance.RoundNumber}");
             
             Visualizer.WriteInstructions(gameInstance, errorMessage);
             input = HandleInput(gameInstance, Console.ReadLine()!);
             if (input == "R") break;
             errorMessage = input;
-            // check if game is over
-            // winner = gameInstance.CheckForWinner();
 
         } while (gameInstance.CheckForWinner() == EGamePiece.Empty);
-
-        input = "";
         
         do
         {
+            input = "";
             Visualizer.DrawBoard(gameInstance);
             Visualizer.DisplayGameOverMessage();
-            input = HandleInput2(gameInstance, Console.ReadLine()!);
+            input = HandleGameOverPageInput(gameInstance, Console.ReadLine()!);
         } while (input == "");
 
         // Console.WriteLine($"{gameInstance.CheckForWinner()} wins!");
         return "R";
     }
 
-    private static string HandleInput2(TicTacTwoBrain gameInstance, string input)
+    private static string HandleGameOverPageInput(TicTacTwoBrain gameInstance, string input)
     {
         if (input.Equals("r", StringComparison.InvariantCultureIgnoreCase))
         {
@@ -86,7 +81,7 @@ public static class GameController
         {
             return "R";
         }
-        else if (input.Equals("g", StringComparison.InvariantCultureIgnoreCase))
+        else if (input.Equals("g", StringComparison.InvariantCultureIgnoreCase) && gameInstance.CanMoveGrid())
         {
             MoveGridMode(gameInstance);
         }
@@ -125,81 +120,34 @@ public static class GameController
 
     private static void MoveGridMode(TicTacTwoBrain gameInstance)
     {
-        // gameInstance.MoveGridModeOn peaks muutma kuskil teises kohas?? turvalisemalt?
-        gameInstance.MoveGridModeOn = true;
-        var input = "";
+        gameInstance.ActivateMoveGridMode();
         
         do
         {
             Visualizer.DrawBoard(gameInstance);
             Visualizer.WriteMoveGridModeInstructions();
-            // input = HandleMoveGridModeInput(gameInstance, Console.ReadLine()!);
 
-            while (true)
+            var key = Console.ReadKey(true).Key;
+            switch(key)
             {
-                var key = Console.ReadKey(true).Key;
-                switch(key)
-                {
-                    
-                    case ConsoleKey.RightArrow:
-                        Console.WriteLine("Right");
-                        break;
-                    case ConsoleKey.LeftArrow:
-                        Console.WriteLine("Left");
-                        break;
-                    case ConsoleKey.UpArrow:
-                        Console.WriteLine("Up");
-                        break;
-                    case ConsoleKey.DownArrow:
-                        Console.WriteLine("Down");
-                        break;
-                    case ConsoleKey.Enter:
-                        Console.WriteLine("Enter");
-                        gameInstance.MoveGridModeOn = false;
-                        return;
-                    default:
-                        // HandleMoveGridModeInput(gameInstance, key);
-                        break;
-                }
+                case ConsoleKey.RightArrow:
+                    gameInstance.MoveGrid(EMoveGridDirection.Right);
+                    break;
+                case ConsoleKey.LeftArrow:
+                    gameInstance.MoveGrid(EMoveGridDirection.Left);
+                    break;
+                case ConsoleKey.UpArrow:
+                    gameInstance.MoveGrid(EMoveGridDirection.Up);
+                    break;
+                case ConsoleKey.DownArrow:
+                    gameInstance.MoveGrid(EMoveGridDirection.Down);
+                    break;
+                case ConsoleKey.Enter:
+                    gameInstance.DeActivateMoveGridMode();
+                    return;
             }
-
             
         } while (true);
-        return;
-    }
-    
-    private static string HandleMoveGridModeInput(TicTacTwoBrain gameInstance, string input)
-    {
-        var errorMessage = "";
-        
-        var inputSplit = input.Split(',');
-        if (inputSplit.Length != 2)
-        {
-            return "One number for X and one number for Y please!";
-        }
-        if (!int.TryParse(inputSplit[0], out var inputX))
-        {
-            return "Insert valid X coordinate!";
-        }
-        if (!int.TryParse(inputSplit[1], out var inputY))
-        {
-            return "Insert valid Y coordinate!";
-        }
-            
-        try
-        {
-            if (!gameInstance.MakeAMove(inputX, inputY))
-            {
-                return "Space occupied! Try again!";
-            }
-        }
-        catch (Exception)
-        {
-            return "Invalid coordinates! Please stay inside the board!";
-        }
-        errorMessage = "";
-
-        return errorMessage;
     }
 
     private static string ChooseConfiguration()
