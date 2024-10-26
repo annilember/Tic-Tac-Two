@@ -3,6 +3,7 @@
 public class TicTacTwoBrain
 {
     private readonly GameState _gameState;
+    private readonly GameConfiguration _gameConfiguration;
 
     public TicTacTwoBrain(GameConfiguration gameConfiguration)
     {
@@ -26,6 +27,15 @@ public class TicTacTwoBrain
             numberOfPiecesLeftX,
             numberOfPiecesLeftO);
         
+        _gameConfiguration = gameConfiguration;
+        
+        GridMovingAreaTest = GetGridMovingArea();
+    }
+    
+    public TicTacTwoBrain(GameState gameState)
+    {
+        _gameConfiguration = gameState.GameConfiguration;
+        _gameState = gameState;
         GridMovingAreaTest = GetGridMovingArea();
     }
 
@@ -73,7 +83,7 @@ public class TicTacTwoBrain
 
     public string GetGameConfigName()
     {
-        return GameState.GameConfiguration.Name;
+        return _gameConfiguration.Name;
     }
     
     public EGamePiece[][] GameBoard
@@ -151,8 +161,8 @@ public class TicTacTwoBrain
     {
         var startPosX = _gameState.GridStartPosX;
         var startPosY = _gameState.GridStartPosY;
-        var endPosX = startPosX + GameState.GameConfiguration.GridSizeWidth;
-        var endPosY = startPosY + GameState.GameConfiguration.GridSizeHeight;
+        var endPosX = startPosX + _gameConfiguration.GridSizeWidth;
+        var endPosY = startPosY + _gameConfiguration.GridSizeHeight;
         
         if (startPosX > 0)
         {
@@ -287,8 +297,8 @@ public class TicTacTwoBrain
             {
                 countRowStrike = CountRowOrColumnStrike(player, countRowStrike, x, y);
                 countColStrike = CountRowOrColumnStrike(player, countColStrike, y, x);
-                if (countRowStrike == GameState.GameConfiguration.WinCondition ||
-                    countColStrike == GameState.GameConfiguration.WinCondition ||
+                if (countRowStrike == _gameConfiguration.WinCondition ||
+                    countColStrike == _gameConfiguration.WinCondition ||
                     CheckDiagonalStreaks(player, x, y, (i) => i + 1) ||
                     CheckDiagonalStreaks(player, x, y, (i) => i - 1)) 
                 {
@@ -319,7 +329,7 @@ public class TicTacTwoBrain
             try
             {
                 if (_gameState.GameGrid[x][y] && _gameState.GameBoard[x][y] == player) countStrike++;
-                if (countStrike == GameState.GameConfiguration.WinCondition) return true;
+                if (countStrike == _gameConfiguration.WinCondition) return true;
                 x++;
                 y = action(y);
             }
@@ -332,12 +342,12 @@ public class TicTacTwoBrain
 
     public bool CanMoveGrid()
     {
-        return GameRoundNumber > GameState.GameConfiguration.MoveGridAfterNMoves;
+        return GameRoundNumber > _gameConfiguration.MoveGridAfterNMoves;
     }
     
     public bool CanMovePiece()
     {
-        return GameRoundNumber > GameState.GameConfiguration.MovePieceAfterNMoves;
+        return GameRoundNumber > _gameConfiguration.MovePieceAfterNMoves;
     }
     
     public bool MovePieceModeOn
@@ -365,8 +375,8 @@ public class TicTacTwoBrain
     {
         var startPosX = _gameState.GridStartPosX;
         var startPosY = _gameState.GridStartPosY;
-        var endPosX = startPosX + GameState.GameConfiguration.GridSizeWidth;
-        var endPosY = startPosY + GameState.GameConfiguration.GridSizeHeight;
+        var endPosX = startPosX + _gameConfiguration.GridSizeWidth;
+        var endPosY = startPosY + _gameConfiguration.GridSizeHeight;
         
         switch (direction)
         {
@@ -395,8 +405,8 @@ public class TicTacTwoBrain
                 }
                 break;
         }
-        endPosX = startPosX + GameState.GameConfiguration.GridSizeWidth;
-        endPosY = startPosY + GameState.GameConfiguration.GridSizeHeight;
+        endPosX = startPosX + _gameConfiguration.GridSizeWidth;
+        endPosY = startPosY + _gameConfiguration.GridSizeHeight;
         
         _gameState.GameGrid = CreateGrid(
             DimX, DimY, 
@@ -410,21 +420,21 @@ public class TicTacTwoBrain
     public void ResetGame()
     {
         // Can I use constructor for making this easier???
-        var gameBoard = new EGamePiece[GameState.GameConfiguration.BoardSizeWidth][];
-        var gameGrid = InitializeGrid(GameState.GameConfiguration);
+        var gameBoard = new EGamePiece[_gameConfiguration.BoardSizeWidth][];
+        var gameGrid = InitializeGrid(_gameConfiguration);
         
         for (var i = 0; i < gameBoard.Length; i++)
         {
-            gameBoard[i] = new EGamePiece[GameState.GameConfiguration.BoardSizeHeight];
+            gameBoard[i] = new EGamePiece[_gameConfiguration.BoardSizeHeight];
         }
         
         _gameState.GameBoard = gameBoard;
         _gameState.GameGrid = gameGrid;
-        _gameState.GridStartPosX = GameState.GameConfiguration.GridStartPosX;
-        _gameState.GridStartPosY = GameState.GameConfiguration.GridStartPosY;
+        _gameState.GridStartPosX = _gameConfiguration.GridStartPosX;
+        _gameState.GridStartPosY = _gameConfiguration.GridStartPosY;
         _gameState.NextMoveBy = EGamePiece.X;
         _gameState.GameRoundNumber = 1;
-        _gameState.NumberOfPiecesLeftX = GameState.GameConfiguration.NumberOfPieces;
-        _gameState.NumberOfPiecesLeftO = GameState.GameConfiguration.NumberOfPieces;
+        _gameState.NumberOfPiecesLeftX = _gameConfiguration.NumberOfPieces;
+        _gameState.NumberOfPiecesLeftO = _gameConfiguration.NumberOfPieces;
     }
 }

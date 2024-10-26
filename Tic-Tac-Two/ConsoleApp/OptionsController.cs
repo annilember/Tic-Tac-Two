@@ -34,9 +34,6 @@ public static class OptionsController
             Name = input
         };
         _configRepository.AddNewConfiguration(newConfig);
-
-        // TODO: see on vaja tõsta eraldi meetodisse changeConfig
-        
         
         return ChangeConfiguration(newConfig);;
     }

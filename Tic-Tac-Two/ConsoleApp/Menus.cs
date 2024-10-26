@@ -37,13 +37,6 @@ public static class Menus
                 Shortcut = "C",
                 Title = "Config options",
                 MenuItemAction = ConfigOptionsMenu.Run
-            },
-
-            new MenuItem()
-            {
-                Shortcut = "X",
-                Title = "X Starts",
-                MenuItemAction = DummyMethod
             }
         ]);
     
@@ -62,6 +55,13 @@ public static class Menus
                 Shortcut = "N",
                 Title = "New Game",
                 MenuItemAction = GameController.MainLoop
+            },
+
+            new MenuItem()
+            {
+                Shortcut = "L",
+                Title = "Load Game",
+                MenuItemAction = GameController.LoadGameMainLoop
             }
         ]);
 

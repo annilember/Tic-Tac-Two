@@ -20,7 +20,7 @@ public class GameState
     
     public int GameRoundNumber { get; set; } = 1;
 
-    public static GameConfiguration GameConfiguration { get; set; }
+    public GameConfiguration GameConfiguration { get; set; }
 
     public GameState(
         GameConfiguration gameConfiguration, 

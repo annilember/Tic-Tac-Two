@@ -20,13 +20,34 @@ public static class GameController
         }
         var chosenConfig = ConfigRepository.GetConfigurationByName(
             ConfigRepository.GetConfigurationNames()[configNo]);
+        
+        return MainLoopMethod(new TicTacTwoBrain(chosenConfig));
+    }
     
-        var gameInstance = new TicTacTwoBrain(chosenConfig);
+    public static string LoadGameMainLoop()
+    {
+        var chosenGameShortcut = LoadGame();
         
-        
+        if (!int.TryParse(chosenGameShortcut, out var gameNo))
+        {
+            return chosenGameShortcut;
+        }
+        var chosenGameState = GameRepository.GetGameStateByName(
+            GameRepository.GetGameNames()[gameNo]);
+
+        if (chosenGameState != null)
+        {
+            return MainLoopMethod(new TicTacTwoBrain(chosenGameState));
+        }
+
+        return "R";
+    }
+
+    private static string MainLoopMethod(TicTacTwoBrain gameInstance)
+    {
         // main loop of gameplay
         // add whose turn it is
-
+        
         var errorMessage = "";
         var input = "";
         
@@ -203,6 +224,28 @@ public static class GameController
         var configMenu = new Menu(EMenuLevel.Secondary,
             "TIC-TAC-TWO - choose game config",
             configMenuItems);
+
+        return configMenu.Run();
+    }
+
+    private static string LoadGame()
+    {
+        var gameMenuItems = new List<MenuItem>();
+        
+        for (var i = 0; i < GameRepository.GetGameNames().Count; i++)
+        {
+            var returnValue = i.ToString();
+            gameMenuItems.Add(new MenuItem()
+            {
+                Shortcut = (i + 1).ToString(),
+                Title = GameRepository.GetGameNames()[i],
+                MenuItemAction = () => returnValue
+            });
+        }
+    
+        var configMenu = new Menu(EMenuLevel.Secondary,
+            "TIC-TAC-TWO - choose saved game",
+            gameMenuItems);
 
         return configMenu.Run();
     }
