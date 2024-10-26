@@ -296,7 +296,10 @@ public class TicTacTwoBrain
             for (int y = 0; y < DimY; y++)
             {
                 countRowStrike = CountRowOrColumnStrike(player, countRowStrike, x, y);
-                countColStrike = CountRowOrColumnStrike(player, countColStrike, y, x);
+                if (y < DimX && x < DimY)
+                {
+                    countColStrike = CountRowOrColumnStrike(player, countColStrike, y, x);
+                }
                 if (countRowStrike == _gameConfiguration.WinCondition ||
                     countColStrike == _gameConfiguration.WinCondition ||
                     CheckDiagonalStreaks(player, x, y, (i) => i + 1) ||
@@ -311,6 +314,7 @@ public class TicTacTwoBrain
 
     private int CountRowOrColumnStrike(EGamePiece player, int countStrike, int x, int y)
     {
+        Console.WriteLine($"<{x};{y}>");
         if (_gameState.GameGrid[x][y])
         {
             if (_gameState.GameBoard[x][y] == player) countStrike++;
