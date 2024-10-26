@@ -57,25 +57,29 @@ public static class Visualizer
 
     private static void DrawBoardBeginning(TicTacTwoBrain gameInstance)
     {
-        Console.Write("  ");
+        Console.Write("   ");
         Console.ForegroundColor = VisualizerHelper.XAxisColor;
         for (int x = 0; x < gameInstance.DimX; x++)
         {
-            Console.Write($"  {x} ");
+            if (x < 10)
+            {
+                Console.Write(" ");
+            }
+            Console.Write($" {x} ");
         }
         Console.ResetColor();
         Console.WriteLine("");
         
-        Console.Write("  \u2554");
+        Console.Write($"   {VisualizerHelper.BoardCornerNorthEast}");
         for (int x = 0; x < gameInstance.DimX; x++)
         {
-            Console.Write("\u2550\u2550\u2550");
+            Console.Write(VisualizerHelper.BoardLineHorisontal);
             if (x != gameInstance.DimX - 1)
             {
-                Console.Write("\u2566");
+                Console.Write(VisualizerHelper.BoardCrossingSouth);
             }
         }
-        Console.WriteLine("\u2557");
+        Console.WriteLine(VisualizerHelper.BoardCornerNorthWest);
     }
 
     private static void DrawBoardMain(TicTacTwoBrain gameInstance)
@@ -83,9 +87,13 @@ public static class Visualizer
         for (int y = 0; y < gameInstance.DimY; y++)
         {
             Console.ForegroundColor = VisualizerHelper.YAxisColor;
+            if (y < 10)
+            {
+                Console.Write(" ");
+            }
             Console.Write($"{y}");
             Console.ResetColor();
-            Console.Write(" \u2551");
+            Console.Write($" {VisualizerHelper.BoardLineVertical}");
             for (int x = 0; x < gameInstance.DimX; x++)
             {
                 if (gameInstance.MoveGridModeOn && gameInstance.GridMovingAreaTest[x][y])
@@ -98,36 +106,36 @@ public static class Visualizer
                 }
                 Console.Write(" " + DrawGamePiece(gameInstance.GameBoard[x][y]) + " ");
                 Console.ResetColor();
-                Console.Write("\u2551");
+                Console.Write(VisualizerHelper.BoardLineVertical);
             }
             Console.WriteLine();
             if (y == gameInstance.DimY - 1) break;
             
-            Console.Write("  \u2560");
+            Console.Write($"   {VisualizerHelper.BoardCrossingWest}");
             for (int x = 0; x < gameInstance.DimX; x++)
             {
-                Console.Write("\u2550\u2550\u2550");
+                Console.Write(VisualizerHelper.BoardLineHorisontal);
                 if (x != gameInstance.DimX - 1)
                 {
-                    Console.Write("\u256c");
+                    Console.Write(VisualizerHelper.BoardCrossing);
                 }
             }
-            Console.WriteLine("\u2563");
+            Console.WriteLine(VisualizerHelper.BoardCrossingEast);
         }
     }
 
     private static void DrawBoardEnd(TicTacTwoBrain gameInstance)
     {
-        Console.Write("  \u255a");
+        Console.Write($"   {VisualizerHelper.BoardCornerSouthEast}");
         for (int x = 0; x < gameInstance.DimX; x++)
         {
-            Console.Write("\u2550\u2550\u2550");
+            Console.Write(VisualizerHelper.BoardLineHorisontal);
             if (x != gameInstance.DimX - 1)
             {
-                Console.Write("\u2569");
+                Console.Write(VisualizerHelper.BoardCrossingNorth);
             }
         }
-        Console.WriteLine("\u255d");
+        Console.WriteLine(VisualizerHelper.BoardCornerSouthWest);
     }
 
     public static void DisplayGameOverMessage()
