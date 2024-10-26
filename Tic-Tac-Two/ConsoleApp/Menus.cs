@@ -4,20 +4,45 @@ namespace ConsoleApp;
 
 public static class Menus
 {
+    public static readonly Menu ConfigOptionsMenu = new Menu(
+        EMenuLevel.Deep,
+        "TIC-TAC-TWO - Config options", [
+            new MenuItem()
+            {
+                Shortcut = "A",
+                Title = "Create new config",
+                MenuItemAction = OptionsController.CreateNewConfig
+            },
+
+            new MenuItem()
+            {
+                Shortcut = "B",
+                Title = "Change config",
+                MenuItemAction = OptionsController.ChangeExistingConfiguration
+            },
+            
+            new MenuItem()
+            {
+                Shortcut = "C",
+                Title = "Delete config",
+                MenuItemAction = OptionsController.DeleteExistingConfiguration
+            }
+        ]);
+    
     public static readonly Menu OptionsMenu = new Menu(
         EMenuLevel.Secondary,
         "TIC-TAC-TWO Options", [
             new MenuItem()
             {
-                Shortcut = "X",
-                Title = "X Starts",
-                MenuItemAction = DummyMethod
+                Shortcut = "C",
+                Title = "Config options",
+                MenuItemAction = ConfigOptionsMenu.Run
             },
 
             new MenuItem()
             {
-                Shortcut = "O",
-                Title = "O Starts",
+                Shortcut = "X",
+                Title = "X Starts",
                 MenuItemAction = DummyMethod
             }
         ]);
@@ -40,7 +65,7 @@ public static class Menus
             }
         ]);
 
-    private static string DummyMethod()
+    public static string DummyMethod()
     {
         Console.Write("Press any key to exit...");
         Console.ReadKey();

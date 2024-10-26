@@ -23,6 +23,21 @@ public class ConfigRepositoryJson : IConfigRepository
         return config;
     }
 
+    public void AddNewConfiguration(GameConfiguration config)
+    {
+        CreateNewConfigFile(config);
+    }
+
+    public void SaveConfigurationChanges(GameConfiguration config)
+    {
+        CreateNewConfigFile(config);
+    }
+
+    public void DeleteConfiguration(GameConfiguration config)
+    {
+        File.Delete(FileHelper.BasePath + config.Name + FileHelper.ConfigExtension);
+    }
+
     private void CheckAndCreateInitialConfig()
     {
         if (!Directory.Exists(FileHelper.BasePath))
@@ -37,9 +52,14 @@ public class ConfigRepositoryJson : IConfigRepository
             foreach (var optionName in optionNames)
             {
                 var gameOption = hardcodedRepo.GetConfigurationByName(optionName);
-                var optionJsonStr = JsonSerializer.Serialize(gameOption);
-                File.WriteAllText($"{FileHelper.BasePath}{optionName}{FileHelper.ConfigExtension}", optionJsonStr);
+                CreateNewConfigFile(gameOption);
             }
         }
+    }
+
+    private void CreateNewConfigFile(GameConfiguration config)
+    {
+        var configJsonStr = JsonSerializer.Serialize(config);
+        File.WriteAllText($"{FileHelper.BasePath}{config.Name}{FileHelper.ConfigExtension}", configJsonStr);
     }
 }

@@ -12,7 +12,7 @@ public static class GameController
     
     public static string MainLoop()
     {
-        var chosenConfigShortcut = ChooseConfiguration();
+        var chosenConfigShortcut = ChooseConfigurationFromMenu();
         
         if (!int.TryParse(chosenConfigShortcut, out var configNo))
         {
@@ -62,13 +62,6 @@ public static class GameController
         }
 
         return "";
-    }
-
-    private static string HandleInputCoordinates(TicTacTwoBrain gameInstance, string input)
-    {
-
-
-        return input;
     }
     
     private static string HandleInput(TicTacTwoBrain gameInstance, string input)
@@ -192,7 +185,7 @@ public static class GameController
         } while (true);
     }
 
-    private static string ChooseConfiguration()
+    public static string ChooseConfigurationFromMenu()
     {
         var configMenuItems = new List<MenuItem>();
 
@@ -207,7 +200,7 @@ public static class GameController
             });
         }
     
-        var configMenu = new Menu(EMenuLevel.Deep,
+        var configMenu = new Menu(EMenuLevel.Secondary,
             "TIC-TAC-TWO - choose game config",
             configMenuItems);
 

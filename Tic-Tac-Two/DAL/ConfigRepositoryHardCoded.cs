@@ -35,9 +35,35 @@ public class ConfigRepositoryHardCoded: IConfigRepository
     {
         return _gameConfigurations.Single(c => c.Name == name);
     }
-
-    public string Test()
+    
+    public void AddNewConfiguration(GameConfiguration config)
     {
-        return "Hello World!";
+        _gameConfigurations.Add(config);
+    }
+    
+    public void SaveConfigurationChanges(GameConfiguration config)
+    {
+        for (int i = 0; i < _gameConfigurations.Count; i++)
+        {
+            if (_gameConfigurations[i].Name == config.Name)
+            {
+                _gameConfigurations[i] = config;
+                return;
+            }
+        }
+        _gameConfigurations.Add(config);
+        
+    }
+    
+    public void DeleteConfiguration(GameConfiguration config)
+    {
+        for (int i = 0; i < _gameConfigurations.Count; i++)
+        {
+            if (_gameConfigurations[i].Name == config.Name)
+            {
+                _gameConfigurations.RemoveAt(i);
+                return;
+            }
+        }
     }
 }

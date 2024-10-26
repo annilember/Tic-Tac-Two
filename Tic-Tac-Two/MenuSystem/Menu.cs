@@ -99,7 +99,7 @@ public class Menu
                 continue;
             }
             
-            if (!string.IsNullOrWhiteSpace(menuReturnValue))
+            if (!string.IsNullOrWhiteSpace(menuReturnValue) || menuReturnValue != "M")
             {
                 return menuReturnValue;
             }
