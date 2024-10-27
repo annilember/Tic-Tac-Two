@@ -16,27 +16,39 @@ public static class Visualizer
     public static void WriteGamePlayInstructions(TicTacTwoBrain gameInstance, string errorMessage)
     {
         WriteBasicGamePlayInstructions(gameInstance, errorMessage);
-        Console.Write("Give me coordinates <");
-        Console.ForegroundColor = VisualizerHelper.XAxisColor;
-        Console.Write("x");
+        Console.Write("Give me coordinates ");
+        WriteCoordinates();
+        Console.Write(", save <");
+        Console.ForegroundColor = VisualizerHelper.ActionColor;
+        Console.Write("S");
         Console.ResetColor();
-        Console.Write(",");
-        Console.ForegroundColor = VisualizerHelper.YAxisColor;
-        Console.Write("y");
+        Console.Write(">");
+        WriteConditionalInstructions(gameInstance);
+        Console.Write(" or return <");
+        Console.ForegroundColor = VisualizerHelper.ActionColor;
+        Console.Write("R");
         Console.ResetColor();
-        Console.Write($">, save <S>{WriteConditionalInstructions(gameInstance)} or return <R> to main menu:");
+        Console.Write("> to main menu:");
     }
     
     public static void WriteMovePieceModeInstructions(TicTacTwoBrain gameInstance, string errorMessage)
     {
         WriteBasicGamePlayInstructions(gameInstance, errorMessage);
-        Console.Write("Give me coordinates of the piece you want to move <x,y>:");
+        Console.Write("Give me coordinates of the piece you want to move ");
+        WriteCoordinates();
+        Console.Write(":");
     }
     
     public static void WriteMoveGridModeInstructions(TicTacTwoBrain gameInstance, string errorMessage)
     {
         WriteBasicGamePlayInstructions(gameInstance, errorMessage);
-        Console.Write("Move grid with arrow keys and press <Enter> to lock position:");
+        Console.Write("Move grid with arrow keys ");
+        WriteArrows();
+        Console.Write(" and press <");
+        Console.ForegroundColor = VisualizerHelper.ActionColor;
+        Console.Write("Enter");
+        Console.ResetColor();
+        Console.Write("> to lock position:");
     }
 
     private static void WriteBasicGamePlayInstructions(TicTacTwoBrain gameInstance, string errorMessage)
@@ -48,11 +60,62 @@ public static class Visualizer
         Console.ResetColor();
     }
 
-    private static string WriteConditionalInstructions(TicTacTwoBrain gameInstance)
+    private static void WriteCoordinates()
     {
-        var pieceMovingInstructions = gameInstance.CanMovePiece() ? ", move piece <P>" : "";
-        var gridMovingInstructions = gameInstance.CanMoveGrid() ? ", move grid <G>" : "";
-        return pieceMovingInstructions + gridMovingInstructions;
+        Console.Write("<");
+        Console.ForegroundColor = VisualizerHelper.XAxisColor;
+        Console.Write("x");
+        Console.ResetColor();
+        Console.Write(",");
+        Console.ForegroundColor = VisualizerHelper.YAxisColor;
+        Console.Write("y");
+        Console.ResetColor();
+        Console.Write(">");
+    }
+    
+    private static void WriteArrows()
+    {
+        Console.Write("< ");
+        Console.ForegroundColor = VisualizerHelper.ActionColor;
+        Console.Write(VisualizerHelper.ArrowLeft);
+        Console.Write(" ");
+        Console.Write(VisualizerHelper.ArrowRight);
+        Console.Write(" ");
+        Console.Write(VisualizerHelper.ArrowUp);
+        Console.Write(" ");
+        Console.Write(VisualizerHelper.ArrowDown);
+        Console.ResetColor();
+        Console.Write(" >");
+    }
+
+    private static void WriteConditionalInstructions(TicTacTwoBrain gameInstance)
+    {
+        if (gameInstance.CanMovePiece())
+        {
+            WriteMovePieceInstructions();
+        }
+        if (gameInstance.CanMoveGrid())
+        {
+            WriteMoveGridInstructions();
+        }
+    }
+    
+    private static void WriteMovePieceInstructions()
+    {
+        Console.Write(", move piece <");
+        Console.ForegroundColor = VisualizerHelper.ActionColor;
+        Console.Write("P");
+        Console.ResetColor();
+        Console.Write(">");
+    }
+    
+    private static void WriteMoveGridInstructions()
+    {
+        Console.Write(", move grid <");
+        Console.ForegroundColor = VisualizerHelper.ActionColor;
+        Console.Write("G");
+        Console.ResetColor();
+        Console.Write(">");
     }
     
     private static string DrawGamePiece(EGamePiece piece) =>
