@@ -17,8 +17,8 @@ public static class GameConfigurationHelper
         {
             { "BoardSizeWidth", [3, 20] },
             { "BoardSizeHeight", [3, 20] },
-            { "GridSizeWidth", [3, config.BoardSizeWidth] },
-            { "GridSizeHeight", [3, config.BoardSizeHeight] },
+            { "GridSizeWidth", [3, config.BoardSizeWidth - config.GridStartPosX] },
+            { "GridSizeHeight", [3, config.BoardSizeHeight - config.GridStartPosY] },
             { "GridStartPosX", [0, config.BoardSizeWidth - config.GridSizeWidth] },
             { "GridStartPosY", [0, config.BoardSizeHeight - config.GridSizeHeight] },
             { "NumberOfPieces", [3, maxNumberOfPieces] },
