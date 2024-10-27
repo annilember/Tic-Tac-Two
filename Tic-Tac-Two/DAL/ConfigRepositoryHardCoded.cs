@@ -21,6 +21,7 @@ public class ConfigRepositoryHardCoded: IConfigRepository
             GridStartPosY = 3,
             NumberOfPieces = 6,
             WinCondition = 3,
+            MaxGameRounds = 10,
             MoveGridAfterNMoves = 3,
             MovePieceAfterNMoves = 3
         }

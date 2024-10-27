@@ -17,11 +17,13 @@ public class GameState
     
     public int NumberOfPiecesLeftX { get; set; }
     public int NumberOfPiecesLeftO { get; set; }
-    
+
     public string PlayerXName { get; set; }
     public string PlayerOName { get; set; }
-    
+
     public int GameRoundNumber { get; set; } = 1;
+    
+    public int GameRoundsLeft { get; set; }
 
     public GameConfiguration GameConfiguration { get; set; }
 
@@ -33,6 +35,7 @@ public class GameState
         int gridStartPosY,
         int numberOfPiecesLeftX,
         int numberOfPiecesLeftO,
+        int gameRoundsLeft,
         string playerXName,
         string playerOName
         )
@@ -44,6 +47,7 @@ public class GameState
         GridStartPosY = gridStartPosY;
         NumberOfPiecesLeftX = numberOfPiecesLeftX;
         NumberOfPiecesLeftO = numberOfPiecesLeftO;
+        GameRoundsLeft = gameRoundsLeft;
         PlayerXName = playerXName;
         PlayerOName = playerOName;
     }

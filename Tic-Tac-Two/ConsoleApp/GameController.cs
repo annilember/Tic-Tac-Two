@@ -97,24 +97,42 @@ public static class GameController
         do
         {
             Visualizer.DrawBoard(gameInstance);
-            Console.WriteLine($"Round number: {gameInstance.GameRoundNumber}");
+            if (gameInstance.GetRoundsLeft() == 1)
+            {
+                Console.WriteLine("Final round!");
+            }
             
             Visualizer.WriteInstructions(gameInstance, errorMessage);
             input = HandleInput(gameInstance, Console.ReadLine()!);
-            if (input == "R") break;
+            if (input == "R") return "R";
             errorMessage = input;
 
-        } while (gameInstance.CheckForWinner() == EGamePiece.Empty);
+        } while (string.IsNullOrEmpty(gameInstance.GetWinnerName()) && !gameInstance.IsGameOverAnyway());
         
         do
         {
+            // TODO: add reset game option
+            
             input = "";
             Visualizer.DrawBoard(gameInstance);
+            if (gameInstance.CheckForDraw())
+            {
+                Console.WriteLine("It's a draw!");
+            } 
+            else if (!string.IsNullOrEmpty(gameInstance.GetWinnerName()))
+            {
+                Console.WriteLine($"The winner is {gameInstance.GetWinnerName()}! Whoop, whoop!");
+            }
+            else if (gameInstance.IsGameOverAnyway())
+            {
+                // check for game end conditions
+                Console.WriteLine("No more rounds left!");
+            }
+            
             Visualizer.DisplayGameOverMessage();
             input = HandleGameOverPageInput(gameInstance, Console.ReadLine()!);
         } while (input == "");
-
-        // Console.WriteLine($"{gameInstance.CheckForWinner()} wins!");
+        
         return "R";
     }
 

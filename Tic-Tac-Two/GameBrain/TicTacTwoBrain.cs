@@ -13,6 +13,7 @@ public class TicTacTwoBrain
         var gridStartPosY = gameConfiguration.GridStartPosY;
         var numberOfPiecesLeftX = gameConfiguration.NumberOfPieces;
         var numberOfPiecesLeftO = gameConfiguration.NumberOfPieces;
+        var gameRoundsLeft = gameConfiguration.MaxGameRounds;
         
         for (var x = 0; x < gameBoard.Length; x++)
         {
@@ -26,6 +27,7 @@ public class TicTacTwoBrain
             gridStartPosY,
             numberOfPiecesLeftX,
             numberOfPiecesLeftO,
+            gameRoundsLeft,
             playerXName,
             playerOName);
         
@@ -76,7 +78,6 @@ public class TicTacTwoBrain
 
         return gameGrid;
     }
-    
 
     public string GetGameStateJson()
     {
@@ -86,6 +87,41 @@ public class TicTacTwoBrain
     public string GetGameConfigName()
     {
         return _gameConfiguration.Name;
+    }
+
+    public string GetPlayerXName()
+    {
+        return _gameState.PlayerXName;
+    }
+    
+    public string GetPlayerOName()
+    {
+        return _gameState.PlayerOName;
+    }
+
+    public string GetNextMoveByPlayerName()
+    {
+        return _gameState.NextMoveBy switch
+        {
+            EGamePiece.X => _gameState.PlayerXName,
+            EGamePiece.O => _gameState.PlayerOName,
+            _ => ""
+        };
+    }
+    
+    public string GetWinnerName()
+    {
+        return CheckForWinner() switch
+        {
+            EGamePiece.X => _gameState.PlayerXName,
+            EGamePiece.O => _gameState.PlayerOName,
+            _ => ""
+        };
+    }
+
+    public bool IsGameOverAnyway()
+    {
+        return _gameState.GameRoundsLeft == 0 && _gameState.NextMoveBy == EGamePiece.X;
     }
     
     public EGamePiece[][] GameBoard
@@ -259,6 +295,7 @@ public class TicTacTwoBrain
         if (_gameState.NextMoveBy == EGamePiece.O)
         {
             _gameState.GameRoundNumber++;
+            _gameState.GameRoundsLeft--;
         }
         _gameState.NextMoveBy = _gameState.NextMoveBy == EGamePiece.X ? EGamePiece.O : EGamePiece.X;
     }
@@ -269,12 +306,22 @@ public class TicTacTwoBrain
         private set => _gameState.GameRoundNumber = value;
     }
 
+    public int GetRoundsLeft()
+    {
+        return _gameState.GameRoundsLeft;
+    }
+
     private int GetRoundNumber()
     {
         return _gameState.GameRoundNumber;
     }
 
-    public EGamePiece CheckForWinner()
+    public bool CheckForDraw()
+    {
+        return CheckForWinnerByPlayer(EGamePiece.X) && CheckForWinnerByPlayer(EGamePiece.O);
+    }
+
+    private EGamePiece CheckForWinner()
     {
         if (CheckForWinnerByPlayer(EGamePiece.X))
         {
@@ -316,7 +363,6 @@ public class TicTacTwoBrain
 
     private int CountRowOrColumnStrike(EGamePiece player, int countStrike, int x, int y)
     {
-        Console.WriteLine($"<{x};{y}>");
         if (_gameState.GameGrid[x][y])
         {
             if (_gameState.GameBoard[x][y] == player) countStrike++;

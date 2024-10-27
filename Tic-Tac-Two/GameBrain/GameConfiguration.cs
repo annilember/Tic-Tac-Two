@@ -17,6 +17,8 @@ public record struct GameConfiguration()
     
     public int WinCondition { get; set; } = 3;
     
+    public int MaxGameRounds { get; set; } = 6;
+    
     public int MoveGridAfterNMoves { get; set; } = 2;
     
     public int MovePieceAfterNMoves { get; set; } = 2;

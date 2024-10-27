@@ -24,8 +24,9 @@ public static class GameConfigurationHelper
             { "GridStartPosY", [0, config.BoardSizeHeight - config.GridSizeHeight] },
             { "NumberOfPieces", [3, maxNumberOfPieces] },
             { "WinCondition", [3, Math.Min(config.GridSizeWidth, config.GridSizeHeight)] },
-            { "MoveGridAfterNMoves", [0, maxNumberOfPieces] },
-            { "MovePieceAfterNMoves", [0, maxNumberOfPieces] }
+            { "MaxGameRounds", [config.NumberOfPieces, config.NumberOfPieces * 2] },
+            { "MoveGridAfterNMoves", [0, config.MaxGameRounds] },
+            { "MovePieceAfterNMoves", [0, config.MaxGameRounds] }
         };
     }
 }

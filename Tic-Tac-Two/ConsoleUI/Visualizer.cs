@@ -15,7 +15,7 @@ public static class Visualizer
 
     public static void WriteInstructions(TicTacTwoBrain gameInstance, string errorMessage)
     {
-        Console.WriteLine("Someone's turn!");
+        Console.WriteLine($"{gameInstance.GetNextMoveByPlayerName()}'s turn!");
         Console.ForegroundColor = VisualizerHelper.ErrorMessageColor;
         Console.WriteLine(errorMessage);
         Console.ResetColor();
