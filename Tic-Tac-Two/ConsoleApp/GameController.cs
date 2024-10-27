@@ -115,11 +115,20 @@ public static class GameController
             if (input == ControllerHelper.ReturnValue) return ControllerHelper.ReturnValue;
             errorMessage = input;
 
-        } while (string.IsNullOrEmpty(gameInstance.GetWinnerName()) && !gameInstance.IsGameOverAnyway());
+            if (!string.IsNullOrEmpty(gameInstance.GetWinnerName()) || gameInstance.IsGameOverAnyway())
+            {
+                var returnValue = GameOverLoop(gameInstance);
+                switch (returnValue)
+                {
+                    case ControllerHelper.ReturnValue:
+                        return ControllerHelper.ReturnValue;
+                    case ControllerHelper.ResetGameValue:
+                        gameInstance.ResetGame();
+                        break;
+                }
+            }
 
-        GameOverLoop(gameInstance);
-        
-        return ControllerHelper.ReturnValue;
+        } while (true);
     }
 
     private static string GameOverLoop(TicTacTwoBrain gameInstance)
@@ -127,29 +136,36 @@ public static class GameController
         var input = "";
         do
         {
-            // TODO: add reset game option
-            
             input = "";
+            var message = "";
             Visualizer.DrawBoard(gameInstance);
+            
             if (gameInstance.CheckForDraw())
             {
-                Console.WriteLine(ControllerHelper.GameOverDrawMessage);
+                message = ControllerHelper.GameOverDrawMessage;
             } 
             else if (!string.IsNullOrEmpty(gameInstance.GetWinnerName()))
             {
-                Console.WriteLine($"The winner is {gameInstance.GetWinnerName()}! Whoop, whoop!");
+                message = $"The winner is {gameInstance.GetWinnerName()}! Whoop, whoop!";
             }
             else if (gameInstance.IsGameOverAnyway())
             {
-                Console.WriteLine("No more rounds left!");
+                message = ControllerHelper.GameOverNoMoreRoundsMessage;
             }
             
-            Visualizer.DisplayGameOverMessage();
+            Visualizer.DisplayGameOverMessage(message);
             input = Console.ReadLine();
-            
-        } while (!input!.Equals(ControllerHelper.ReturnValue, StringComparison.InvariantCultureIgnoreCase));
 
-        return "";
+            if (input!.Equals(ControllerHelper.ReturnValue, StringComparison.InvariantCultureIgnoreCase))
+            {
+                return ControllerHelper.ReturnValue;
+            }
+            if (input.Equals(ControllerHelper.ResetGameValue, StringComparison.InvariantCultureIgnoreCase))
+            {
+                return ControllerHelper.ResetGameValue;
+            }
+            
+        } while (true);
     }
     
     private static string HandleInput(TicTacTwoBrain gameInstance, string input)

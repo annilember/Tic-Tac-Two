@@ -19,6 +19,8 @@ public static class ControllerHelper
     public const string MovePieceValue = "P";
     
     public const string GameOverDrawMessage = "It's a draw!";
+    
+    public const string GameOverNoMoreRoundsMessage = "No more rounds left!";
 
     public const string InvalidXCoordinateMessage = "Insert valid X coordinate!";
 

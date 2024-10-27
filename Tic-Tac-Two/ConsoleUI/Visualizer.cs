@@ -279,10 +279,21 @@ public static class Visualizer
         Console.WriteLine(VisualizerHelper.BoardCornerSouthWest);
     }
 
-    public static void DisplayGameOverMessage()
+    public static void DisplayGameOverMessage(string message)
     {
+        Console.ForegroundColor = VisualizerHelper.MessageColor;
+        Console.WriteLine(message);
+        Console.ResetColor();
         Console.WriteLine(VisualizerHelper.GameOverMessage);
-        Console.WriteLine("Press <R> to return to main menu:");
+        Console.Write("Press <");
+        Console.ForegroundColor = VisualizerHelper.ActionColor;
+        Console.Write("R");
+        Console.ResetColor();
+        Console.Write("> to return to main menu or <");
+        Console.ForegroundColor = VisualizerHelper.ActionColor;
+        Console.Write("G");
+        Console.ResetColor();
+        Console.Write("> to reset game: ");
     }
 
     public static void DisplayFinalRoundMessage()

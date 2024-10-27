@@ -497,11 +497,14 @@ public class TicTacTwoBrain
         
         _gameState.GameBoard = gameBoard;
         _gameState.GameGrid = gameGrid;
+        _gameState.MoveGridModeOn = false;
+        _gameState.MovePieceModeOn = false;
         _gameState.GridStartPosX = _gameConfiguration.GridStartPosX;
         _gameState.GridStartPosY = _gameConfiguration.GridStartPosY;
         _gameState.NextMoveBy = EGamePiece.X;
-        _gameState.GameRoundNumber = 1;
         _gameState.NumberOfPiecesLeftX = _gameConfiguration.NumberOfPieces;
         _gameState.NumberOfPiecesLeftO = _gameConfiguration.NumberOfPieces;
+        _gameState.GameRoundNumber = 1;
+        _gameState.GameRoundsLeft = _gameConfiguration.MaxGameRounds;
     }
 }
