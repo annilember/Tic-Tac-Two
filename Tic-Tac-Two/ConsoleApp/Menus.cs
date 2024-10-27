@@ -29,6 +29,17 @@ public static class Menus
             }
         ]);
     
+    public static readonly Menu GameOptionsMenu = new Menu(
+        EMenuLevel.Deep,
+        "TIC-TAC-TWO - Game options", [
+            new MenuItem()
+            {
+                Shortcut = "A",
+                Title = "Delete saved game",
+                MenuItemAction = OptionsController.DeleteSavedGame
+            }
+        ]);
+    
     public static readonly Menu OptionsMenu = new Menu(
         EMenuLevel.Secondary,
         "TIC-TAC-TWO Options", [
@@ -37,6 +48,13 @@ public static class Menus
                 Shortcut = "C",
                 Title = "Config options",
                 MenuItemAction = ConfigOptionsMenu.Run
+            },
+            
+            new MenuItem()
+            {
+                Shortcut = "G",
+                Title = "Game options",
+                MenuItemAction = GameOptionsMenu.Run
             }
         ]);
     
@@ -54,14 +72,14 @@ public static class Menus
             {
                 Shortcut = "N",
                 Title = "New Game",
-                MenuItemAction = GameController.MainLoop
+                MenuItemAction = GameController.StartNewGame
             },
 
             new MenuItem()
             {
                 Shortcut = "L",
                 Title = "Load Game",
-                MenuItemAction = GameController.LoadGameMainLoop
+                MenuItemAction = GameController.LoadSavedGame
             }
         ]);
 

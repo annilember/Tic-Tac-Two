@@ -8,7 +8,8 @@ namespace ConsoleApp;
 
 public static class OptionsController
 {
-    private static IConfigRepository _configRepository = new ConfigRepositoryJson();
+    private static readonly IConfigRepository ConfigRepository = new ConfigRepositoryJson();
+    private static readonly IGameRepository GameRepository = new GameRepositoryJson();
     
     public static string CreateNewConfig()
     {
@@ -33,7 +34,7 @@ public static class OptionsController
         {
             Name = input
         };
-        _configRepository.AddNewConfiguration(newConfig);
+        ConfigRepository.AddNewConfiguration(newConfig);
         
         return ChangeConfiguration(newConfig);;
     }
@@ -101,7 +102,7 @@ public static class OptionsController
             var propertyInfo = GameConfigurationHelper.GetConfigPropertyInfo(config)[propertyNo];
         
             config = ChangePropertyValue(config, propertyInfo);
-            _configRepository.SaveConfigurationChanges(config);
+            ConfigRepository.SaveConfigurationChanges(config);
             
         } while (true);
     }
@@ -139,8 +140,8 @@ public static class OptionsController
         {
             return chosenConfigShortcut;
         }
-        var chosenConfig = _configRepository.GetConfigurationByName(
-            _configRepository.GetConfigurationNames()[configNo]);
+        var chosenConfig = ConfigRepository.GetConfigurationByName(
+            ConfigRepository.GetConfigurationNames()[configNo]);
         
         return ChangeConfiguration(chosenConfig);
     }
@@ -153,9 +154,23 @@ public static class OptionsController
         {
             return chosenConfigShortcut;
         }
-        var chosenConfig = _configRepository.GetConfigurationByName(
-            _configRepository.GetConfigurationNames()[configNo]);
-        _configRepository.DeleteConfiguration(chosenConfig);
+        var chosenConfig = ConfigRepository.GetConfigurationByName(
+            ConfigRepository.GetConfigurationNames()[configNo]);
+        ConfigRepository.DeleteConfiguration(chosenConfig);
          return "R";
+    }
+    
+    public static string DeleteSavedGame()
+    {
+        var chosenGameShortcut = GameController.ChooseGameToLoadFromMenu();
+        
+        if (!int.TryParse(chosenGameShortcut, out var gameNo))
+        {
+            return chosenGameShortcut;
+        }
+        var gameName = GameRepository.GetGameNames()[gameNo];
+        GameRepository.DeleteGame(gameName);
+        
+        return "R";
     }
 }

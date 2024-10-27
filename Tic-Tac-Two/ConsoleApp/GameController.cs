@@ -10,7 +10,7 @@ public static class GameController
     private static readonly IConfigRepository ConfigRepository = new ConfigRepositoryJson();
     private static readonly IGameRepository GameRepository = new GameRepositoryJson();
     
-    public static string MainLoop()
+    public static string StartNewGame()
     {
         var chosenConfigShortcut = ChooseConfigurationFromMenu();
         
@@ -21,12 +21,12 @@ public static class GameController
         var chosenConfig = ConfigRepository.GetConfigurationByName(
             ConfigRepository.GetConfigurationNames()[configNo]);
         
-        return MainLoopMethod(new TicTacTwoBrain(chosenConfig));
+        return MainGameLoop(new TicTacTwoBrain(chosenConfig));
     }
     
-    public static string LoadGameMainLoop()
+    public static string LoadSavedGame()
     {
-        var chosenGameShortcut = LoadGame();
+        var chosenGameShortcut = ChooseGameToLoadFromMenu();
         
         if (!int.TryParse(chosenGameShortcut, out var gameNo))
         {
@@ -37,13 +37,13 @@ public static class GameController
 
         if (chosenGameState != null)
         {
-            return MainLoopMethod(new TicTacTwoBrain(chosenGameState));
+            return MainGameLoop(new TicTacTwoBrain(chosenGameState));
         }
 
         return "R";
     }
 
-    private static string MainLoopMethod(TicTacTwoBrain gameInstance)
+    private static string MainGameLoop(TicTacTwoBrain gameInstance)
     {
         // main loop of gameplay
         // add whose turn it is
@@ -228,7 +228,7 @@ public static class GameController
         return configMenu.Run();
     }
 
-    private static string LoadGame()
+    public static string ChooseGameToLoadFromMenu()
     {
         var gameMenuItems = new List<MenuItem>();
         

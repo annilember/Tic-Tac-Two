@@ -31,6 +31,11 @@ public class GameRepositoryJson : IGameRepository
         
         File.WriteAllText(fileName, jsonStateString);
     }
+
+    public void DeleteGame(string name)
+    {
+        File.Delete(FileHelper.BasePath + name + FileHelper.GameExtension);
+    }
     
     private void CheckAndCreateInitialFolder()
     {
