@@ -32,8 +32,11 @@ public static class VisualizerHelper
     
     public const ConsoleColor GridAllowedMoveAreaColor = ConsoleColor.DarkGreen;
     
+    public const ConsoleColor MessageColor = ConsoleColor.Yellow;
+    
     public const ConsoleColor ErrorMessageColor = ConsoleColor.Red;
     
     public const string GameOverMessage = "  ____    _    __  __ _____    _____     _______ ____  \n / ___|  / \\  |  \\/  | ____|  / _ \\ \\   / / ____|  _ \\ \n| |  _  / _ \\ | |\\/| |  _|   | | | \\ \\ / /|  _| | |_) |\n| |_| |/ ___ \\| |  | | |___  | |_| |\\ V / | |___|  _ < \n \\____/_/   \\_\\_|  |_|_____|  \\___/  \\_/  |_____|_| \\_\\";
     
+    public const string FinalRoundMessage = "Final round!";
 }

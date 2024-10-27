@@ -25,6 +25,7 @@ public class Menu
         Title = "Return to Main Menu",
         MenuItemAction = null
     };
+    
     private EMenuLevel _menuLevel { get; set; }
 
     public void SetMenuItemAction(string shortCut, Func<string> action)

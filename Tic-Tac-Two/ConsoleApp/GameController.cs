@@ -12,54 +12,31 @@ public static class GameController
     
     public static string StartNewGame()
     {
-        var chosenConfigShortcut = ChooseConfigurationFromMenu();
-        
-        if (!int.TryParse(chosenConfigShortcut, out var configNo))
-        {
-            return chosenConfigShortcut;
-        }
-        var chosenConfig = ConfigRepository.GetConfigurationByName(
-            ConfigRepository.GetConfigurationNames()[configNo]);
-        
-        var input = "";
-        
         do
         {
-            Console.Write("Enter player 1 name or return <R>: ");
-            input = Console.ReadLine();
-            if (string.IsNullOrWhiteSpace(input))
+            var chosenConfigShortcut = ChooseConfigurationFromMenu();
+        
+            if (!int.TryParse(chosenConfigShortcut, out var configNo))
             {
-                continue;
+                return chosenConfigShortcut;
             }
-            if (input.Equals("r", StringComparison.InvariantCultureIgnoreCase))
-            {
-                return "R";
-            }
-            break;
-        } while (true);
+            var chosenConfig = ConfigRepository.GetConfigurationByName(
+                ConfigRepository.GetConfigurationNames()[configNo]);
+        
+            var input = "";
+        
+            Console.Write("Enter player 1 (X) name or cancel <C>: ");
+            input = GetStringInputWithReturnOption();
+            if (input == ControllerHelper.CancelValue) continue;
+            var playerXName = input;
 
-        var playerXName = input;
+            Console.Write("Enter player 2 (O) name or cancel <C>: ");
+            input = GetStringInputWithReturnOption();
+            if (input == ControllerHelper.CancelValue) continue;
+            var playerOName = input;
         
-        input = "";
-        
-        do
-        {
-            Console.Write("Enter player 2 name or return <R>: ");
-            input = Console.ReadLine();
-            if (string.IsNullOrWhiteSpace(input))
-            {
-                continue;
-            }
-            if (input.Equals("r", StringComparison.InvariantCultureIgnoreCase))
-            {
-                return "R";
-            }
-            break;
+            return MainGameLoop(new TicTacTwoBrain(chosenConfig, playerXName, playerOName));
         } while (true);
-        
-        var playerOName = input;
-        
-        return MainGameLoop(new TicTacTwoBrain(chosenConfig, playerXName, playerOName));
     }
     
     public static string LoadSavedGame()
@@ -78,19 +55,13 @@ public static class GameController
         var chosenGameState = GameRepository.GetGameStateByName(
             GameRepository.GetGameNames()[gameNo]);
 
-        if (chosenGameState != null)
-        {
-            return MainGameLoop(new TicTacTwoBrain(chosenGameState));
-        }
-
-        return "R";
+        return chosenGameState != null ? 
+            MainGameLoop(new TicTacTwoBrain(chosenGameState)) : 
+            ControllerHelper.ReturnValue;
     }
 
     private static string MainGameLoop(TicTacTwoBrain gameInstance)
     {
-        // main loop of gameplay
-        // add whose turn it is
-        
         var errorMessage = "";
         var input = "";
         
@@ -99,16 +70,24 @@ public static class GameController
             Visualizer.DrawBoard(gameInstance);
             if (gameInstance.GetRoundsLeft() == 1)
             {
-                Console.WriteLine("Final round!");
+                Visualizer.DisplayFinalRoundMessage();
             }
             
-            Visualizer.WriteInstructions(gameInstance, errorMessage);
+            Visualizer.WriteGamePlayInstructions(gameInstance, errorMessage);
             input = HandleInput(gameInstance, Console.ReadLine()!);
-            if (input == "R") return "R";
+            if (input == ControllerHelper.ReturnValue) return ControllerHelper.ReturnValue;
             errorMessage = input;
 
         } while (string.IsNullOrEmpty(gameInstance.GetWinnerName()) && !gameInstance.IsGameOverAnyway());
+
+        GameOverLoop(gameInstance);
         
+        return ControllerHelper.ReturnValue;
+    }
+
+    private static string GameOverLoop(TicTacTwoBrain gameInstance)
+    {
+        var input = "";
         do
         {
             // TODO: add reset game option
@@ -117,7 +96,7 @@ public static class GameController
             Visualizer.DrawBoard(gameInstance);
             if (gameInstance.CheckForDraw())
             {
-                Console.WriteLine("It's a draw!");
+                Console.WriteLine(ControllerHelper.GameOverDrawMessage);
             } 
             else if (!string.IsNullOrEmpty(gameInstance.GetWinnerName()))
             {
@@ -125,23 +104,13 @@ public static class GameController
             }
             else if (gameInstance.IsGameOverAnyway())
             {
-                // check for game end conditions
                 Console.WriteLine("No more rounds left!");
             }
             
             Visualizer.DisplayGameOverMessage();
-            input = HandleGameOverPageInput(gameInstance, Console.ReadLine()!);
-        } while (input == "");
-        
-        return "R";
-    }
-
-    private static string HandleGameOverPageInput(TicTacTwoBrain gameInstance, string input)
-    {
-        if (input.Equals("r", StringComparison.InvariantCultureIgnoreCase))
-        {
-            return "R";
-        }
+            input = Console.ReadLine();
+            
+        } while (!input!.Equals(ControllerHelper.ReturnValue, StringComparison.InvariantCultureIgnoreCase));
 
         return "";
     }
@@ -152,85 +121,101 @@ public static class GameController
         
         var errorMessage = "";
         
-        if (input.Equals("save", StringComparison.InvariantCultureIgnoreCase))
+        if (input.Equals(ControllerHelper.SaveGameValue, StringComparison.InvariantCultureIgnoreCase) && 
+            !gameInstance.MovePieceModeOn &&
+            !gameInstance.MoveGridModeOn)
         {
             GameRepository.SaveGame(
                 gameInstance.GetGameStateJson(), 
                 gameInstance.GetGameConfigName()
             );
         }
-        else if (input.Equals("r", StringComparison.InvariantCultureIgnoreCase))
+        else if (input.Equals(ControllerHelper.ReturnValue, StringComparison.InvariantCultureIgnoreCase) &&
+                 !gameInstance.MovePieceModeOn &&
+                 !gameInstance.MoveGridModeOn)
         {
-            return "R";
+            return ControllerHelper.ReturnValue;
         }
-        else if (input.Equals("p", StringComparison.InvariantCultureIgnoreCase) && gameInstance.CanMovePiece())
+        else if (input.Equals(ControllerHelper.MovePieceValue, StringComparison.InvariantCultureIgnoreCase) && 
+                 gameInstance.CanMovePiece() && 
+                 !gameInstance.MovePieceModeOn &&
+                 !gameInstance.MoveGridModeOn)
         {
             MovePieceMode(gameInstance);
         }
-        else if (input.Equals("g", StringComparison.InvariantCultureIgnoreCase) && gameInstance.CanMoveGrid())
+        else if (input.Equals(ControllerHelper.MoveGridValue, StringComparison.InvariantCultureIgnoreCase) && 
+                 gameInstance.CanMoveGrid() && 
+                 !gameInstance.MoveGridModeOn &&
+                 !gameInstance.MovePieceModeOn)
         {
             MoveGridMode(gameInstance);
         }
         else
         {
-            var inputSplit = input.Split(',');
-            if (inputSplit.Length != 2)
-            {
-                return "One number for X and one number for Y please!";
-            }
-            if (!int.TryParse(inputSplit[0], out var inputX))
-            {
-                return "Insert valid X coordinate!";
-            }
-            if (!int.TryParse(inputSplit[1], out var inputY))
-            {
-                return "Insert valid Y coordinate!";
-            }
-            
-            try
-            {
-                if (gameInstance.MovePieceModeOn)
-                {
-                    if (!gameInstance.RemovePiece(inputX, inputY))
-                    {
-                        return $"Coordinates <{inputX},{inputY}> do not contain your piece! Choose again!";
-                    }
-                    gameInstance.DeActivateMovePieceMode();
-                    return "R";
-                }
-
-                if (!gameInstance.HasGamePiece(gameInstance.GetNextMoveBy()))
-                {
-                    return "Not enough pieces to make a move! You can move a piece, or move grid.";
-                }
-                
-                if (!gameInstance.MakeAMove(inputX, inputY))
-                {
-                    return "Space occupied! Try again!";
-                }
-                
-            }
-            catch (Exception)
-            {
-                return "Invalid coordinates! Please stay inside the board!";
-            }
-            errorMessage = "";
+            errorMessage = HandleCoordinates(gameInstance, input);
         }
 
         return errorMessage;
     }
 
+    private static string HandleCoordinates(TicTacTwoBrain gameInstance, string input)
+    {
+        var inputSplit = input.Split(',');
+        if (inputSplit.Length != 2)
+        {
+            return ControllerHelper.InvalidCoordinatesMessage;
+        }
+        if (!int.TryParse(inputSplit[0], out var inputX))
+        {
+            return ControllerHelper.InvalidXCoordinateMessage;
+        }
+        if (!int.TryParse(inputSplit[1], out var inputY))
+        {
+            return ControllerHelper.InvalidYCoordinateMessage;
+        }
+            
+        try
+        {
+            if (gameInstance.MovePieceModeOn)
+            {
+                if (!gameInstance.RemovePiece(inputX, inputY))
+                {
+                    return $"Coordinates <{inputX},{inputY}> do not contain your piece! Choose again!";
+                }
+                gameInstance.DeActivateMovePieceMode();
+                return ControllerHelper.ReturnValue;
+            }
+
+            if (!gameInstance.HasGamePiece(gameInstance.GetNextMoveBy()))
+            {
+                return ControllerHelper.NotEnoughPiecesMessage;
+            }
+                
+            if (!gameInstance.MakeAMove(inputX, inputY))
+            {
+                return ControllerHelper.SpaceOccupiedMessage;
+            }
+                
+        }
+        catch (Exception)
+        {
+            return ControllerHelper.CoordinatesOutOfBoundsMessage;
+        }
+
+        return "";
+    }
+
     private static void MovePieceMode(TicTacTwoBrain gameInstance)
     {
         gameInstance.ActivateMovePieceMode();
+        var errorMessage = "";
         do
         {
             Visualizer.DrawBoard(gameInstance);
-            Visualizer.WriteMovePieceModeInstructions();
+            Visualizer.WriteMovePieceModeInstructions(gameInstance, errorMessage);
             var input = HandleInput(gameInstance, Console.ReadLine()!);
-            if (input == "R") break;
-            var errorMessage = input;
-            Console.WriteLine(errorMessage);
+            if (input == ControllerHelper.ReturnValue) break;
+            errorMessage = input;
             
         } while (true);
     }
@@ -238,11 +223,12 @@ public static class GameController
     private static void MoveGridMode(TicTacTwoBrain gameInstance)
     {
         gameInstance.ActivateMoveGridMode();
+        var errorMessage = "";
         
         do
         {
             Visualizer.DrawBoard(gameInstance);
-            Visualizer.WriteMoveGridModeInstructions();
+            Visualizer.WriteMoveGridModeInstructions(gameInstance, errorMessage);
 
             var key = Console.ReadKey(true).Key;
             switch(key)
@@ -282,7 +268,7 @@ public static class GameController
             });
         }
     
-        var configMenu = new Menu(EMenuLevel.Secondary,
+        var configMenu = new Menu(EMenuLevel.Deep,
             "TIC-TAC-TWO - choose game config",
             configMenuItems);
 
@@ -309,10 +295,25 @@ public static class GameController
             return ControllerHelper.NoSavedGamesMessage;
         }
     
-        var configMenu = new Menu(EMenuLevel.Secondary,
+        var configMenu = new Menu(EMenuLevel.Deep,
             "TIC-TAC-TWO - choose saved game",
             gameMenuItems);
 
         return configMenu.Run();
+    }
+
+    private static string GetStringInputWithReturnOption()
+    {
+        var input = "";
+        do
+        {
+            input = Console.ReadLine();
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                continue;
+            }
+            return input.Equals(ControllerHelper.CancelValue, StringComparison.InvariantCultureIgnoreCase) ? 
+                ControllerHelper.CancelValue : input;
+        } while (true);
     }
 }
