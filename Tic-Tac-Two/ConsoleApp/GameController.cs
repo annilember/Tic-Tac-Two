@@ -28,12 +28,12 @@ public static class GameController
             
             Visualizer.WriteInsertPlayerNameInstructions(EGamePiece.X);
             input = GetStringInputWithReturnOption();
-            if (input == ControllerHelper.CancelValue) continue;
+            if (input == ControllerHelper.ReturnValue) continue;
             var playerXName = input;
 
             Visualizer.WriteInsertPlayerNameInstructions(EGamePiece.O);
             input = GetStringInputWithReturnOption();
-            if (input == ControllerHelper.CancelValue) continue;
+            if (input == ControllerHelper.ReturnValue) continue;
             var playerOName = input;
         
             return MainGameLoop(new TicTacTwoBrain(chosenConfig, playerXName, playerOName));
@@ -42,23 +42,59 @@ public static class GameController
     
     public static string LoadSavedGame()
     {
-        var chosenGameShortcut = ChooseGameToLoadFromMenu(EMenuLevel.Secondary);
-
-        if (chosenGameShortcut == ControllerHelper.NoSavedGamesMessage)
+        do
         {
-            return ControllerHelper.NoSavedGamesMessage;
-        }
-        
-        if (!int.TryParse(chosenGameShortcut, out var gameNo))
-        {
-            return chosenGameShortcut;
-        }
-        var chosenGameState = GameRepository.GetGameStateByName(
-            GameRepository.GetGameNames()[gameNo]);
+            var chosenGameShortcut = ChooseGameToLoadFromMenu(EMenuLevel.Secondary);
 
-        return chosenGameState != null ? 
-            MainGameLoop(new TicTacTwoBrain(chosenGameState)) : 
-            ControllerHelper.ReturnValue;
+            if (chosenGameShortcut == ControllerHelper.NoSavedGamesMessage)
+            {
+                return ControllerHelper.NoSavedGamesMessage;
+            }
+            
+            if (!int.TryParse(chosenGameShortcut, out var gameNo))
+            {
+                return chosenGameShortcut;
+            }
+            var chosenGameState = GameRepository.GetGameStateByName(
+                GameRepository.GetGameNames()[gameNo]);
+
+            var returnValue = "";
+            if (chosenGameState != null)
+            {
+                returnValue = StartLoadedGame(chosenGameState);
+            }
+            if (returnValue == ControllerHelper.CancelValue) continue;
+            return returnValue;
+        } while (true);
+
+    }
+
+    private static string StartLoadedGame(GameState chosenGameState)
+    {
+        do
+        {
+            Visualizer.WriteLoadGameModeInstructions();
+            var input = Console.ReadLine();
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                continue;
+            }
+            if (input.Equals(ControllerHelper.CancelValue, StringComparison.InvariantCultureIgnoreCase))
+            {
+                return ControllerHelper.CancelValue;
+            }
+            if (input.Equals(ControllerHelper.ResetGameValue, StringComparison.InvariantCultureIgnoreCase))
+            {
+                return MainGameLoop(new TicTacTwoBrain(chosenGameState.GameConfiguration, 
+                    chosenGameState.PlayerXName, 
+                    chosenGameState.PlayerOName));
+            }
+            if (input.Equals(ControllerHelper.LoadGameValue, StringComparison.InvariantCultureIgnoreCase))
+            {
+                return MainGameLoop(new TicTacTwoBrain(chosenGameState));
+            }
+                
+        } while (true);
     }
 
     private static string MainGameLoop(TicTacTwoBrain gameInstance)
@@ -319,8 +355,8 @@ public static class GameController
             {
                 continue;
             }
-            return input.Equals(ControllerHelper.CancelValue, StringComparison.InvariantCultureIgnoreCase) ? 
-                ControllerHelper.CancelValue : input;
+            return input.Equals(ControllerHelper.ReturnValue, StringComparison.InvariantCultureIgnoreCase) ? 
+                ControllerHelper.ReturnValue : input;
         } while (true);
     }
 }

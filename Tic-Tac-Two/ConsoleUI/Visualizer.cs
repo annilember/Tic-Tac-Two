@@ -50,6 +50,24 @@ public static class Visualizer
         Console.ResetColor();
         Console.Write("> to lock position:");
     }
+    
+    public static void WriteLoadGameModeInstructions()
+    {
+        Console.Clear();
+        Console.Write("Load from saved state <");
+        Console.ForegroundColor = VisualizerHelper.ActionColor;
+        Console.Write("L");
+        Console.ResetColor();
+        Console.Write(">, reset game <");
+        Console.ForegroundColor = VisualizerHelper.ActionColor;
+        Console.Write("G");
+        Console.ResetColor();
+        Console.Write("> or cancel <");
+        Console.ForegroundColor = VisualizerHelper.ActionColor;
+        Console.Write("C");
+        Console.ResetColor();
+        Console.Write(">: ");
+    }
 
     public static void WriteInsertPlayerNameInstructions(EGamePiece gamePiece)
     {
@@ -59,9 +77,9 @@ public static class Visualizer
         Console.ForegroundColor = VisualizerHelper.ActionColor;
         Console.Write("name");
         Console.ResetColor();
-        Console.Write("> or cancel <");
+        Console.Write("> or return <");
         Console.ForegroundColor = VisualizerHelper.ActionColor;
-        Console.Write("C");
+        Console.Write("R");
         Console.ResetColor();
         Console.Write(">: ");
     }

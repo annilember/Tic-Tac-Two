@@ -30,7 +30,6 @@ public static class OptionsController
             {
                 return ControllerHelper.ReturnValue;
             }
-            // TODO: error if name already in use
             if (ConfigRepository.ConfigurationExists(input))
             {
                 errorMessage = "Configuration with this name already exists. Please try another name.";
