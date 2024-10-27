@@ -33,14 +33,16 @@ public class TicTacTwoBrain
         
         _gameConfiguration = gameConfiguration;
         
-        GridMovingAreaTest = GetGridMovingArea();
+        GridMovingArea = GetGridMovingArea();
+        CurrentGridState = GetGrid();
     }
     
     public TicTacTwoBrain(GameState gameState)
     {
         _gameConfiguration = gameState.GameConfiguration;
         _gameState = gameState;
-        GridMovingAreaTest = GetGridMovingArea();
+        GridMovingArea = GetGridMovingArea();
+        CurrentGridState = GetGrid();
     }
 
     private bool[][] InitializeGrid(GameConfiguration gameConfiguration)
@@ -87,16 +89,6 @@ public class TicTacTwoBrain
     public string GetGameConfigName()
     {
         return _gameConfiguration.Name;
-    }
-
-    public string GetPlayerXName()
-    {
-        return _gameState.PlayerXName;
-    }
-    
-    public string GetPlayerOName()
-    {
-        return _gameState.PlayerOName;
     }
 
     public string GetNextMoveByPlayerName()
@@ -150,7 +142,7 @@ public class TicTacTwoBrain
     public void ActivateMoveGridMode()
     {
         _gameState.MoveGridModeOn = true;
-        GridMovingAreaTest = GetGridMovingArea();
+        GridMovingArea = GetGridMovingArea();
     }
     
     public void DeActivateMoveGridMode()
@@ -159,7 +151,7 @@ public class TicTacTwoBrain
         CountAsMove();
     }
 
-    public bool[][] GridMovingAreaTest { get; set; }
+    public bool[][] GridMovingArea { get; set; }
     
     public int DimX => _gameState.GameBoard.Length;
     public int DimY => _gameState.GameBoard[0].Length;
@@ -421,6 +413,29 @@ public class TicTacTwoBrain
     public void DeActivateMovePieceMode()
     {
         _gameState.MovePieceModeOn = false;
+    }
+
+    private bool[][] CurrentGridState { get; set; }
+    
+    public void SaveCurrentGridState()
+    {
+        CurrentGridState = GetGrid();
+    }
+
+    public bool GridWasMoved()
+    {
+        for (int x = 0; x < DimX; x++)
+        {
+            for (int y = 0; y < DimY; y++)
+            {
+                if (CurrentGridState[x][y] != GameGrid[x][y])
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     public void MoveGrid(EMoveGridDirection direction)

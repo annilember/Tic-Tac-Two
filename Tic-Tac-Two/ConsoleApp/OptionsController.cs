@@ -1,5 +1,6 @@
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using ConsoleUI;
 using DAL;
 using GameBrain;
 using MenuSystem;
@@ -17,15 +18,15 @@ public static class OptionsController
         
         do
         {
-            Console.Write("Enter configuration name or return <R>: ");
+            Visualizer.WriteInsertConfigNameInstructions();
             input = Console.ReadLine();
             if (string.IsNullOrWhiteSpace(input))
             {
                 continue;
             }
-            if (input.Equals("r", StringComparison.InvariantCultureIgnoreCase))
+            if (input.Equals(ControllerHelper.ReturnValue, StringComparison.InvariantCultureIgnoreCase))
             {
-                return "R";
+                return ControllerHelper.ReturnValue;
             }
             break;
         } while (true);
@@ -39,53 +40,62 @@ public static class OptionsController
         return ChangeConfiguration(newConfig);;
     }
 
-    private static GameConfiguration ChangePropertyValue(GameConfiguration config, PropertyInfo propertyInfo)
+    private static GameConfiguration ChangePropertyValueMode(GameConfiguration config, PropertyInfo propertyInfo)
     {
         var input = "";
+        var errormessage = "";
         
         do
         {
-            Console.Write("Enter new value for property or return <R>: ");
+            Visualizer.WriteInsertNewPropertyValueInstructions(propertyInfo.Name, errormessage);
             input = Console.ReadLine();
             if (string.IsNullOrWhiteSpace(input))
             {
                 continue;
             }
-            if (input.Equals("r", StringComparison.InvariantCultureIgnoreCase))
+            if (input.Equals(ControllerHelper.ReturnValue, StringComparison.InvariantCultureIgnoreCase))
             {
                 return config;
             }
             
             if (propertyInfo.PropertyType == typeof(int) && int.TryParse(input, out var value))
             {
-                var boundsDictionary = GameConfigurationHelper.GetConfigPropertyBoundsDictionary(config);
-                var bounds = boundsDictionary[propertyInfo.Name];
+                var propertyBoundsDictionary = GameConfigurationHelper.GetConfigPropertyBoundsDictionary(config);
+                var minBound = propertyBoundsDictionary[propertyInfo.Name][0];
+                var maxBound = propertyBoundsDictionary[propertyInfo.Name][1];
             
-                if (value >= bounds[0] && value <= bounds[1])
+                if (value >= minBound && value <= maxBound)
                 {
-                    object boxedObject = RuntimeHelpers.GetObjectValue(config);
-                    config.GetType().GetProperty(propertyInfo.Name)!.SetValue(boxedObject, value);
-                    config = (GameConfiguration)boxedObject;
-                    return config;
+                    return SetNewIntValueProperty(config, propertyInfo, value);
                 }
-
-                Console.WriteLine($"{propertyInfo.Name} value has to range from {bounds[0]} to {bounds[1]}!");
-
+                errormessage = $"{propertyInfo.Name} value has to range from {minBound} to {maxBound}!";
+                
             }
             else if (propertyInfo.PropertyType == typeof(string))
             {
-                object boxedObject = RuntimeHelpers.GetObjectValue(config);
-                config.GetType().GetProperty(propertyInfo.Name)!.SetValue(boxedObject, input);
-                config = (GameConfiguration)boxedObject;
-                return config;
+                return SetNewStringValueProperty(config, propertyInfo, input);
             }
             else
             {
-                throw new ArgumentException("Invalid configuration provided.");
+                errormessage = "Input type is invalid! Try again!";
             }
             
         } while (true);
+    }
 
+    private static GameConfiguration SetNewIntValueProperty(GameConfiguration config, PropertyInfo propertyInfo, int value)
+    {
+        object boxedObject = RuntimeHelpers.GetObjectValue(config);
+        config.GetType().GetProperty(propertyInfo.Name)!.SetValue(boxedObject, value);
+        config = (GameConfiguration)boxedObject;
+        return config;
+    }
+    
+    private static GameConfiguration SetNewStringValueProperty(GameConfiguration config, PropertyInfo propertyInfo, string value)
+    {
+        object boxedObject = RuntimeHelpers.GetObjectValue(config);
+        config.GetType().GetProperty(propertyInfo.Name)!.SetValue(boxedObject, value);
+        config = (GameConfiguration)boxedObject;
         return config;
     }
     
@@ -101,7 +111,7 @@ public static class OptionsController
 
             var propertyInfo = GameConfigurationHelper.GetConfigPropertyInfo(config)[propertyNo];
         
-            config = ChangePropertyValue(config, propertyInfo);
+            config = ChangePropertyValueMode(config, propertyInfo);
             ConfigRepository.SaveConfigurationChanges(config);
             
         } while (true);
@@ -126,7 +136,7 @@ public static class OptionsController
         }
     
         var propertyMenu = new Menu(EMenuLevel.Deep,
-            "TIC-TAC-TWO: - choose property",
+            "TIC-TAC-TWO: - choose property to change",
             propertyMenuItems);
 
         return propertyMenu.Run();
@@ -157,7 +167,7 @@ public static class OptionsController
         var chosenConfig = ConfigRepository.GetConfigurationByName(
             ConfigRepository.GetConfigurationNames()[configNo]);
         ConfigRepository.DeleteConfiguration(chosenConfig);
-         return "R";
+         return ControllerHelper.ReturnValue;
     }
     
     public static string DeleteSavedGame()
@@ -171,6 +181,6 @@ public static class OptionsController
         var gameName = GameRepository.GetGameNames()[gameNo];
         GameRepository.DeleteGame(gameName);
         
-        return "R";
+        return ControllerHelper.ReturnValue;
     }
 }

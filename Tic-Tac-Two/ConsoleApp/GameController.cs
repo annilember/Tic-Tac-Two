@@ -24,13 +24,14 @@ public static class GameController
                 ConfigRepository.GetConfigurationNames()[configNo]);
         
             var input = "";
-        
-            Console.Write("Enter player 1 (X) name or cancel <C>: ");
+            Console.Clear();
+            
+            Visualizer.WriteInsertPlayerNameInstructions(EGamePiece.X);
             input = GetStringInputWithReturnOption();
             if (input == ControllerHelper.CancelValue) continue;
             var playerXName = input;
 
-            Console.Write("Enter player 2 (O) name or cancel <C>: ");
+            Visualizer.WriteInsertPlayerNameInstructions(EGamePiece.O);
             input = GetStringInputWithReturnOption();
             if (input == ControllerHelper.CancelValue) continue;
             var playerOName = input;
@@ -117,8 +118,6 @@ public static class GameController
     
     private static string HandleInput(TicTacTwoBrain gameInstance, string input)
     {
-        // TODO: separate 2 functionalities if can - input validation and making a move.
-        
         var errorMessage = "";
         
         if (input.Equals(ControllerHelper.SaveGameValue, StringComparison.InvariantCultureIgnoreCase) && 
@@ -173,7 +172,12 @@ public static class GameController
         {
             return ControllerHelper.InvalidYCoordinateMessage;
         }
-            
+        
+        return TryAndMakeAMove(gameInstance, inputX, inputY);
+    }
+
+    private static string TryAndMakeAMove(TicTacTwoBrain gameInstance, int inputX, int inputY)
+    {
         try
         {
             if (gameInstance.MovePieceModeOn)
@@ -185,17 +189,14 @@ public static class GameController
                 gameInstance.DeActivateMovePieceMode();
                 return ControllerHelper.ReturnValue;
             }
-
             if (!gameInstance.HasGamePiece(gameInstance.GetNextMoveBy()))
             {
                 return ControllerHelper.NotEnoughPiecesMessage;
             }
-                
             if (!gameInstance.MakeAMove(inputX, inputY))
             {
                 return ControllerHelper.SpaceOccupiedMessage;
             }
-                
         }
         catch (Exception)
         {
@@ -223,6 +224,7 @@ public static class GameController
     private static void MoveGridMode(TicTacTwoBrain gameInstance)
     {
         gameInstance.ActivateMoveGridMode();
+        gameInstance.SaveCurrentGridState();
         var errorMessage = "";
         
         do
@@ -246,8 +248,13 @@ public static class GameController
                     gameInstance.MoveGrid(EMoveGridDirection.Down);
                     break;
                 case ConsoleKey.Enter:
-                    gameInstance.DeActivateMoveGridMode();
-                    return;
+                    if (gameInstance.GridWasMoved())
+                    {
+                        gameInstance.DeActivateMoveGridMode();
+                        return;
+                    }
+                    errorMessage = ControllerHelper.GridWasNotMovedMessage;
+                    break;
             }
             
         } while (true);

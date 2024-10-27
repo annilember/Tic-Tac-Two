@@ -1,3 +1,4 @@
+using System.Globalization;
 using ConsoleUI;
 
 namespace MenuSystem;
@@ -75,7 +76,8 @@ public class Menu
             Console.Clear();
             if (!string.IsNullOrWhiteSpace(message))
             {
-                WriteMessage(message);
+                Visualizer.WriteErrorMessage(message);
+                Console.WriteLine();
             }
             var menuItem = DisplayMenuGetUserChoice();
             message = "";
@@ -121,17 +123,17 @@ public class Menu
     private MenuItem DisplayMenuGetUserChoice()
     {
         var userInput = "";
+        var errorMessage = "";
 
         do
         {
-            DrawMenu();
+            DrawMenu(errorMessage);
             
             userInput = Console.ReadLine();
             
             if (string.IsNullOrWhiteSpace(userInput))
             {
-                Console.WriteLine("Please choose an option.");
-                Console.WriteLine();
+                errorMessage = "Please choose an option.";
             }
             else
             {
@@ -143,15 +145,16 @@ public class Menu
                     return menuItem;
                 }
                 
-                Console.WriteLine("Please choose a valid option.");
+                errorMessage = "Please choose a valid option.";
                 Console.WriteLine();
             }
             
         } while (true);
     }
 
-    private void DrawMenu()
+    private void DrawMenu(string errorMessage)
     {
+        Console.Clear();
         Console.WriteLine(MenuHeader);
         Console.WriteLine(_menuDivider);
         
@@ -159,15 +162,12 @@ public class Menu
         {
             Console.WriteLine(t);
         }
-        
+
+        if (!string.IsNullOrWhiteSpace(errorMessage))
+        {
+            Visualizer.WriteErrorMessage(errorMessage);
+        }
         Console.WriteLine();
         Console.Write(">");
-    }
-
-    private void WriteMessage(string message)
-    {
-        Console.ForegroundColor = VisualizerHelper.ErrorMessageColor;
-        Console.WriteLine(message);
-        Console.ResetColor();
     }
 }

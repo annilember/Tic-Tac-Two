@@ -4,17 +4,6 @@ namespace ConsoleApp;
 
 public static class Menus
 {
-    public static readonly Menu InGameMenu = new Menu(
-        EMenuLevel.Deep,
-        "Choose an option:", [
-            new MenuItem()
-            {
-                Shortcut = "S",
-                Title = "Save Game",
-                MenuItemAction = DummyMethod
-            }
-        ]);
-    
     public static readonly Menu ConfigOptionsMenu = new Menu(
         EMenuLevel.Deep,
         "TIC-TAC-TWO - Config options", [

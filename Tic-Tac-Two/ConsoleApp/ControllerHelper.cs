@@ -27,4 +27,6 @@ public static class ControllerHelper
     public const string SpaceOccupiedMessage = "Space occupied! Try again!";
     
     public const string CoordinatesOutOfBoundsMessage = "Invalid coordinates! Please stay inside the board!";
+    
+    public const string GridWasNotMovedMessage = "Grid was not moved! Try again!";
 }
