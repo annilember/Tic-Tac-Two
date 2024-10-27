@@ -15,10 +15,12 @@ public static class OptionsController
     public static string CreateNewConfig()
     {
         var input = "";
+        var errorMessage = "";
         
         do
         {
-            Visualizer.WriteInsertConfigNameInstructions();
+            Console.Clear();
+            Visualizer.WriteInsertConfigNameInstructions(errorMessage);
             input = Console.ReadLine();
             if (string.IsNullOrWhiteSpace(input))
             {
@@ -27,6 +29,12 @@ public static class OptionsController
             if (input.Equals(ControllerHelper.ReturnValue, StringComparison.InvariantCultureIgnoreCase))
             {
                 return ControllerHelper.ReturnValue;
+            }
+            // TODO: error if name already in use
+            if (ConfigRepository.ConfigurationExists(input))
+            {
+                errorMessage = "Configuration with this name already exists. Please try another name.";
+                continue;
             }
             break;
         } while (true);

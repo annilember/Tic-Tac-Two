@@ -23,6 +23,11 @@ public class ConfigRepositoryJson : IConfigRepository
         return config;
     }
 
+    public bool ConfigurationExists(string name)
+    {
+        return GetConfigurationNames().Any(configName => name == configName);
+    }
+
     public void AddNewConfiguration(GameConfiguration config)
     {
         CreateNewConfigFile(config);

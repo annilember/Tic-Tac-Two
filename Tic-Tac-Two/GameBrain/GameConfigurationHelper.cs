@@ -15,8 +15,8 @@ public static class GameConfigurationHelper
         
         return new Dictionary<string, int[]>()
         {
-            { "BoardSizeWidth", [3, 20] },
-            { "BoardSizeHeight", [3, 20] },
+            { "BoardSizeWidth", [3, Math.Min(20, config.GridSizeWidth + config.GridStartPosX)] },
+            { "BoardSizeHeight", [3, Math.Min(20, config.GridSizeHeight + config.GridStartPosY)] },
             { "GridSizeWidth", [3, config.BoardSizeWidth - config.GridStartPosX] },
             { "GridSizeHeight", [3, config.BoardSizeHeight - config.GridStartPosY] },
             { "GridStartPosX", [0, config.BoardSizeWidth - config.GridSizeWidth] },

@@ -66,8 +66,10 @@ public static class Visualizer
         Console.Write(">: ");
     }
     
-    public static void WriteInsertConfigNameInstructions()
+    public static void WriteInsertConfigNameInstructions(string errorMessage)
     {
+        WriteErrorMessage(errorMessage);
+        Console.WriteLine();
         Console.Write("Enter configuration <");
         Console.ForegroundColor = VisualizerHelper.ActionColor;
         Console.Write("name");

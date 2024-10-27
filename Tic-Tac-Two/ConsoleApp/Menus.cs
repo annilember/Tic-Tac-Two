@@ -9,21 +9,21 @@ public static class Menus
         "TIC-TAC-TWO - Config options", [
             new MenuItem()
             {
-                Shortcut = "A",
+                Shortcut = "N",
                 Title = "Create new config",
                 MenuItemAction = OptionsController.CreateNewConfig
             },
 
             new MenuItem()
             {
-                Shortcut = "B",
+                Shortcut = "C",
                 Title = "Change config",
                 MenuItemAction = OptionsController.ChangeExistingConfiguration
             },
             
             new MenuItem()
             {
-                Shortcut = "C",
+                Shortcut = "D",
                 Title = "Delete config",
                 MenuItemAction = OptionsController.DeleteExistingConfiguration
             }

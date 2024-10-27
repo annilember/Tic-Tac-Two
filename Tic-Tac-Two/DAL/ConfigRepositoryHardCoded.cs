@@ -37,6 +37,11 @@ public class ConfigRepositoryHardCoded: IConfigRepository
         return _gameConfigurations.Single(c => c.Name == name);
     }
     
+    public bool ConfigurationExists(string name)
+    {
+        return GetConfigurationNames().Any(configName => name == configName);
+    }
+    
     public void AddNewConfiguration(GameConfiguration config)
     {
         _gameConfigurations.Add(config);
