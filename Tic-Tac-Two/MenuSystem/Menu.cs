@@ -88,22 +88,24 @@ public class Menu
                 menuReturnValue = menuItem.MenuItemAction();
             }
             
-            if (menuItem.Shortcut == "R")
+            if (menuItem.Shortcut == _menuItemReturn.Shortcut)
             {
                 return menuItem.Shortcut;
             }
             
-            if (menuItem.Shortcut == "E" || menuReturnValue == "E")
+            if (menuItem.Shortcut == _menuItemExit.Shortcut || menuReturnValue == _menuItemExit.Shortcut)
             {
-                return "E";
+                return _menuItemExit.Shortcut;
             }
             
-            if ((menuItem.Shortcut == "M" || menuReturnValue == "M") && _menuLevel != EMenuLevel.Main)
+            if ((menuItem.Shortcut == _menuItemReturnMain.Shortcut || 
+                 menuReturnValue == _menuItemReturnMain.Shortcut) && 
+                _menuLevel != EMenuLevel.Main)
             {
-                return "M";
+                return _menuItemReturnMain.Shortcut;
             }
 
-            if (menuReturnValue == "R")
+            if (menuReturnValue == _menuItemReturn.Shortcut)
             {
                 continue;
             }
@@ -122,14 +124,13 @@ public class Menu
 
     private MenuItem DisplayMenuGetUserChoice(string message)
     {
-        var userInput = "";
         var errorMessage = message;
 
         do
         {
             DrawMenu(errorMessage);
             
-            userInput = Console.ReadLine();
+            var userInput = Console.ReadLine();
             
             if (string.IsNullOrWhiteSpace(userInput))
             {

@@ -77,9 +77,9 @@ public static class Visualizer
         Console.ForegroundColor = VisualizerHelper.ActionColor;
         Console.Write("name");
         Console.ResetColor();
-        Console.Write("> or return <");
+        Console.Write("> or cancel <");
         Console.ForegroundColor = VisualizerHelper.ActionColor;
-        Console.Write("R");
+        Console.Write("C");
         Console.ResetColor();
         Console.Write(">: ");
     }

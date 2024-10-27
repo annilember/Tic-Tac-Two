@@ -28,12 +28,12 @@ public static class GameController
             
             Visualizer.WriteInsertPlayerNameInstructions(EGamePiece.X);
             input = GetStringInputWithReturnOption();
-            if (input == ControllerHelper.ReturnValue) continue;
+            if (input == ControllerHelper.CancelValue) continue;
             var playerXName = input;
 
             Visualizer.WriteInsertPlayerNameInstructions(EGamePiece.O);
             input = GetStringInputWithReturnOption();
-            if (input == ControllerHelper.ReturnValue) continue;
+            if (input == ControllerHelper.CancelValue) continue;
             var playerOName = input;
         
             return MainGameLoop(new TicTacTwoBrain(chosenConfig, playerXName, playerOName));
@@ -100,8 +100,7 @@ public static class GameController
     private static string MainGameLoop(TicTacTwoBrain gameInstance)
     {
         var errorMessage = "";
-        var input = "";
-        
+
         do
         {
             Visualizer.DrawBoard(gameInstance);
@@ -111,7 +110,7 @@ public static class GameController
             }
             
             Visualizer.WriteGamePlayInstructions(gameInstance, errorMessage);
-            input = HandleInput(gameInstance, Console.ReadLine()!);
+            var input = HandleInput(gameInstance, Console.ReadLine()!);
             if (input == ControllerHelper.ReturnValue) return ControllerHelper.ReturnValue;
             errorMessage = input;
 
@@ -371,8 +370,8 @@ public static class GameController
             {
                 continue;
             }
-            return input.Equals(ControllerHelper.ReturnValue, StringComparison.InvariantCultureIgnoreCase) ? 
-                ControllerHelper.ReturnValue : input;
+            return input.Equals(ControllerHelper.CancelValue, StringComparison.InvariantCultureIgnoreCase) ? 
+                ControllerHelper.CancelValue : input;
         } while (true);
     }
 }
