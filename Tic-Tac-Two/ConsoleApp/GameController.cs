@@ -65,6 +65,11 @@ public static class GameController
     public static string LoadSavedGame()
     {
         var chosenGameShortcut = ChooseGameToLoadFromMenu();
+
+        if (chosenGameShortcut == ControllerHelper.NoSavedGamesMessage)
+        {
+            return ControllerHelper.NoSavedGamesMessage;
+        }
         
         if (!int.TryParse(chosenGameShortcut, out var gameNo))
         {
@@ -279,6 +284,11 @@ public static class GameController
                 Title = GameRepository.GetGameNames()[i],
                 MenuItemAction = () => returnValue
             });
+        }
+
+        if (gameMenuItems.Count == 0)
+        {
+            return ControllerHelper.NoSavedGamesMessage;
         }
     
         var configMenu = new Menu(EMenuLevel.Secondary,

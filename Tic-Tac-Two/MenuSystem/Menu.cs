@@ -1,3 +1,5 @@
+using ConsoleUI;
+
 namespace MenuSystem;
 
 public class Menu
@@ -66,10 +68,16 @@ public class Menu
     {
         //TODO! Implement main menu loop!
 
+        var message = "";
         do
         {
             Console.Clear();
+            if (!string.IsNullOrWhiteSpace(message))
+            {
+                WriteMessage(message);
+            }
             var menuItem = DisplayMenuGetUserChoice();
+            message = "";
             var menuReturnValue = "";
         
             if (menuItem.MenuItemAction != null)
@@ -92,14 +100,17 @@ public class Menu
                 return menuItem.Shortcut;
             }
 
-            //return menuItem.Shortcut;
-
             if (menuReturnValue == "R")
             {
                 continue;
             }
             
-            if (!string.IsNullOrWhiteSpace(menuReturnValue) || menuReturnValue != "M")
+            if (menuReturnValue.Length > 1)
+            {
+                message = menuReturnValue;
+            }
+            
+            if (!string.IsNullOrWhiteSpace(menuReturnValue) && int.TryParse(menuReturnValue, out _))
             {
                 return menuReturnValue;
             }
@@ -150,5 +161,12 @@ public class Menu
         
         Console.WriteLine();
         Console.Write(">");
+    }
+
+    private void WriteMessage(string message)
+    {
+        Console.ForegroundColor = VisualizerHelper.ErrorMessageColor;
+        Console.WriteLine(message);
+        Console.ResetColor();
     }
 }
