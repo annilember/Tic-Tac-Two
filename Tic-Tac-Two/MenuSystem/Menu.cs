@@ -100,7 +100,7 @@ public class Menu
             
             if ((menuItem.Shortcut == "M" || menuReturnValue == "M") && _menuLevel != EMenuLevel.Main)
             {
-                return menuItem.Shortcut;
+                return "M";
             }
 
             if (menuReturnValue == "R")
