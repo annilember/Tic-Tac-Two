@@ -34,7 +34,7 @@ public static class Menus
         "TIC-TAC-TWO - Game options", [
             new MenuItem()
             {
-                Shortcut = "A",
+                Shortcut = "D",
                 Title = "Delete saved game",
                 MenuItemAction = OptionsController.DeleteSavedGame
             }

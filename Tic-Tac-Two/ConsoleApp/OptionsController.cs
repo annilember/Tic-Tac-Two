@@ -181,6 +181,7 @@ public static class OptionsController
         var gameName = GameRepository.GetGameNames()[gameNo];
         GameRepository.DeleteGame(gameName);
         
-        return ControllerHelper.ReturnValue;
+        // return ControllerHelper.ReturnValue;
+        return "Game deleted!";
     }
 }

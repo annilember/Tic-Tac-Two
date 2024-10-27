@@ -68,9 +68,8 @@ public class Menu
 
     public string Run()
     {
-        //TODO! Implement main menu loop!
-
         var message = "";
+        
         do
         {
             Console.Clear();
@@ -79,7 +78,8 @@ public class Menu
                 Visualizer.WriteErrorMessage(message);
                 Console.WriteLine();
             }
-            var menuItem = DisplayMenuGetUserChoice();
+            
+            var menuItem = DisplayMenuGetUserChoice(message);
             message = "";
             var menuReturnValue = "";
         
@@ -120,10 +120,10 @@ public class Menu
         } while (true);
     }
 
-    private MenuItem DisplayMenuGetUserChoice()
+    private MenuItem DisplayMenuGetUserChoice(string message)
     {
         var userInput = "";
-        var errorMessage = "";
+        var errorMessage = message;
 
         do
         {
