@@ -42,7 +42,7 @@ public static class GameController
     
     public static string LoadSavedGame()
     {
-        var chosenGameShortcut = ChooseGameToLoadFromMenu();
+        var chosenGameShortcut = ChooseGameToLoadFromMenu(EMenuLevel.Secondary);
 
         if (chosenGameShortcut == ControllerHelper.NoSavedGamesMessage)
         {
@@ -282,7 +282,7 @@ public static class GameController
         return configMenu.Run();
     }
 
-    public static string ChooseGameToLoadFromMenu()
+    public static string ChooseGameToLoadFromMenu(EMenuLevel menuLevel)
     {
         var gameMenuItems = new List<MenuItem>();
         
@@ -302,7 +302,7 @@ public static class GameController
             return ControllerHelper.NoSavedGamesMessage;
         }
     
-        var configMenu = new Menu(EMenuLevel.Deep,
+        var configMenu = new Menu(menuLevel,
             "TIC-TAC-TWO - choose saved game",
             gameMenuItems);
 

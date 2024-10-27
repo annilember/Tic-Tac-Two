@@ -175,12 +175,13 @@ public static class OptionsController
         var chosenConfig = ConfigRepository.GetConfigurationByName(
             ConfigRepository.GetConfigurationNames()[configNo]);
         ConfigRepository.DeleteConfiguration(chosenConfig);
-         return ControllerHelper.ReturnValue;
+        
+        return "Configuration deleted!";
     }
     
     public static string DeleteSavedGame()
     {
-        var chosenGameShortcut = GameController.ChooseGameToLoadFromMenu();
+        var chosenGameShortcut = GameController.ChooseGameToLoadFromMenu(EMenuLevel.Deep);
         
         if (!int.TryParse(chosenGameShortcut, out var gameNo))
         {
@@ -189,7 +190,6 @@ public static class OptionsController
         var gameName = GameRepository.GetGameNames()[gameNo];
         GameRepository.DeleteGame(gameName);
         
-        // return ControllerHelper.ReturnValue;
         return "Game deleted!";
     }
 }

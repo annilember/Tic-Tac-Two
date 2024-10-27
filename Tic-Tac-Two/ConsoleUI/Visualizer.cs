@@ -100,7 +100,7 @@ public static class Visualizer
     private static void WriteBasicGamePlayInstructions(TicTacTwoBrain gameInstance, string errorMessage)
     {
         Console.ForegroundColor = VisualizerHelper.MessageColor;
-        Console.WriteLine($"{gameInstance.GetNextMoveByPlayerName()}'s turn!");
+        Console.WriteLine($"{gameInstance.GetNextMoveByPlayerName()}'s turn ({gameInstance.GetNextMoveBy()})!");
         WriteErrorMessage(errorMessage);
         Console.WriteLine();
     }
