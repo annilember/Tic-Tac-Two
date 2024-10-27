@@ -18,6 +18,9 @@ public class GameState
     public int NumberOfPiecesLeftX { get; set; }
     public int NumberOfPiecesLeftO { get; set; }
     
+    public string PlayerXName { get; set; }
+    public string PlayerOName { get; set; }
+    
     public int GameRoundNumber { get; set; } = 1;
 
     public GameConfiguration GameConfiguration { get; set; }
@@ -29,7 +32,9 @@ public class GameState
         int gridStartPosX, 
         int gridStartPosY,
         int numberOfPiecesLeftX,
-        int numberOfPiecesLeftO
+        int numberOfPiecesLeftO,
+        string playerXName,
+        string playerOName
         )
     {
         GameConfiguration = gameConfiguration;
@@ -39,6 +44,8 @@ public class GameState
         GridStartPosY = gridStartPosY;
         NumberOfPiecesLeftX = numberOfPiecesLeftX;
         NumberOfPiecesLeftO = numberOfPiecesLeftO;
+        PlayerXName = playerXName;
+        PlayerOName = playerOName;
     }
 
     public override string ToString()

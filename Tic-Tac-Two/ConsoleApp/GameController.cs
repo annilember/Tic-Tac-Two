@@ -21,7 +21,45 @@ public static class GameController
         var chosenConfig = ConfigRepository.GetConfigurationByName(
             ConfigRepository.GetConfigurationNames()[configNo]);
         
-        return MainGameLoop(new TicTacTwoBrain(chosenConfig));
+        var input = "";
+        
+        do
+        {
+            Console.Write("Enter player 1 name or return <R>: ");
+            input = Console.ReadLine();
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                continue;
+            }
+            if (input.Equals("r", StringComparison.InvariantCultureIgnoreCase))
+            {
+                return "R";
+            }
+            break;
+        } while (true);
+
+        var playerXName = input;
+        
+        input = "";
+        
+        do
+        {
+            Console.Write("Enter player 2 name or return <R>: ");
+            input = Console.ReadLine();
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                continue;
+            }
+            if (input.Equals("r", StringComparison.InvariantCultureIgnoreCase))
+            {
+                return "R";
+            }
+            break;
+        } while (true);
+        
+        var playerOName = input;
+        
+        return MainGameLoop(new TicTacTwoBrain(chosenConfig, playerXName, playerOName));
     }
     
     public static string LoadSavedGame()

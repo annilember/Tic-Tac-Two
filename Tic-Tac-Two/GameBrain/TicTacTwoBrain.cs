@@ -5,7 +5,7 @@ public class TicTacTwoBrain
     private readonly GameState _gameState;
     private readonly GameConfiguration _gameConfiguration;
 
-    public TicTacTwoBrain(GameConfiguration gameConfiguration)
+    public TicTacTwoBrain(GameConfiguration gameConfiguration, string playerXName, string playerOName)
     {
         var gameBoard = new EGamePiece[gameConfiguration.BoardSizeWidth][];
         var gameGrid = InitializeGrid(gameConfiguration);
@@ -25,7 +25,9 @@ public class TicTacTwoBrain
             gridStartPosX,
             gridStartPosY,
             numberOfPiecesLeftX,
-            numberOfPiecesLeftO);
+            numberOfPiecesLeftO,
+            playerXName,
+            playerOName);
         
         _gameConfiguration = gameConfiguration;
         
