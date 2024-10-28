@@ -183,7 +183,8 @@ public static class GameController
         {
             GameRepository.SaveGame(
                 gameInstance.GetGameStateJson(), 
-                gameInstance.GetGameConfigName()
+                gameInstance.GetGameConfigName(),
+                true
             );
         }
         else if (input.Equals(ControllerHelper.ReturnValue, StringComparison.InvariantCultureIgnoreCase) &&

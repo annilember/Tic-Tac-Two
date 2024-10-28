@@ -17,16 +17,33 @@ public class GameRepositoryJson : IGameRepository
 
     public GameState? GetGameStateByName(string name)
     {
+        if (!GameExists(name)) return null;
+        
         var gameStateJsonStr = File.ReadAllText(FileHelper.BasePath + name + FileHelper.GameExtension);
         var gameState = JsonSerializer.Deserialize<GameState>(gameStateJsonStr);
         return gameState;
     }
-    
-    public void SaveGame(string jsonStateString, string gameConfigName)
+
+    public string GetGameStateJsonByName(string name)
     {
+        return GameExists(name) ? File.ReadAllText(FileHelper.BasePath + name + FileHelper.GameExtension) : "";
+    }
+
+    public bool GameExists(string name)
+    {
+        return File.Exists(FileHelper.BasePath + name + FileHelper.GameExtension);
+    }
+    
+    public void SaveGame(string jsonStateString, string gameConfigName, bool addDateTime)
+    {
+        var dateTime = "";
+        if (addDateTime)
+        {
+            dateTime = " " + DateTime.Now.ToString("O");
+        }
         var fileName = FileHelper.BasePath + 
-                       gameConfigName + " " + 
-                       DateTime.Now.ToString("O") + 
+                       gameConfigName + 
+                       dateTime + 
                        FileHelper.GameExtension;
         
         File.WriteAllText(fileName, jsonStateString);

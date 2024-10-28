@@ -37,6 +37,13 @@ public static class Menus
                 Shortcut = "D",
                 Title = "Delete saved game",
                 MenuItemAction = OptionsController.DeleteSavedGame
+            },
+            
+            new MenuItem()
+            {
+                Shortcut = "N",
+                Title = "Rename saved game",
+                MenuItemAction = OptionsController.RenameSavedGame
             }
         ]);
     

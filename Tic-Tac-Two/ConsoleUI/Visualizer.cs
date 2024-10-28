@@ -99,6 +99,21 @@ public static class Visualizer
         Console.Write(">: ");
     }
     
+    public static void WriteInsertNewGameNameInstructions(string errorMessage)
+    {
+        WriteErrorMessage(errorMessage);
+        Console.WriteLine();
+        Console.Write("Enter new <");
+        Console.ForegroundColor = VisualizerHelper.ActionColor;
+        Console.Write("name");
+        Console.ResetColor();
+        Console.Write("> for game or return <");
+        Console.ForegroundColor = VisualizerHelper.ActionColor;
+        Console.Write("R");
+        Console.ResetColor();
+        Console.Write(">: ");
+    }
+    
     public static void WriteInsertNewPropertyValueInstructions(string propertyName, string errorMessage)
     {
         Console.Clear();

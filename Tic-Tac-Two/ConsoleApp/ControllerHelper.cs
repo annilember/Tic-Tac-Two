@@ -38,15 +38,21 @@ public static class ControllerHelper
     
     public const string ConfigNameAlreadyInUseMessage = "Configuration with this name already exists. Please try another name.";
     
+    public const string GameNameAlreadyInUseMessage = "Game with this name already exists. Please try another name.";
+
     public const string InvalidInputMessage = "Input is invalid! Try again!";
     
     public const string ConfigDeletedMessage = "Configuration deleted!";
     
     public const string GameDeletedMessage = "Game deleted!";
     
+    public const string GameRenamedMessage = "Game renamed!";
+    
     public const string PropertySavedMessage = "Property saved!";
     
     public const string DeleteGameMenuHeader = "TIC-TAC-TWO - choose game to delete";
+    
+    public const string RenameGameMenuHeader = "TIC-TAC-TWO - choose game to rename";
     
     public const string LoadGameMenuHeader = "TIC-TAC-TWO - choose game to load";
     

@@ -205,4 +205,52 @@ public static class OptionsController
         
         return ControllerHelper.GameDeletedMessage;
     }
+    
+    public static string RenameSavedGame()
+    {
+        var chosenGameShortcut = GameController.ChooseGameToLoadFromMenu(
+            EMenuLevel.Deep, 
+            ControllerHelper.RenameGameMenuHeader
+        );
+        
+        if (!int.TryParse(chosenGameShortcut, out var gameNo))
+        {
+            return chosenGameShortcut;
+        }
+        var gameName = GameRepository.GetGameNames()[gameNo];
+        var newGameName = GetNewGameName();
+        
+        GameRepository.SaveGame(
+            GameRepository.GetGameStateJsonByName(gameName), 
+            newGameName,
+            false
+        );
+        GameRepository.DeleteGame(gameName);
+        
+        return ControllerHelper.GameRenamedMessage;
+    }
+
+    private static string GetNewGameName()
+    {
+        var errorMessage = "";
+        do
+        {
+            Console.Clear();
+            Visualizer.WriteInsertNewGameNameInstructions(errorMessage);
+            var input = Console.ReadLine();
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                continue;
+            }
+            if (input.Equals(ControllerHelper.ReturnValue, StringComparison.InvariantCultureIgnoreCase))
+            {
+                return ControllerHelper.ReturnValue;
+            }
+
+            if (!GameRepository.GameExists(input)) return input;
+            
+            errorMessage = ControllerHelper.GameNameAlreadyInUseMessage;
+
+        } while (true);
+    }
 }
