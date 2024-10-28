@@ -45,4 +45,14 @@ public static class ControllerHelper
     public const string GameDeletedMessage = "Game deleted!";
     
     public const string PropertySavedMessage = "Property saved!";
+    
+    public const string DeleteGameMenuHeader = "TIC-TAC-TWO - choose game to delete";
+    
+    public const string LoadGameMenuHeader = "TIC-TAC-TWO - choose game to load";
+    
+    public const string DeleteConfigMenuHeader = "TIC-TAC-TWO - choose game configuration to delete";
+    
+    public const string ChangeConfigMenuHeader = "TIC-TAC-TWO - choose game configuration to change";
+    
+    public const string ChooseConfigForNewGameMenuHeader = "TIC-TAC-TWO - choose configuration for new game";
 }

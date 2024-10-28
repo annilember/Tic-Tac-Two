@@ -156,7 +156,10 @@ public static class OptionsController
 
     public static string ChangeExistingConfiguration()
     {
-        var chosenConfigShortcut = GameController.ChooseConfigurationFromMenu();
+        var chosenConfigShortcut = GameController.ChooseConfigurationFromMenu(
+            EMenuLevel.Deep,
+            ControllerHelper.ChangeConfigMenuHeader
+        );
         
         if (!int.TryParse(chosenConfigShortcut, out var configNo))
         {
@@ -170,7 +173,10 @@ public static class OptionsController
 
     public static string DeleteExistingConfiguration()
     {
-        var chosenConfigShortcut = GameController.ChooseConfigurationFromMenu();
+        var chosenConfigShortcut = GameController.ChooseConfigurationFromMenu(
+            EMenuLevel.Deep,
+            ControllerHelper.DeleteConfigMenuHeader
+        );
         
         if (!int.TryParse(chosenConfigShortcut, out var configNo))
         {
@@ -185,7 +191,10 @@ public static class OptionsController
     
     public static string DeleteSavedGame()
     {
-        var chosenGameShortcut = GameController.ChooseGameToLoadFromMenu(EMenuLevel.Deep);
+        var chosenGameShortcut = GameController.ChooseGameToLoadFromMenu(
+            EMenuLevel.Deep, 
+            ControllerHelper.DeleteGameMenuHeader
+            );
         
         if (!int.TryParse(chosenGameShortcut, out var gameNo))
         {
