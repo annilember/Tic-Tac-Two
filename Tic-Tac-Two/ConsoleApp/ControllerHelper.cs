@@ -35,4 +35,12 @@ public static class ControllerHelper
     public const string CoordinatesOutOfBoundsMessage = "Invalid coordinates! Please stay inside the board!";
     
     public const string GridWasNotMovedMessage = "Grid was not moved! Try again!";
+    
+    public const string ConfigNameAlreadyInUseMessage = "Configuration with this name already exists. Please try another name.";
+    
+    public const string InvalidInputMessage = "Input is invalid! Try again!";
+    
+    public const string ConfigDeletedMessage = "Configuration deleted!";
+    
+    public const string GameDeletedMessage = "Game deleted!";
 }

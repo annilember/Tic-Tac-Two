@@ -32,7 +32,7 @@ public static class OptionsController
             }
             if (ConfigRepository.ConfigurationExists(input))
             {
-                errorMessage = "Configuration with this name already exists. Please try another name.";
+                errorMessage = ControllerHelper.ConfigNameAlreadyInUseMessage;
                 continue;
             }
             break;
@@ -49,13 +49,12 @@ public static class OptionsController
 
     private static GameConfiguration ChangePropertyValueMode(GameConfiguration config, PropertyInfo propertyInfo)
     {
-        var input = "";
-        var errormessage = "";
+        var errorMessage = "";
         
         do
         {
-            Visualizer.WriteInsertNewPropertyValueInstructions(propertyInfo.Name, errormessage);
-            input = Console.ReadLine();
+            Visualizer.WriteInsertNewPropertyValueInstructions(propertyInfo.Name, errorMessage);
+            var input = Console.ReadLine();
             if (string.IsNullOrWhiteSpace(input))
             {
                 continue;
@@ -75,16 +74,19 @@ public static class OptionsController
                 {
                     return SetNewIntValueProperty(config, propertyInfo, value);
                 }
-                errormessage = $"{propertyInfo.Name} value has to range from {minBound} to {maxBound}!";
+                errorMessage = $"{propertyInfo.Name} value has to range from {minBound} to {maxBound}!";
                 
             }
-            else if (propertyInfo.PropertyType == typeof(string))
+            else if (propertyInfo.PropertyType == typeof(string) &&
+                     propertyInfo.Name.Equals("Name", StringComparison.InvariantCultureIgnoreCase))
             {
-                return SetNewStringValueProperty(config, propertyInfo, input);
+                if (!ConfigRepository.ConfigurationExists(input))
+                    return SetNewStringValueProperty(config, propertyInfo, input);
+                errorMessage = ControllerHelper.ConfigNameAlreadyInUseMessage;
             }
             else
             {
-                errormessage = "Input type is invalid! Try again!";
+                errorMessage = ControllerHelper.InvalidInputMessage;
             }
             
         } while (true);
@@ -175,7 +177,7 @@ public static class OptionsController
             ConfigRepository.GetConfigurationNames()[configNo]);
         ConfigRepository.DeleteConfiguration(chosenConfig);
         
-        return "Configuration deleted!";
+        return ControllerHelper.ConfigDeletedMessage;
     }
     
     public static string DeleteSavedGame()
@@ -189,6 +191,6 @@ public static class OptionsController
         var gameName = GameRepository.GetGameNames()[gameNo];
         GameRepository.DeleteGame(gameName);
         
-        return "Game deleted!";
+        return ControllerHelper.GameDeletedMessage;
     }
 }
