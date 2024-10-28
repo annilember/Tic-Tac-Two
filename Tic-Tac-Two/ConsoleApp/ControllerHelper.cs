@@ -43,4 +43,6 @@ public static class ControllerHelper
     public const string ConfigDeletedMessage = "Configuration deleted!";
     
     public const string GameDeletedMessage = "Game deleted!";
+    
+    public const string PropertySavedMessage = "Property saved!";
 }

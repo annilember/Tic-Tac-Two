@@ -68,7 +68,11 @@ public class Menu
 
     public string Run()
     {
-        var message = "";
+        return Run("");
+    }
+
+    public string Run(string message)
+    {
         
         do
         {

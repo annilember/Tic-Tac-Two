@@ -110,9 +110,11 @@ public static class OptionsController
     
     private static string ChangeConfiguration(GameConfiguration config)
     {
+        var message = "";
         do
         {
-            var chosenPropertyShortcut = ChooseConfigurationProperty(config);
+            Console.WriteLine(message);
+            var chosenPropertyShortcut = ChooseConfigurationProperty(config, message);
             if (!int.TryParse(chosenPropertyShortcut, out var propertyNo))
             {
                 return chosenPropertyShortcut;
@@ -122,11 +124,12 @@ public static class OptionsController
         
             config = ChangePropertyValueMode(config, propertyInfo);
             ConfigRepository.SaveConfigurationChanges(config);
-            
+            message = ControllerHelper.PropertySavedMessage;
+
         } while (true);
     }
     
-    private static string ChooseConfigurationProperty(GameConfiguration config)
+    private static string ChooseConfigurationProperty(GameConfiguration config, string message)
     {
         var propertyMenuItems = new List<MenuItem>();
 
@@ -148,7 +151,7 @@ public static class OptionsController
             "TIC-TAC-TWO: - choose property to change",
             propertyMenuItems);
 
-        return propertyMenu.Run();
+        return propertyMenu.Run(message);
     }
 
     public static string ChangeExistingConfiguration()
