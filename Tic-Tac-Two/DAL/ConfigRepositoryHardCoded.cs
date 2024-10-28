@@ -24,6 +24,21 @@ public class ConfigRepositoryHardCoded: IConfigRepository
             MaxGameRounds = 10,
             MoveGridAfterNMoves = 3,
             MovePieceAfterNMoves = 3
+        },
+        new GameConfiguration()
+        {
+            Name = "Tic-Tac-Toe",
+            BoardSizeWidth = 3,
+            BoardSizeHeight = 3,
+            GridSizeWidth = 3,
+            GridSizeHeight = 3,
+            GridStartPosX = 0,
+            GridStartPosY = 0,
+            NumberOfPieces = 5,
+            WinCondition = 3,
+            MaxGameRounds = 5,
+            MoveGridAfterNMoves = 5,
+            MovePieceAfterNMoves = 5
         }
     };
 
