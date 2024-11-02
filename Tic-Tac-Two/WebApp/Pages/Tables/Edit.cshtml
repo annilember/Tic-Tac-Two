@@ -1,0 +1,40 @@
+@page
+@model WebApp.Pages.Tables.EditModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>Table</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Table.Id" />
+            <div class="form-group">
+                <label asp-for="Table.TableName" class="control-label"></label>
+                <input asp-for="Table.TableName" class="form-control" />
+                <span asp-validation-for="Table.TableName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Table.RestaurantId" class="control-label"></label>
+                <select asp-for="Table.RestaurantId" class="form-control" asp-items="ViewBag.RestaurantId"></select>
+                <span asp-validation-for="Table.RestaurantId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="./Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
