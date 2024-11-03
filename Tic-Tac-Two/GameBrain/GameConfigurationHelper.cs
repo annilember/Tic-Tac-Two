@@ -26,7 +26,7 @@ public static class GameConfigurationHelper
             { "WinCondition", [3, Math.Min(config.GridSizeWidth, config.GridSizeHeight)] },
             { "MaxGameRounds", [config.NumberOfPieces, config.NumberOfPieces * 2] },
             { "MoveGridAfterNMoves", [0, config.MaxGameRounds] },
-            { "MovePieceAfterNMoves", [0, config.MaxGameRounds] }
+            { "MovePieceAfterNMoves", [1, config.MaxGameRounds] }
         };
     }
 }

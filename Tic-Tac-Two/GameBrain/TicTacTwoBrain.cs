@@ -250,6 +250,16 @@ public class TicTacTwoBrain
         };
     }
     
+    public int GamePiecesLeft(EGamePiece piece)
+    {
+        return piece switch
+        {
+            EGamePiece.X => _gameState.NumberOfPiecesLeftX,
+            EGamePiece.O => _gameState.NumberOfPiecesLeftO,
+            _ => 0
+        };
+    }
+    
     public bool MakeAMove(int x, int y)
     {
         if (_gameState.GameBoard[x][y] != EGamePiece.Empty)

@@ -68,13 +68,7 @@ public static class Menus
     public static Menu MainMenu = new Menu(
         EMenuLevel.Main,
         "TIC-TAC-TWO", [
-            new MenuItem()
-            {
-                Shortcut = "O",
-                Title = "Options",
-                MenuItemAction = OptionsMenu.Run
-            },
-
+            
             new MenuItem()
             {
                 Shortcut = "N",
@@ -87,6 +81,20 @@ public static class Menus
                 Shortcut = "L",
                 Title = "Load Game",
                 MenuItemAction = GameController.LoadSavedGame
+            },
+            
+            new MenuItem()
+            {
+                Shortcut = "O",
+                Title = "Options",
+                MenuItemAction = OptionsMenu.Run
+            },
+            
+            new MenuItem()
+            {
+                Shortcut = "G",
+                Title = "Game Rules",
+                MenuItemAction = OptionsController.DisplayGameRules
             }
         ]);
 

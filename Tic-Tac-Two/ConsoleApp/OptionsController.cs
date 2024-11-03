@@ -231,7 +231,6 @@ public static class OptionsController
             return ControllerHelper.GameRenamedMessage;
             
         } while (true);
-
     }
 
     private static string GetNewGameName()
@@ -256,5 +255,12 @@ public static class OptionsController
             errorMessage = ControllerHelper.GameNameAlreadyInUseMessage;
 
         } while (true);
+    }
+
+    public static string DisplayGameRules()
+    {
+        Visualizer.WriteGameRulesPage();
+        Console.ReadKey();
+        return ControllerHelper.ReturnValue;
     }
 }

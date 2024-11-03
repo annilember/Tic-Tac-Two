@@ -142,7 +142,9 @@ public static class Visualizer
     private static void WriteBasicGamePlayInstructions(TicTacTwoBrain gameInstance, string errorMessage)
     {
         Console.ForegroundColor = VisualizerHelper.MessageColor;
-        Console.WriteLine($"{gameInstance.GetNextMoveByPlayerName()}'s turn ({gameInstance.GetNextMoveBy()})!");
+        Console.Write($"{gameInstance.GetNextMoveByPlayerName()}'s turn ({gameInstance.GetNextMoveBy()})! ");
+        Console.Write($"You have {gameInstance.GamePiecesLeft(gameInstance.GetNextMoveBy())} pieces left, ");
+        Console.WriteLine($"{gameInstance.GetRoundsLeft()} rounds left!");
         WriteErrorMessage(errorMessage);
         Console.WriteLine();
     }
@@ -325,5 +327,15 @@ public static class Visualizer
         Console.ForegroundColor = VisualizerHelper.ErrorMessageColor;
         Console.WriteLine(VisualizerHelper.FinalRoundMessage);
         Console.ResetColor();
+    }
+
+    public static void WriteGameRulesPage()
+    {
+        Console.Clear();
+        Console.WriteLine("TIC-TAC-TWO - classical rules");
+        Console.WriteLine(VisualizerHelper.Divider);
+        Console.WriteLine("Tic-Tac-Two closely follows the rules of Tic-Tac-Toe. To begin the game the moveable grid is placed on the gameboard. It can be placed on any location on the board as long as the whole grid is on the gameboard. The game begins like Tic-Tac-Toe where both players alternate placing their first two pieces.\n\nAfter both players have placed 2 tokens, each player then has a choice of what they would like to do on their turn. They can do one of the following:\n\n1. Place one of the pieces that are still in their hand in one of the spots in the grid.\n2. Move one of their pieces that are in the grid to another spot in the grid.\n3. They may move the grid one spot in any direction (horizontally, vertically, or diagonally).\n\nWhen both players are out of pieces and there is still no winner, additional 2 rounds of game are available where players can make moves 2. or 3. on their turn.\n\nCheck out other configurations or create an entirely new configurations to bend the rules ;)");
+        Console.WriteLine(VisualizerHelper.Divider);
+        Console.WriteLine("Press any key to return to the main menu...");
     }
 }

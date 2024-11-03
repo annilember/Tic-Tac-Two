@@ -31,12 +31,12 @@ public static class GameController
             Console.Clear();
             
             Visualizer.WriteInsertPlayerNameInstructions(EGamePiece.X);
-            input = GetStringInputWithReturnOption();
+            input = GetStringInputWithCancelOption();
             if (input == ControllerHelper.CancelValue) continue;
             var playerXName = input;
 
             Visualizer.WriteInsertPlayerNameInstructions(EGamePiece.O);
-            input = GetStringInputWithReturnOption();
+            input = GetStringInputWithCancelOption();
             if (input == ControllerHelper.CancelValue) continue;
             var playerOName = input;
         
@@ -375,7 +375,7 @@ public static class GameController
         return configMenu.Run();
     }
 
-    private static string GetStringInputWithReturnOption()
+    private static string GetStringInputWithCancelOption()
     {
         var input = "";
         do
