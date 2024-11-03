@@ -1,7 +1,12 @@
-namespace GameBrain;
+using System.ComponentModel.DataAnnotations;
 
-public record struct GameConfiguration()
+namespace Domain;
+
+public record GameConfiguration()
 {
+    public int Id { get; set; }
+    
+    [MaxLength(128)]
     public string Name { get; set; } = default!;
     
     public int BoardSizeWidth { get; set; } = 5;
@@ -22,6 +27,8 @@ public record struct GameConfiguration()
     public int MoveGridAfterNMoves { get; set; } = 2;
     
     public int MovePieceAfterNMoves { get; set; } = 2;
+
+    public ICollection<SavedGame>? SavedGames { get; set; } = default;
     
     
     public override string ToString() =>

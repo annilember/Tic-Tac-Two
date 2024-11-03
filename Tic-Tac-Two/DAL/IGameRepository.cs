@@ -1,3 +1,4 @@
+using Domain;
 using GameBrain;
 
 namespace DAL;
@@ -5,9 +6,12 @@ namespace DAL;
 public interface IGameRepository
 {
     List<string> GetGameNames();
-    GameState? GetGameStateByName(string name);
-    string GetGameStateJsonByName(string name);
+    SavedGame GetSavedGameByName(string name);
+    GameState GetSavedGameState(SavedGame savedGame);
+    string GetSavedGameJsonByName(string name);
     bool GameExists(string name);
-    void SaveGame(string jsonStateString, string gameConfigName, bool addDateTime);
+    void SaveGame(TicTacTwoBrain gameInstance, string name);
+    void RenameGame(SavedGame savedGame, string newName);
     void DeleteGame(string name);
+    GameConfiguration GetGameConfiguration(SavedGame savedGame);
 }

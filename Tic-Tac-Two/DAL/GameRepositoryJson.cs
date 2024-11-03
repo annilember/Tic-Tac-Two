@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Domain;
 using GameBrain;
 
 namespace DAL;
@@ -15,16 +16,17 @@ public class GameRepositoryJson : IGameRepository
             .ToList();
     }
 
-    public GameState? GetGameStateByName(string name)
+    public SavedGame GetSavedGameByName(string name)
     {
-        if (!GameExists(name)) return null;
-        
-        var gameStateJsonStr = File.ReadAllText(FileHelper.BasePath + name + FileHelper.GameExtension);
-        var gameState = JsonSerializer.Deserialize<GameState>(gameStateJsonStr);
-        return gameState;
+        return JsonSerializer.Deserialize<SavedGame>(GetSavedGameJsonByName(name))!;
     }
 
-    public string GetGameStateJsonByName(string name)
+    public GameState GetSavedGameState(SavedGame savedGame)
+    {
+        return JsonSerializer.Deserialize<GameState>(savedGame.State)!;
+    }
+
+    public string GetSavedGameJsonByName(string name)
     {
         return GameExists(name) ? File.ReadAllText(FileHelper.BasePath + name + FileHelper.GameExtension) : "";
     }
@@ -34,31 +36,61 @@ public class GameRepositoryJson : IGameRepository
         return File.Exists(FileHelper.BasePath + name + FileHelper.GameExtension);
     }
     
-    public void SaveGame(string jsonStateString, string gameConfigName, bool addDateTime)
+    public void SaveGame(TicTacTwoBrain gameInstance, string name)
     {
-        var dateTime = "";
-        if (addDateTime)
-        {
-            dateTime = " " + DateTime.Now.ToString("O");
-        }
-        var fileName = FileHelper.BasePath + 
-                       gameConfigName + 
-                       dateTime + 
-                       FileHelper.GameExtension;
-        
-        File.WriteAllText(fileName, jsonStateString);
+        var savedGame = CreateNewSavedGame(gameInstance, name);
+        CreateNewSavedGameFile(savedGame);
+    }
+
+    public void RenameGame(SavedGame savedGame, string newName)
+    {
+        var oldName = savedGame.Name;
+        savedGame.Name = newName;
+        CreateNewSavedGameFile(savedGame);
+        DeleteGame(oldName);
     }
 
     public void DeleteGame(string name)
     {
         File.Delete(FileHelper.BasePath + name + FileHelper.GameExtension);
     }
-    
+
+    public GameConfiguration GetGameConfiguration(SavedGame savedGame)
+    {
+        return savedGame.Configuration!;
+    }
+
     private void CheckAndCreateInitialFolder()
     {
         if (!Directory.Exists(FileHelper.BasePath))
         {
             Directory.CreateDirectory(FileHelper.BasePath);
         }
+    }
+    
+    private SavedGame CreateNewSavedGame(TicTacTwoBrain gameInstance, string name)
+    {
+        var savedGame = new SavedGame
+        {
+            Name = name,
+            CreatedAtDateTime = DateTime.Now.ToString("O"),
+            State = gameInstance.GetGameStateJson(),
+            Configuration = gameInstance.GetGameConfig()
+        };
+        
+        if (name == "")
+        {
+            savedGame.Name = gameInstance.GetGameConfigName() + " " + savedGame.CreatedAtDateTime;
+        }
+        return savedGame;
+    }
+
+    private void CreateNewSavedGameFile(SavedGame savedGame)
+    {
+        var fileName = FileHelper.BasePath + 
+                       savedGame.Name + 
+                       FileHelper.GameExtension;
+        
+        File.WriteAllText(fileName, JsonSerializer.Serialize(savedGame));
     }
 }

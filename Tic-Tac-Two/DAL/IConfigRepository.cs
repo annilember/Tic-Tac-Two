@@ -1,3 +1,4 @@
+using Domain;
 using GameBrain;
 
 namespace DAL;
@@ -8,6 +9,6 @@ public interface IConfigRepository
     GameConfiguration GetConfigurationByName(string name);
     bool ConfigurationExists(string name);
     void AddNewConfiguration(GameConfiguration gameConfiguration);
-    void SaveConfigurationChanges(GameConfiguration gameConfiguration);
+    void SaveConfigurationChanges(GameConfiguration gameConfiguration, string previousName);
     void DeleteConfiguration(GameConfiguration gameConfiguration);
 }

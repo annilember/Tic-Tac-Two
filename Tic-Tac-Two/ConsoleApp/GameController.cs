@@ -1,5 +1,6 @@
 using ConsoleUI;
 using DAL;
+using Domain;
 using GameBrain;
 using MenuSystem;
 
@@ -7,8 +8,8 @@ namespace ConsoleApp;
 
 public static class GameController
 {
-    private static readonly IConfigRepository ConfigRepository = new ConfigRepositoryJson();
-    private static readonly IGameRepository GameRepository = new GameRepositoryJson();
+    private static readonly IConfigRepository ConfigRepository = new ConfigRepositoryDb();
+    private static readonly IGameRepository GameRepository = new GameRepositoryDb();
     
     public static string StartNewGame()
     {
@@ -47,7 +48,7 @@ public static class GameController
     {
         do
         {
-            var chosenGameShortcut = ChooseGameToLoadFromMenu(
+            var chosenGameShortcut = ChooseGameFromMenu(
                 EMenuLevel.Secondary,
                 ControllerHelper.LoadGameMenuHeader
                 );
@@ -61,21 +62,20 @@ public static class GameController
             {
                 return chosenGameShortcut;
             }
-            var chosenGameState = GameRepository.GetGameStateByName(
-                GameRepository.GetGameNames()[gameNo]);
 
-            var returnValue = "";
-            if (chosenGameState != null)
-            {
-                returnValue = StartLoadedGame(chosenGameState);
-            }
+            var chosenSavedGame = GameRepository.GetSavedGameByName(
+                GameRepository.GetGameNames()[gameNo]
+                );
+
+            var returnValue = StartLoadedGame(chosenSavedGame);
+
             if (returnValue == ControllerHelper.CancelValue) continue;
             return returnValue;
         } while (true);
 
     }
 
-    private static string StartLoadedGame(GameState chosenGameState)
+    private static string StartLoadedGame(SavedGame savedGame)
     {
         do
         {
@@ -89,15 +89,17 @@ public static class GameController
             {
                 return ControllerHelper.CancelValue;
             }
+
+            var gameInstance = new TicTacTwoBrain(savedGame, GameRepository.GetGameConfiguration(savedGame));
+            
             if (input.Equals(ControllerHelper.ResetGameValue, StringComparison.InvariantCultureIgnoreCase))
             {
-                return MainGameLoop(new TicTacTwoBrain(chosenGameState.GameConfiguration, 
-                    chosenGameState.PlayerXName, 
-                    chosenGameState.PlayerOName));
+                gameInstance.ResetGame();
+                return MainGameLoop(gameInstance);
             }
             if (input.Equals(ControllerHelper.LoadGameValue, StringComparison.InvariantCultureIgnoreCase))
             {
-                return MainGameLoop(new TicTacTwoBrain(chosenGameState));
+                return MainGameLoop(gameInstance);
             }
                 
         } while (true);
@@ -181,11 +183,7 @@ public static class GameController
             !gameInstance.MovePieceModeOn &&
             !gameInstance.MoveGridModeOn)
         {
-            GameRepository.SaveGame(
-                gameInstance.GetGameStateJson(), 
-                gameInstance.GetGameConfigName(),
-                true
-            );
+            GameRepository.SaveGame(gameInstance, "");
         }
         else if (input.Equals(ControllerHelper.ReturnValue, StringComparison.InvariantCultureIgnoreCase) &&
                  !gameInstance.MovePieceModeOn &&
@@ -271,12 +269,22 @@ public static class GameController
         do
         {
             Visualizer.DrawBoard(gameInstance);
-            Visualizer.WriteMovePieceModeInstructions(gameInstance, errorMessage);
+            Visualizer.WriteMovePieceModeRemoveInstructions(gameInstance, errorMessage);
             var input = HandleInput(gameInstance, Console.ReadLine()!);
             if (input == ControllerHelper.ReturnValue) break;
             errorMessage = input;
             
         } while (true);
+        // // gameInstance.DeActivateMovePieceMode();
+        // do
+        // {
+        //     Visualizer.DrawBoard(gameInstance);
+        //     Visualizer.WriteMovePieceModePlaceInstructions(gameInstance, errorMessage);
+        //     var input = HandleInput(gameInstance, Console.ReadLine()!);
+        //     if (input == ControllerHelper.ReturnValue) break;
+        //     errorMessage = input;
+        //     
+        // } while (true);
     }
     
     private static void MoveGridMode(TicTacTwoBrain gameInstance)
@@ -340,7 +348,7 @@ public static class GameController
         return configMenu.Run();
     }
 
-    public static string ChooseGameToLoadFromMenu(EMenuLevel menuLevel, string menuHeader)
+    public static string ChooseGameFromMenu(EMenuLevel menuLevel, string menuHeader)
     {
         var gameMenuItems = new List<MenuItem>();
         

@@ -1,4 +1,5 @@
-﻿using GameBrain;
+﻿using Domain;
+using GameBrain;
 
 namespace ConsoleUI;
 
@@ -31,10 +32,18 @@ public static class Visualizer
         Console.Write("> to main menu:");
     }
     
-    public static void WriteMovePieceModeInstructions(TicTacTwoBrain gameInstance, string errorMessage)
+    public static void WriteMovePieceModeRemoveInstructions(TicTacTwoBrain gameInstance, string errorMessage)
     {
         WriteBasicGamePlayInstructions(gameInstance, errorMessage);
         Console.Write("Give me coordinates of the piece you want to move ");
+        WriteCoordinates();
+        Console.Write(":");
+    }
+    
+    public static void WriteMovePieceModePlaceInstructions(TicTacTwoBrain gameInstance, string errorMessage)
+    {
+        WriteBasicGamePlayInstructions(gameInstance, errorMessage);
+        Console.Write("Give me new coordinates for the piece ");
         WriteCoordinates();
         Console.Write(":");
     }
@@ -203,7 +212,7 @@ public static class Visualizer
         Console.Write(">");
     }
     
-    private static string DrawGamePiece(EGamePiece piece) =>
+    public static string DrawGamePiece(EGamePiece piece) =>
         piece switch
         {
             EGamePiece.O => "O",

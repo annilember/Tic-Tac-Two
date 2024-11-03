@@ -2,6 +2,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using ConsoleUI;
 using DAL;
+using Domain;
 using GameBrain;
 using MenuSystem;
 
@@ -9,8 +10,8 @@ namespace ConsoleApp;
 
 public static class OptionsController
 {
-    private static readonly IConfigRepository ConfigRepository = new ConfigRepositoryJson();
-    private static readonly IGameRepository GameRepository = new GameRepositoryJson();
+    private static readonly IConfigRepository ConfigRepository = new ConfigRepositoryDb();
+    private static readonly IGameRepository GameRepository = new GameRepositoryDb();
     
     public static string CreateNewConfig()
     {
@@ -122,8 +123,9 @@ public static class OptionsController
 
             var propertyInfo = GameConfigurationHelper.GetConfigPropertyInfo(config)[propertyNo];
         
+            var configOldName = config.Name;
             config = ChangePropertyValueMode(config, propertyInfo);
-            ConfigRepository.SaveConfigurationChanges(config);
+            ConfigRepository.SaveConfigurationChanges(config, configOldName);
             message = ControllerHelper.PropertySavedMessage;
 
         } while (true);
@@ -133,7 +135,7 @@ public static class OptionsController
     {
         var propertyMenuItems = new List<MenuItem>();
 
-        for (var i = 0; i < GameConfigurationHelper.GetConfigPropertyInfo(config).Length; i++)
+        for (var i = 1; i < GameConfigurationHelper.GetConfigPropertyInfo(config).Length - 1; i++)
         {
             var returnValue = i.ToString();
             var propertyName = GameConfigurationHelper.GetConfigPropertyInfo(config)[i].Name;
@@ -141,7 +143,7 @@ public static class OptionsController
             
             propertyMenuItems.Add(new MenuItem()
             {
-                Shortcut = (i + 1).ToString(),
+                Shortcut = i.ToString(),
                 Title = $"{propertyName}: {propertyValue}",
                 MenuItemAction = () => returnValue
             });
@@ -191,7 +193,7 @@ public static class OptionsController
     
     public static string DeleteSavedGame()
     {
-        var chosenGameShortcut = GameController.ChooseGameToLoadFromMenu(
+        var chosenGameShortcut = GameController.ChooseGameFromMenu(
             EMenuLevel.Deep, 
             ControllerHelper.DeleteGameMenuHeader
             );
@@ -208,7 +210,7 @@ public static class OptionsController
     
     public static string RenameSavedGame()
     {
-        var chosenGameShortcut = GameController.ChooseGameToLoadFromMenu(
+        var chosenGameShortcut = GameController.ChooseGameFromMenu(
             EMenuLevel.Deep, 
             ControllerHelper.RenameGameMenuHeader
         );
@@ -218,14 +220,10 @@ public static class OptionsController
             return chosenGameShortcut;
         }
         var gameName = GameRepository.GetGameNames()[gameNo];
+        var savedGame = GameRepository.GetSavedGameByName(gameName);
         var newGameName = GetNewGameName();
         
-        GameRepository.SaveGame(
-            GameRepository.GetGameStateJsonByName(gameName), 
-            newGameName,
-            false
-        );
-        GameRepository.DeleteGame(gameName);
+        GameRepository.RenameGame(savedGame, newGameName);
         
         return ControllerHelper.GameRenamedMessage;
     }

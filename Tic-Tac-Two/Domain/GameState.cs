@@ -1,4 +1,4 @@
-namespace GameBrain;
+namespace Domain;
 
 public class GameState
 {
@@ -25,10 +25,7 @@ public class GameState
     
     public int GameRoundsLeft { get; set; }
 
-    public GameConfiguration GameConfiguration { get; set; }
-
     public GameState(
-        GameConfiguration gameConfiguration, 
         EGamePiece[][] gameBoard, 
         bool[][] gameGrid, 
         int gridStartPosX, 
@@ -40,7 +37,6 @@ public class GameState
         string playerOName
         )
     {
-        GameConfiguration = gameConfiguration;
         GameBoard = gameBoard;
         GameGrid = gameGrid;
         GridStartPosX = gridStartPosX;

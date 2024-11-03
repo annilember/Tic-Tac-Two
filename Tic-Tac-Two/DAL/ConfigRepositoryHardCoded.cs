@@ -1,4 +1,5 @@
-﻿using GameBrain;
+﻿using Domain;
+using GameBrain;
 
 namespace DAL;
 
@@ -62,7 +63,7 @@ public class ConfigRepositoryHardCoded: IConfigRepository
         _gameConfigurations.Add(config);
     }
     
-    public void SaveConfigurationChanges(GameConfiguration config)
+    public void SaveConfigurationChanges(GameConfiguration config, string previousName)
     {
         for (int i = 0; i < _gameConfigurations.Count; i++)
         {
@@ -74,6 +75,10 @@ public class ConfigRepositoryHardCoded: IConfigRepository
         }
         _gameConfigurations.Add(config);
         
+        if (previousName != config.Name && ConfigurationExists(previousName))
+        {
+            DeleteConfiguration(GetConfigurationByName(previousName));
+        }
     }
     
     public void DeleteConfiguration(GameConfiguration config)

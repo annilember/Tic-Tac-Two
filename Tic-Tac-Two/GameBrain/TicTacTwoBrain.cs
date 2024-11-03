@@ -1,4 +1,7 @@
-﻿namespace GameBrain;
+﻿using System.Text.Json;
+using Domain;
+
+namespace GameBrain;
 
 public class TicTacTwoBrain
 {
@@ -20,7 +23,7 @@ public class TicTacTwoBrain
             gameBoard[x] = new EGamePiece[gameConfiguration.BoardSizeHeight];
         }
         
-        _gameState = new GameState(gameConfiguration, 
+        _gameState = new GameState(
             gameBoard, 
             gameGrid,
             gridStartPosX,
@@ -37,10 +40,11 @@ public class TicTacTwoBrain
         CurrentGridState = GetGrid();
     }
     
-    public TicTacTwoBrain(GameState gameState)
+    public TicTacTwoBrain(SavedGame savedGame, GameConfiguration config)
     {
-        _gameConfiguration = gameState.GameConfiguration;
-        _gameState = gameState;
+        _gameConfiguration = config;
+        _gameState = JsonSerializer.Deserialize<GameState>(savedGame.State)!;
+        Console.WriteLine(_gameConfiguration.BoardSizeWidth);
         GridMovingArea = GetGridMovingArea();
         CurrentGridState = GetGrid();
     }
@@ -89,6 +93,11 @@ public class TicTacTwoBrain
     public string GetGameConfigName()
     {
         return _gameConfiguration.Name;
+    }
+    
+    public GameConfiguration GetGameConfig()
+    {
+        return _gameConfiguration;
     }
 
     public string GetNextMoveByPlayerName()
@@ -329,6 +338,7 @@ public class TicTacTwoBrain
 
     private bool CheckForWinnerByPlayer(EGamePiece player)
     {
+        // TODO: stop strike check when so little rows or columns left that can't make strike anymore anyway
         var countRowStrike = 0;
         var countColStrike = 0;
 
@@ -486,7 +496,6 @@ public class TicTacTwoBrain
 
     public void ResetGame()
     {
-        // Can I use constructor for making this easier???
         var gameBoard = new EGamePiece[_gameConfiguration.BoardSizeWidth][];
         var gameGrid = InitializeGrid(_gameConfiguration);
         
