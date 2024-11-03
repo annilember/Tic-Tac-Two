@@ -210,22 +210,28 @@ public static class OptionsController
     
     public static string RenameSavedGame()
     {
-        var chosenGameShortcut = GameController.ChooseGameFromMenu(
-            EMenuLevel.Deep, 
-            ControllerHelper.RenameGameMenuHeader
-        );
-        
-        if (!int.TryParse(chosenGameShortcut, out var gameNo))
+        do
         {
-            return chosenGameShortcut;
-        }
-        var gameName = GameRepository.GetGameNames()[gameNo];
-        var savedGame = GameRepository.GetSavedGameByName(gameName);
-        var newGameName = GetNewGameName();
+            var chosenGameShortcut = GameController.ChooseGameFromMenu(
+                EMenuLevel.Deep, 
+                ControllerHelper.RenameGameMenuHeader
+            );
         
-        GameRepository.RenameGame(savedGame, newGameName);
+            if (!int.TryParse(chosenGameShortcut, out var gameNo))
+            {
+                return chosenGameShortcut;
+            }
+            var gameName = GameRepository.GetGameNames()[gameNo];
+            var savedGame = GameRepository.GetSavedGameByName(gameName);
+            var newGameName = GetNewGameName();
         
-        return ControllerHelper.GameRenamedMessage;
+            if (newGameName == ControllerHelper.ReturnValue) continue;
+        
+            GameRepository.RenameGame(savedGame, newGameName);
+            return ControllerHelper.GameRenamedMessage;
+            
+        } while (true);
+
     }
 
     private static string GetNewGameName()
