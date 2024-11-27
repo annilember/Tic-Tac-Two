@@ -1,9 +1,21 @@
+using DAL;
 using MenuSystem;
 
 namespace ConsoleApp;
 
 public static class Menus
 {
+    private static IConfigRepository _configRepository = default!;
+    private static IGameRepository _gameRepository = default!;
+    
+    public static void Init(IConfigRepository configRepository, IGameRepository gameRepository)
+    {
+        _configRepository = configRepository;
+        _gameRepository = gameRepository;
+        OptionsController.Init(_configRepository, _gameRepository);
+        GameController.Init(_configRepository, _gameRepository);
+    }
+    
     public static readonly Menu ConfigOptionsMenu = new Menu(
         EMenuLevel.Deep,
         "TIC-TAC-TWO - Config options", [

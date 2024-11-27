@@ -8,14 +8,20 @@ namespace ConsoleApp;
 
 public static class GameController
 {
-    private static readonly IConfigRepository ConfigRepository = new ConfigRepositoryDb();
-    private static readonly IGameRepository GameRepository = new GameRepositoryDb();
+    private static IConfigRepository _configRepository = default!;
+    private static IGameRepository _gameRepository = default!;
+
+    public static void Init(IConfigRepository configRepository, IGameRepository gameRepository)
+    {
+        _configRepository = configRepository;
+        _gameRepository = gameRepository;
+    }
     
     public static string StartNewGame()
     {
         do
         {
-            var chosenConfigShortcut = ChooseConfigurationFromMenu(
+            var chosenConfigShortcut = OptionsController.ChooseConfigurationFromMenu(
                 EMenuLevel.Secondary,
                 ControllerHelper.ChooseConfigForNewGameMenuHeader
                 );
@@ -24,8 +30,8 @@ public static class GameController
             {
                 return chosenConfigShortcut;
             }
-            var chosenConfig = ConfigRepository.GetConfigurationByName(
-                ConfigRepository.GetConfigurationNames()[configNo]);
+            var chosenConfig = _configRepository.GetConfigurationByName(
+                _configRepository.GetConfigurationNames()[configNo]);
         
             var input = "";
             Console.Clear();
@@ -48,7 +54,7 @@ public static class GameController
     {
         do
         {
-            var chosenGameShortcut = ChooseGameFromMenu(
+            var chosenGameShortcut = OptionsController.ChooseGameFromMenu(
                 EMenuLevel.Secondary,
                 ControllerHelper.LoadGameMenuHeader
                 );
@@ -63,8 +69,8 @@ public static class GameController
                 return chosenGameShortcut;
             }
 
-            var chosenSavedGame = GameRepository.GetSavedGameByName(
-                GameRepository.GetGameNames()[gameNo]
+            var chosenSavedGame = _gameRepository.GetSavedGameByName(
+                _gameRepository.GetGameNames()[gameNo]
                 );
 
             var returnValue = StartLoadedGame(chosenSavedGame);
@@ -90,7 +96,7 @@ public static class GameController
                 return ControllerHelper.CancelValue;
             }
 
-            var gameInstance = new TicTacTwoBrain(savedGame, GameRepository.GetGameConfiguration(savedGame));
+            var gameInstance = new TicTacTwoBrain(savedGame, _gameRepository.GetGameConfiguration(savedGame));
             
             if (input.Equals(ControllerHelper.ResetGameValue, StringComparison.InvariantCultureIgnoreCase))
             {
@@ -180,28 +186,34 @@ public static class GameController
         var errorMessage = "";
         
         if (input.Equals(ControllerHelper.SaveGameValue, StringComparison.InvariantCultureIgnoreCase) && 
-            !gameInstance.MovePieceModeOn &&
+            !gameInstance.RemovePieceModeOn &&
             !gameInstance.MoveGridModeOn)
         {
-            GameRepository.SaveGame(gameInstance, "");
+            _gameRepository.SaveGame(gameInstance, "");
         }
-        else if (input.Equals(ControllerHelper.ReturnValue, StringComparison.InvariantCultureIgnoreCase) &&
-                 !gameInstance.MovePieceModeOn &&
-                 !gameInstance.MoveGridModeOn)
+        else if (input.Equals(ControllerHelper.ReturnValue, StringComparison.InvariantCultureIgnoreCase)
+                 // && !gameInstance.MoveGridModeOn
+                 )
         {
+            if (gameInstance.RemovePieceModeOn)
+            {
+                gameInstance.DeActivateRemovePieceMode();
+            }
             return ControllerHelper.ReturnValue;
         }
         else if (input.Equals(ControllerHelper.MovePieceValue, StringComparison.InvariantCultureIgnoreCase) && 
                  gameInstance.CanMovePiece() && 
                  !gameInstance.MovePieceModeOn &&
+                 !gameInstance.RemovePieceModeOn &&
                  !gameInstance.MoveGridModeOn)
         {
-            MovePieceMode(gameInstance);
+            RemovePieceMode(gameInstance);
         }
         else if (input.Equals(ControllerHelper.MoveGridValue, StringComparison.InvariantCultureIgnoreCase) && 
                  gameInstance.CanMoveGrid() && 
+                 !gameInstance.MovePieceModeOn &&
                  !gameInstance.MoveGridModeOn &&
-                 !gameInstance.MovePieceModeOn)
+                 !gameInstance.RemovePieceModeOn)
         {
             MoveGridMode(gameInstance);
         }
@@ -236,13 +248,14 @@ public static class GameController
     {
         try
         {
-            if (gameInstance.MovePieceModeOn)
+            if (gameInstance.RemovePieceModeOn)
             {
                 if (!gameInstance.RemovePiece(inputX, inputY))
                 {
                     return $"Coordinates <{inputX},{inputY}> do not contain your piece! Choose again!";
                 }
-                gameInstance.DeActivateMovePieceMode();
+                gameInstance.DeActivateRemovePieceMode();
+                gameInstance.ActivateMovePieceMode();
                 return ControllerHelper.ReturnValue;
             }
             if (!gameInstance.HasGamePiece(gameInstance.GetNextMoveBy()))
@@ -251,8 +264,13 @@ public static class GameController
             }
             if (!gameInstance.MakeAMove(inputX, inputY))
             {
+                if (gameInstance.RemovedPieceCoordinateClash(inputX, inputY))
+                {
+                    return ControllerHelper.RemovedPieceCoordinateClashMessage;
+                }
                 return ControllerHelper.SpaceOccupiedMessage;
             }
+            gameInstance.DeActivateMovePieceMode();
         }
         catch (Exception)
         {
@@ -262,29 +280,19 @@ public static class GameController
         return "";
     }
 
-    private static void MovePieceMode(TicTacTwoBrain gameInstance)
+    private static void RemovePieceMode(TicTacTwoBrain gameInstance)
     {
-        gameInstance.ActivateMovePieceMode();
+        gameInstance.ActivateRemovePieceMode();
         var errorMessage = "";
         do
         {
             Visualizer.DrawBoard(gameInstance);
-            Visualizer.WriteMovePieceModeRemoveInstructions(gameInstance, errorMessage);
+            Visualizer.WriteRemovePieceInstructions(gameInstance, errorMessage);
             var input = HandleInput(gameInstance, Console.ReadLine()!);
             if (input == ControllerHelper.ReturnValue) break;
             errorMessage = input;
             
         } while (true);
-        // // gameInstance.DeActivateMovePieceMode();
-        // do
-        // {
-        //     Visualizer.DrawBoard(gameInstance);
-        //     Visualizer.WriteMovePieceModePlaceInstructions(gameInstance, errorMessage);
-        //     var input = HandleInput(gameInstance, Console.ReadLine()!);
-        //     if (input == ControllerHelper.ReturnValue) break;
-        //     errorMessage = input;
-        //     
-        // } while (true);
     }
     
     private static void MoveGridMode(TicTacTwoBrain gameInstance)
@@ -313,6 +321,9 @@ public static class GameController
                 case ConsoleKey.DownArrow:
                     gameInstance.MoveGrid(EMoveGridDirection.Down);
                     break;
+                case ConsoleKey.R:
+                    gameInstance.RestoreGridState();
+                    return;
                 case ConsoleKey.Enter:
                     if (gameInstance.GridWasMoved())
                     {
@@ -326,61 +337,60 @@ public static class GameController
         } while (true);
     }
 
-    public static string ChooseConfigurationFromMenu(EMenuLevel menuLevel, string menuHeader)
-    {
-        var configMenuItems = new List<MenuItem>();
+    // public static string ChooseConfigurationFromMenu(EMenuLevel menuLevel, string menuHeader)
+    // {
+    //     var configMenuItems = new List<MenuItem>();
+    //
+    //     for (var i = 0; i < _configRepository.GetConfigurationNames().Count; i++)
+    //     {
+    //         var returnValue = i.ToString();
+    //         configMenuItems.Add(new MenuItem()
+    //         {
+    //             Shortcut = (i + 1).ToString(),
+    //             Title = _configRepository.GetConfigurationNames()[i],
+    //             MenuItemAction = () => returnValue
+    //         });
+    //     }
+    //
+    //     var configMenu = new Menu(menuLevel,
+    //         menuHeader,
+    //         configMenuItems);
+    //
+    //     return configMenu.Run();
+    // }
 
-        for (var i = 0; i < ConfigRepository.GetConfigurationNames().Count; i++)
-        {
-            var returnValue = i.ToString();
-            configMenuItems.Add(new MenuItem()
-            {
-                Shortcut = (i + 1).ToString(),
-                Title = ConfigRepository.GetConfigurationNames()[i],
-                MenuItemAction = () => returnValue
-            });
-        }
-    
-        var configMenu = new Menu(menuLevel,
-            menuHeader,
-            configMenuItems);
-
-        return configMenu.Run();
-    }
-
-    public static string ChooseGameFromMenu(EMenuLevel menuLevel, string menuHeader)
-    {
-        var gameMenuItems = new List<MenuItem>();
-        
-        for (var i = 0; i < GameRepository.GetGameNames().Count; i++)
-        {
-            var returnValue = i.ToString();
-            gameMenuItems.Add(new MenuItem()
-            {
-                Shortcut = (i + 1).ToString(),
-                Title = GameRepository.GetGameNames()[i],
-                MenuItemAction = () => returnValue
-            });
-        }
-
-        if (gameMenuItems.Count == 0)
-        {
-            return ControllerHelper.NoSavedGamesMessage;
-        }
-    
-        var configMenu = new Menu(menuLevel,
-            menuHeader,
-            gameMenuItems);
-
-        return configMenu.Run();
-    }
+    // public static string ChooseGameFromMenu(EMenuLevel menuLevel, string menuHeader)
+    // {
+    //     var gameMenuItems = new List<MenuItem>();
+    //     
+    //     for (var i = 0; i < _gameRepository.GetGameNames().Count; i++)
+    //     {
+    //         var returnValue = i.ToString();
+    //         gameMenuItems.Add(new MenuItem()
+    //         {
+    //             Shortcut = (i + 1).ToString(),
+    //             Title = _gameRepository.GetGameNames()[i],
+    //             MenuItemAction = () => returnValue
+    //         });
+    //     }
+    //
+    //     if (gameMenuItems.Count == 0)
+    //     {
+    //         return ControllerHelper.NoSavedGamesMessage;
+    //     }
+    //
+    //     var configMenu = new Menu(menuLevel,
+    //         menuHeader,
+    //         gameMenuItems);
+    //
+    //     return configMenu.Run();
+    // }
 
     private static string GetStringInputWithCancelOption()
     {
-        var input = "";
         do
         {
-            input = Console.ReadLine();
+            var input = Console.ReadLine();
             if (string.IsNullOrWhiteSpace(input))
             {
                 continue;

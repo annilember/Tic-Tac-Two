@@ -10,8 +10,14 @@ namespace ConsoleApp;
 
 public static class OptionsController
 {
-    private static readonly IConfigRepository ConfigRepository = new ConfigRepositoryDb();
-    private static readonly IGameRepository GameRepository = new GameRepositoryDb();
+    private static IConfigRepository _configRepository = default!;
+    private static IGameRepository _gameRepository = default!;
+
+    public static void Init(IConfigRepository configRepository, IGameRepository gameRepository)
+    {
+        _configRepository = configRepository;
+        _gameRepository = gameRepository;
+    }
     
     public static string CreateNewConfig()
     {
@@ -31,7 +37,7 @@ public static class OptionsController
             {
                 return ControllerHelper.ReturnValue;
             }
-            if (ConfigRepository.ConfigurationExists(input))
+            if (_configRepository.ConfigurationExists(input))
             {
                 errorMessage = ControllerHelper.ConfigNameAlreadyInUseMessage;
                 continue;
@@ -43,7 +49,7 @@ public static class OptionsController
         {
             Name = input
         };
-        ConfigRepository.AddNewConfiguration(newConfig);
+        _configRepository.AddNewConfiguration(newConfig);
         
         return ChangeConfiguration(newConfig);;
     }
@@ -81,7 +87,7 @@ public static class OptionsController
             else if (propertyInfo.PropertyType == typeof(string) &&
                      propertyInfo.Name.Equals("Name", StringComparison.InvariantCultureIgnoreCase))
             {
-                if (!ConfigRepository.ConfigurationExists(input))
+                if (!_configRepository.ConfigurationExists(input))
                     return SetNewStringValueProperty(config, propertyInfo, input);
                 errorMessage = ControllerHelper.ConfigNameAlreadyInUseMessage;
             }
@@ -125,7 +131,7 @@ public static class OptionsController
         
             var configOldName = config.Name;
             config = ChangePropertyValueMode(config, propertyInfo);
-            ConfigRepository.SaveConfigurationChanges(config, configOldName);
+            _configRepository.SaveConfigurationChanges(config, configOldName);
             message = ControllerHelper.PropertySavedMessage;
 
         } while (true);
@@ -158,7 +164,7 @@ public static class OptionsController
 
     public static string ChangeExistingConfiguration()
     {
-        var chosenConfigShortcut = GameController.ChooseConfigurationFromMenu(
+        var chosenConfigShortcut = ChooseConfigurationFromMenu(
             EMenuLevel.Deep,
             ControllerHelper.ChangeConfigMenuHeader
         );
@@ -167,15 +173,15 @@ public static class OptionsController
         {
             return chosenConfigShortcut;
         }
-        var chosenConfig = ConfigRepository.GetConfigurationByName(
-            ConfigRepository.GetConfigurationNames()[configNo]);
+        var chosenConfig = _configRepository.GetConfigurationByName(
+            _configRepository.GetConfigurationNames()[configNo]);
         
         return ChangeConfiguration(chosenConfig);
     }
 
     public static string DeleteExistingConfiguration()
     {
-        var chosenConfigShortcut = GameController.ChooseConfigurationFromMenu(
+        var chosenConfigShortcut = ChooseConfigurationFromMenu(
             EMenuLevel.Deep,
             ControllerHelper.DeleteConfigMenuHeader
         );
@@ -184,16 +190,38 @@ public static class OptionsController
         {
             return chosenConfigShortcut;
         }
-        var chosenConfig = ConfigRepository.GetConfigurationByName(
-            ConfigRepository.GetConfigurationNames()[configNo]);
-        ConfigRepository.DeleteConfiguration(chosenConfig);
+        var chosenConfig = _configRepository.GetConfigurationByName(
+            _configRepository.GetConfigurationNames()[configNo]);
+        _configRepository.DeleteConfiguration(chosenConfig);
         
         return ControllerHelper.ConfigDeletedMessage;
     }
     
+    public static string ChooseConfigurationFromMenu(EMenuLevel menuLevel, string menuHeader)
+    {
+        var configMenuItems = new List<MenuItem>();
+
+        for (var i = 0; i < _configRepository.GetConfigurationNames().Count; i++)
+        {
+            var returnValue = i.ToString();
+            configMenuItems.Add(new MenuItem()
+            {
+                Shortcut = (i + 1).ToString(),
+                Title = _configRepository.GetConfigurationNames()[i],
+                MenuItemAction = () => returnValue
+            });
+        }
+    
+        var configMenu = new Menu(menuLevel,
+            menuHeader,
+            configMenuItems);
+
+        return configMenu.Run();
+    }
+    
     public static string DeleteSavedGame()
     {
-        var chosenGameShortcut = GameController.ChooseGameFromMenu(
+        var chosenGameShortcut = ChooseGameFromMenu(
             EMenuLevel.Deep, 
             ControllerHelper.DeleteGameMenuHeader
             );
@@ -202,8 +230,8 @@ public static class OptionsController
         {
             return chosenGameShortcut;
         }
-        var gameName = GameRepository.GetGameNames()[gameNo];
-        GameRepository.DeleteGame(gameName);
+        var gameName = _gameRepository.GetGameNames()[gameNo];
+        _gameRepository.DeleteGame(gameName);
         
         return ControllerHelper.GameDeletedMessage;
     }
@@ -212,7 +240,7 @@ public static class OptionsController
     {
         do
         {
-            var chosenGameShortcut = GameController.ChooseGameFromMenu(
+            var chosenGameShortcut = ChooseGameFromMenu(
                 EMenuLevel.Deep, 
                 ControllerHelper.RenameGameMenuHeader
             );
@@ -221,16 +249,43 @@ public static class OptionsController
             {
                 return chosenGameShortcut;
             }
-            var gameName = GameRepository.GetGameNames()[gameNo];
-            var savedGame = GameRepository.GetSavedGameByName(gameName);
+            var gameName = _gameRepository.GetGameNames()[gameNo];
+            var savedGame = _gameRepository.GetSavedGameByName(gameName);
             var newGameName = GetNewGameName();
         
             if (newGameName == ControllerHelper.ReturnValue) continue;
         
-            GameRepository.RenameGame(savedGame, newGameName);
+            _gameRepository.RenameGame(savedGame, newGameName);
             return ControllerHelper.GameRenamedMessage;
             
         } while (true);
+    }
+    
+    public static string ChooseGameFromMenu(EMenuLevel menuLevel, string menuHeader)
+    {
+        var gameMenuItems = new List<MenuItem>();
+        
+        for (var i = 0; i < _gameRepository.GetGameNames().Count; i++)
+        {
+            var returnValue = i.ToString();
+            gameMenuItems.Add(new MenuItem()
+            {
+                Shortcut = (i + 1).ToString(),
+                Title = _gameRepository.GetGameNames()[i],
+                MenuItemAction = () => returnValue
+            });
+        }
+
+        if (gameMenuItems.Count == 0)
+        {
+            return ControllerHelper.NoSavedGamesMessage;
+        }
+    
+        var configMenu = new Menu(menuLevel,
+            menuHeader,
+            gameMenuItems);
+
+        return configMenu.Run();
     }
 
     private static string GetNewGameName()
@@ -250,7 +305,7 @@ public static class OptionsController
                 return ControllerHelper.ReturnValue;
             }
 
-            if (!GameRepository.GameExists(input)) return input;
+            if (!_gameRepository.GameExists(input)) return input;
             
             errorMessage = ControllerHelper.GameNameAlreadyInUseMessage;
 

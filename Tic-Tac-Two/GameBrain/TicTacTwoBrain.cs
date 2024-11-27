@@ -38,6 +38,11 @@ public class TicTacTwoBrain
         
         GridMovingArea = GetGridMovingArea();
         CurrentGridState = GetGrid();
+        _currentGridStateStartPos = new Dictionary<string, int>
+        {
+            { "Xpos", _gameState.GridStartPosX },
+            { "Ypos", _gameState.GridStartPosY }
+        };
     }
     
     public TicTacTwoBrain(SavedGame savedGame, GameConfiguration config)
@@ -47,6 +52,11 @@ public class TicTacTwoBrain
         Console.WriteLine(_gameConfiguration.BoardSizeWidth);
         GridMovingArea = GetGridMovingArea();
         CurrentGridState = GetGrid();
+        _currentGridStateStartPos = new Dictionary<string, int>
+        {
+            { "Xpos", _gameState.GridStartPosX },
+            { "Ypos", _gameState.GridStartPosY }
+        };
     }
 
     private bool[][] InitializeGrid(GameConfiguration gameConfiguration)
@@ -160,6 +170,14 @@ public class TicTacTwoBrain
         CountAsMove();
     }
 
+    public void RestoreGridState()
+    {
+        _gameState.MoveGridModeOn = false;
+        _gameState.GameGrid = CurrentGridState;
+        _gameState.GridStartPosX = _currentGridStateStartPos["Xpos"];
+        _gameState.GridStartPosY = _currentGridStateStartPos["Ypos"];
+    }
+
     public bool[][] GridMovingArea { get; set; }
     
     public int DimX => _gameState.GameBoard.Length;
@@ -262,6 +280,13 @@ public class TicTacTwoBrain
     
     public bool MakeAMove(int x, int y)
     {
+        if (MovePieceModeOn && 
+            x == _removedPieceLocation[0] && 
+            y == _removedPieceLocation[1])
+        {
+            return false;
+        }
+        
         if (_gameState.GameBoard[x][y] != EGamePiece.Empty)
         {
             return false;
@@ -282,11 +307,22 @@ public class TicTacTwoBrain
 
         return true;
     }
+
+    public bool RemovedPieceCoordinateClash(int x, int y)
+    {
+        if (!MovePieceModeOn) return false;
+        return x == _removedPieceLocation[0] && 
+               y == _removedPieceLocation[1];
+    }
+
+    private readonly int[] _removedPieceLocation = new int[2];
     
     public bool RemovePiece(int x, int y)
     {
         if (_gameState.GameBoard[x][y] != _gameState.NextMoveBy) return false;
         _gameState.GameBoard[x][y] = EGamePiece.Empty;
+        _removedPieceLocation[0] = x;
+        _removedPieceLocation[1] = y;
         
         switch (_gameState.NextMoveBy)
         {
@@ -414,15 +450,26 @@ public class TicTacTwoBrain
         return GameRoundNumber > _gameConfiguration.MovePieceAfterNMoves;
     }
     
-    public bool MovePieceModeOn
+    public bool RemovePieceModeOn
     {
-        get => GetMovePieceModeOn();
-        set => _gameState.MovePieceModeOn = value;
+        get => _gameState.RemovePieceModeOn;
+        set => _gameState.RemovePieceModeOn = value;
     }
     
-    private bool GetMovePieceModeOn()
+    public void ActivateRemovePieceMode()
     {
-        return _gameState.MovePieceModeOn;
+        _gameState.RemovePieceModeOn = true;
+    }
+    
+    public void DeActivateRemovePieceMode()
+    {
+        _gameState.RemovePieceModeOn = false;
+    }
+    
+    public bool MovePieceModeOn
+    {
+        get => _gameState.MovePieceModeOn;
+        set => _gameState.MovePieceModeOn = value;
     }
     
     public void ActivateMovePieceMode()
@@ -434,12 +481,15 @@ public class TicTacTwoBrain
     {
         _gameState.MovePieceModeOn = false;
     }
-
+    
     private bool[][] CurrentGridState { get; set; }
+    private readonly Dictionary<string, int> _currentGridStateStartPos;
     
     public void SaveCurrentGridState()
     {
         CurrentGridState = GetGrid();
+        _currentGridStateStartPos["Xpos"] = _gameState.GridStartPosX;
+        _currentGridStateStartPos["Ypos"] = _gameState.GridStartPosY;
     }
 
     public bool GridWasMoved()
@@ -517,7 +567,7 @@ public class TicTacTwoBrain
         _gameState.GameBoard = gameBoard;
         _gameState.GameGrid = gameGrid;
         _gameState.MoveGridModeOn = false;
-        _gameState.MovePieceModeOn = false;
+        _gameState.RemovePieceModeOn = false;
         _gameState.GridStartPosX = _gameConfiguration.GridStartPosX;
         _gameState.GridStartPosY = _gameConfiguration.GridStartPosY;
         _gameState.NextMoveBy = EGamePiece.X;

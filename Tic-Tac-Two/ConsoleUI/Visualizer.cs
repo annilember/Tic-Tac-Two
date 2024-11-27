@@ -32,20 +32,16 @@ public static class Visualizer
         Console.Write("> to main menu:");
     }
     
-    public static void WriteMovePieceModeRemoveInstructions(TicTacTwoBrain gameInstance, string errorMessage)
+    public static void WriteRemovePieceInstructions(TicTacTwoBrain gameInstance, string errorMessage)
     {
         WriteBasicGamePlayInstructions(gameInstance, errorMessage);
         Console.Write("Give me coordinates of the piece you want to move ");
         WriteCoordinates();
-        Console.Write(":");
-    }
-    
-    public static void WriteMovePieceModePlaceInstructions(TicTacTwoBrain gameInstance, string errorMessage)
-    {
-        WriteBasicGamePlayInstructions(gameInstance, errorMessage);
-        Console.Write("Give me new coordinates for the piece ");
-        WriteCoordinates();
-        Console.Write(":");
+        Console.Write(" (or <");
+        Console.ForegroundColor = VisualizerHelper.ActionColor;
+        Console.Write("R");
+        Console.ResetColor();
+        Console.Write("> to cancel):");
     }
     
     public static void WriteMoveGridModeInstructions(TicTacTwoBrain gameInstance, string errorMessage)
@@ -57,7 +53,11 @@ public static class Visualizer
         Console.ForegroundColor = VisualizerHelper.ActionColor;
         Console.Write("Enter");
         Console.ResetColor();
-        Console.Write("> to lock position:");
+        Console.Write("> to lock position (or <");
+        Console.ForegroundColor = VisualizerHelper.ActionColor;
+        Console.Write("R");
+        Console.ResetColor();
+        Console.Write("> to cancel).");
     }
     
     public static void WriteLoadGameModeInstructions()
@@ -186,11 +186,11 @@ public static class Visualizer
 
     private static void WriteConditionalInstructions(TicTacTwoBrain gameInstance)
     {
-        if (gameInstance.CanMovePiece())
+        if (gameInstance.CanMovePiece() && !gameInstance.MovePieceModeOn)
         {
             WriteMovePieceInstructions();
         }
-        if (gameInstance.CanMoveGrid())
+        if (gameInstance.CanMoveGrid() && !gameInstance.MovePieceModeOn)
         {
             WriteMoveGridInstructions();
         }

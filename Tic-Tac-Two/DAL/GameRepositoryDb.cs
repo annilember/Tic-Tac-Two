@@ -1,30 +1,19 @@
 using System.Text.Json;
 using Domain;
 using GameBrain;
-using Microsoft.EntityFrameworkCore;
 
 namespace DAL;
 
-public class GameRepositoryDb : IGameRepository
+public class GameRepositoryDb(AppDbContext db) : IGameRepository
 {
-    private static readonly string ConnectionString = $"Data Source={FileHelper.BasePath}app.db";
-
-    private static readonly DbContextOptions<AppDbContext> ContextOptions = new DbContextOptionsBuilder<AppDbContext>()
-        .UseSqlite(ConnectionString)
-        .EnableDetailedErrors()
-        .EnableSensitiveDataLogging()
-        .Options;
-
-    private readonly AppDbContext _context = new AppDbContext(ContextOptions);
-    
     public List<string> GetGameNames()
     {
-        return _context.SavedGames.Select(savedGame => savedGame.Name).ToList();
+        return db.SavedGames.Select(savedGame => savedGame.Name).ToList();
     }
 
     public SavedGame GetSavedGameByName(string name)
     {
-        foreach (var savedGame in _context.SavedGames)
+        foreach (var savedGame in db.SavedGames)
         {
             if (savedGame.Name == name)
             {
@@ -55,26 +44,26 @@ public class GameRepositoryDb : IGameRepository
         var savedGame = CreateNewSavedGame(gameInstance, name);
         
         // .Update works, but not .Add !?
-        _context.SavedGames.Update(savedGame);
-        _context.SaveChanges();
+        db.SavedGames.Update(savedGame);
+        db.SaveChanges();
     }
 
     public void RenameGame(SavedGame savedGame, string newName)
     {
         savedGame.Name = newName;
-        _context.SaveChanges();
+        db.SaveChanges();
     }
 
     public void DeleteGame(string name)
     {
         var savedGame = GetSavedGameByName(name);
-        _context.SavedGames.Remove(savedGame);
-        _context.SaveChanges();
+        db.SavedGames.Remove(savedGame);
+        db.SaveChanges();
     }
 
     public GameConfiguration GetGameConfiguration(SavedGame savedGame)
     {
-        return _context.Configurations.Find(savedGame.ConfigurationId)!;
+        return db.Configurations.Find(savedGame.ConfigurationId)!;
     }
 
     private SavedGame CreateNewSavedGame(TicTacTwoBrain gameInstance, string name)
