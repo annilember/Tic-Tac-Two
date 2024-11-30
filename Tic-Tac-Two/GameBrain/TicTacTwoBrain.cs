@@ -8,7 +8,7 @@ public class TicTacTwoBrain
     private readonly GameState _gameState;
     private readonly GameConfiguration _gameConfiguration;
 
-    public TicTacTwoBrain(GameConfiguration gameConfiguration, string playerXName, string playerOName)
+    public TicTacTwoBrain(GameConfiguration gameConfiguration, EGameMode mode, string playerXName, string playerOName)
     {
         var gameBoard = new EGamePiece[gameConfiguration.BoardSizeWidth][];
         var gameGrid = InitializeGrid(gameConfiguration);
@@ -24,6 +24,7 @@ public class TicTacTwoBrain
         }
         
         _gameState = new GameState(
+            mode,
             gameBoard, 
             gameGrid,
             gridStartPosX,
@@ -120,6 +121,16 @@ public class TicTacTwoBrain
         };
     }
     
+    public EPlayerType GetNextMoveByPlayerType()
+    {
+        return _gameState.NextMoveBy switch
+        {
+            EGamePiece.X => _gameState.PlayerXType,
+            EGamePiece.O => _gameState.PlayerOType,
+            _ => throw new ArgumentException(message: "Player type not defined", paramName: nameof(_gameState.NextMoveBy)),
+        };
+    }
+    
     public string GetWinnerName()
     {
         return CheckForWinner() switch
@@ -132,7 +143,8 @@ public class TicTacTwoBrain
 
     public bool IsGameOverAnyway()
     {
-        return _gameState.GameRoundsLeft == 0 && _gameState.NextMoveBy == EGamePiece.X;
+        return (_gameState.GameRoundsLeft == 0 && _gameState.NextMoveBy == EGamePiece.X) ||
+               (GameBoardEmptySpacesCount() == 0 && !CanMoveGrid());
     }
     
     public EGamePiece[][] GameBoard
@@ -160,6 +172,7 @@ public class TicTacTwoBrain
 
     public void ActivateMoveGridMode()
     {
+        SaveCurrentGridState();
         _gameState.MoveGridModeOn = true;
         GridMovingArea = GetGridMovingArea();
     }
@@ -176,6 +189,22 @@ public class TicTacTwoBrain
         _gameState.GameGrid = CurrentGridState;
         _gameState.GridStartPosX = _currentGridStateStartPos["Xpos"];
         _gameState.GridStartPosY = _currentGridStateStartPos["Ypos"];
+    }
+
+    public void MakeGridMove(EMoveGridDirection direction)
+    {
+        ActivateMoveGridMode();
+        MoveGrid(direction);
+        DeActivateMoveGridMode();
+    }
+
+    public void CancelGridMove()
+    {
+        RestoreGridState();
+        _gameState.NextMoveBy = _gameState.NextMoveBy == EGamePiece.X ? EGamePiece.O : EGamePiece.X;
+        if (_gameState.NextMoveBy == EGamePiece.X) return;
+        _gameState.GameRoundNumber--;
+        _gameState.GameRoundsLeft++;
     }
 
     public bool[][] GridMovingArea { get; set; }
@@ -308,6 +337,24 @@ public class TicTacTwoBrain
         return true;
     }
 
+    public void CancelMove(int x, int y)
+    {
+        _gameState.GameBoard[x][y] = EGamePiece.Empty;
+        _gameState.NextMoveBy = _gameState.NextMoveBy == EGamePiece.X ? EGamePiece.O : EGamePiece.X;
+        
+        switch (_gameState.NextMoveBy)
+        {
+            case EGamePiece.X:
+                _gameState.NumberOfPiecesLeftX++;
+                break;
+            case EGamePiece.O:
+                _gameState.NumberOfPiecesLeftO++;
+                _gameState.GameRoundNumber--;
+                _gameState.GameRoundsLeft++;
+                break;
+        }
+    }
+
     public bool RemovedPieceCoordinateClash(int x, int y)
     {
         if (!MovePieceModeOn) return false;
@@ -368,7 +415,7 @@ public class TicTacTwoBrain
         return CheckForWinnerByPlayer(EGamePiece.X) && CheckForWinnerByPlayer(EGamePiece.O);
     }
 
-    private EGamePiece CheckForWinner()
+    public EGamePiece CheckForWinner()
     {
         if (CheckForWinnerByPlayer(EGamePiece.X))
         {
@@ -390,18 +437,51 @@ public class TicTacTwoBrain
 
         for (int x = 0; x < DimX; x++)
         {
+            countRowStrike = 0;
             for (int y = 0; y < DimY; y++)
             {
                 countRowStrike = CountRowOrColumnStrike(player, countRowStrike, x, y);
-                if (y < DimX && x < DimY)
-                {
-                    countColStrike = CountRowOrColumnStrike(player, countColStrike, y, x);
-                }
+                // if (y < DimX && x < DimY)
+                // {
+                //     countColStrike = CountRowOrColumnStrike(player, countColStrike, y, x);
+                // }
                 if (countRowStrike == _gameConfiguration.WinCondition ||
-                    countColStrike == _gameConfiguration.WinCondition ||
+                    // countColStrike == _gameConfiguration.WinCondition ||
                     CheckDiagonalStreaks(player, x, y, (i) => i + 1) ||
                     CheckDiagonalStreaks(player, x, y, (i) => i - 1)) 
                 {
+                    // Console.WriteLine($"Row: {countRowStrike}");
+                    // Console.WriteLine($"Col: {countColStrike}");
+                    // Console.WriteLine($"Dia 1: {CheckDiagonalStreaks(player, x, y, (i) => i + 1)}");
+                    // Console.WriteLine($"Dia 2: {CheckDiagonalStreaks(player, x, y, (i) => i - 1)}");
+                    
+                    return true;
+                }
+            }
+        }
+        
+        for (int y = 0; y < DimY; y++)
+        {
+            countColStrike = 0;
+            for (int x = 0; x < DimX; x++)
+            {
+                countColStrike = CountRowOrColumnStrike(player, countColStrike, x, y);
+                // if (x < DimX && y < DimY)
+                // {
+                //     countColStrike = CountRowOrColumnStrike(player, countColStrike, x, y);
+                // }
+                if (
+                    // countRowStrike == _gameConfiguration.WinCondition ||
+                    countColStrike == _gameConfiguration.WinCondition
+                    // CheckDiagonalStreaks(player, y, x, (i) => i + 1) ||
+                    // CheckDiagonalStreaks(player, y, x, (i) => i - 1)
+                    ) 
+                {
+                    // Console.WriteLine($"Row: {countRowStrike}");
+                    // Console.WriteLine($"Col: {countColStrike}");
+                    // Console.WriteLine($"Dia 1: {CheckDiagonalStreaks(player, x, y, (i) => i + 1)}");
+                    // Console.WriteLine($"Dia 2: {CheckDiagonalStreaks(player, x, y, (i) => i - 1)}");
+                    
                     return true;
                 }
             }
@@ -440,9 +520,30 @@ public class TicTacTwoBrain
         }
     }
 
+    public int GameBoardEmptySpacesCount()
+    {
+        var count = 0;
+        for (int x = 0; x < DimX; x++)
+        {
+            for (int y = 0; y < DimY; y++)
+            {
+                if (_gameState.GameBoard[x][y] == EGamePiece.Empty)
+                {
+                    count++;
+                }
+            }
+        }
+
+        return count;
+    }
+
     public bool CanMoveGrid()
     {
-        return GameRoundNumber > _gameConfiguration.MoveGridAfterNMoves;
+        return GameRoundNumber > _gameConfiguration.MoveGridAfterNMoves &&
+               (
+                   _gameConfiguration.BoardSizeWidth > _gameConfiguration.GridSizeWidth ||
+                   _gameConfiguration.BoardSizeHeight > _gameConfiguration.GridSizeHeight
+                );
     }
     
     public bool CanMovePiece()
@@ -552,6 +653,16 @@ public class TicTacTwoBrain
         
         _gameState.GridStartPosX = startPosX;
         _gameState.GridStartPosY = startPosY;
+    }
+
+    public void MakeAiMove()
+    {
+        var player = _gameState.NextMoveBy;
+        var opponent = _gameState.NextMoveBy == EGamePiece.X ? EGamePiece.O : EGamePiece.X;
+        var ai = new Ai(this, player, opponent);
+        ai.FindBestMove();
+        // Console.WriteLine($"AI chose <{bestMove[0]}, {bestMove[1]}>");
+        // MakeAMove(bestMove[0], bestMove[1]);
     }
 
     public void ResetGame()

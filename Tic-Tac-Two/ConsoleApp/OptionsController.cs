@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using ConsoleUI;
@@ -218,7 +219,30 @@ public static class OptionsController
 
         return configMenu.Run();
     }
+
+    public static string ChooseGameModeFromMenu()
+    {
+        var gameModeMenuItems = new List<MenuItem>();
+        var gameModes = GameMode.GetGameModeNames();
+
+        for (var i = 0; i < gameModes.Count; i++)
+        {
+            var returnValue = i.ToString();
+            gameModeMenuItems.Add(new MenuItem()
+            {
+                Shortcut = (i + 1).ToString(),
+                Title = gameModes[i],
+                MenuItemAction = () => returnValue
+            });
+        }
     
+        var gameModeMenu = new Menu(EMenuLevel.Deep,
+            ControllerHelper.ChooseGameModeMenuHeader,
+            gameModeMenuItems);
+
+        return gameModeMenu.Run();
+    }
+
     public static string DeleteSavedGame()
     {
         var chosenGameShortcut = ChooseGameFromMenu(

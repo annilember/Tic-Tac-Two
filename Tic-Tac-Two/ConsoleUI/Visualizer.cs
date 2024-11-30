@@ -1,4 +1,5 @@
-﻿using Domain;
+﻿using DAL;
+using Domain;
 using GameBrain;
 
 namespace ConsoleUI;
@@ -30,6 +31,23 @@ public static class Visualizer
         Console.Write("R");
         Console.ResetColor();
         Console.Write("> to main menu:");
+    }
+
+    public static void WriteAisTurnMessage(TicTacTwoBrain gameInstance)
+    {
+        Console.ForegroundColor = VisualizerHelper.MessageColor;
+        Console.Write($"{gameInstance.GetNextMoveByPlayerName()}'s turn ({gameInstance.GetNextMoveBy()})! ");
+        Console.Write($"{gameInstance.GamePiecesLeft(gameInstance.GetNextMoveBy())} pieces left, ");
+        Console.WriteLine($"{gameInstance.GetRoundsLeft()} rounds left!");
+        Console.ForegroundColor = VisualizerHelper.AiColor;
+        Console.Write($"{gameInstance.GetNextMoveByPlayerName()} is thinking.");
+        Thread.Sleep(1000);
+        Console.Write(".");
+        Thread.Sleep(1000);
+        Console.Write(".");
+        Thread.Sleep(1000);
+        Console.Write(".");
+        Console.ResetColor();
     }
     
     public static void WriteRemovePieceInstructions(TicTacTwoBrain gameInstance, string errorMessage)
@@ -78,10 +96,13 @@ public static class Visualizer
         Console.Write(">: ");
     }
 
-    public static void WriteInsertPlayerNameInstructions(EGamePiece gamePiece)
+    public static void WriteInsertPlayerNameInstructions(EGamePiece gamePiece, EGameMode gameMode)
     {
+        var playerType = GameMode.GetPlayerTypeName(gameMode, gamePiece);
         Console.Write("Enter player (");
         Console.Write(gamePiece.ToString());
+        Console.Write(" / ");
+        Console.Write(playerType);
         Console.Write(") <");
         Console.ForegroundColor = VisualizerHelper.ActionColor;
         Console.Write("name");

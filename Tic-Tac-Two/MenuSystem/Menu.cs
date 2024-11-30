@@ -62,8 +62,6 @@ public class Menu
             MenuItems.Add(_menuItemReturnMain);
         }
         MenuItems.Add(_menuItemExit);
-        
-        //TODO! Validate menuItems for shortcut conflict!
     }
 
     public string Run()

@@ -32,21 +32,32 @@ public static class GameController
             }
             var chosenConfig = _configRepository.GetConfigurationByName(
                 _configRepository.GetConfigurationNames()[configNo]);
-        
-            var input = "";
+            
+            
+            var gameModeShortCut = OptionsController.ChooseGameModeFromMenu();
+            if (!int.TryParse(gameModeShortCut, out var gameModeNo))
+            {
+                if (gameModeShortCut == ControllerHelper.ReturnValue)
+                {
+                    continue;
+                }
+                return gameModeShortCut;
+            }
+            var gameMode = GameMode.GetGameModes()[gameModeNo];
+            
             Console.Clear();
             
-            Visualizer.WriteInsertPlayerNameInstructions(EGamePiece.X);
-            input = GetStringInputWithCancelOption();
+            Visualizer.WriteInsertPlayerNameInstructions(EGamePiece.X, gameMode);
+            var input = GetStringInputWithCancelOption();
             if (input == ControllerHelper.CancelValue) continue;
             var playerXName = input;
 
-            Visualizer.WriteInsertPlayerNameInstructions(EGamePiece.O);
+            Visualizer.WriteInsertPlayerNameInstructions(EGamePiece.O, gameMode);
             input = GetStringInputWithCancelOption();
             if (input == ControllerHelper.CancelValue) continue;
             var playerOName = input;
         
-            return MainGameLoop(new TicTacTwoBrain(chosenConfig, playerXName, playerOName));
+            return MainGameLoop(new TicTacTwoBrain(chosenConfig, gameMode, playerXName, playerOName));
         } while (true);
     }
     
@@ -122,11 +133,19 @@ public static class GameController
             {
                 Visualizer.DisplayFinalRoundMessage();
             }
-            
-            Visualizer.WriteGamePlayInstructions(gameInstance, errorMessage);
-            var input = HandleInput(gameInstance, Console.ReadLine()!);
-            if (input == ControllerHelper.ReturnValue) return ControllerHelper.ReturnValue;
-            errorMessage = input;
+
+            if (gameInstance.GetNextMoveByPlayerType() == EPlayerType.Human)
+            {
+                Visualizer.WriteGamePlayInstructions(gameInstance, errorMessage);
+                var input = HandleInput(gameInstance, Console.ReadLine()!);
+                if (input == ControllerHelper.ReturnValue) return ControllerHelper.ReturnValue;
+                errorMessage = input;
+            }
+            else if (gameInstance.GetNextMoveByPlayerType() == EPlayerType.Ai)
+            {
+                Visualizer.WriteAisTurnMessage(gameInstance);
+                gameInstance.MakeAiMove();
+            }
 
             if (!string.IsNullOrEmpty(gameInstance.GetWinnerName()) || gameInstance.IsGameOverAnyway())
             {
@@ -146,10 +165,8 @@ public static class GameController
 
     private static string GameOverLoop(TicTacTwoBrain gameInstance)
     {
-        var input = "";
         do
         {
-            input = "";
             var message = "";
             Visualizer.DrawBoard(gameInstance);
             
@@ -167,7 +184,7 @@ public static class GameController
             }
             
             Visualizer.DisplayGameOverMessage(message);
-            input = Console.ReadLine();
+            var input = Console.ReadLine();
 
             if (input!.Equals(ControllerHelper.ReturnValue, StringComparison.InvariantCultureIgnoreCase))
             {
@@ -298,7 +315,7 @@ public static class GameController
     private static void MoveGridMode(TicTacTwoBrain gameInstance)
     {
         gameInstance.ActivateMoveGridMode();
-        gameInstance.SaveCurrentGridState();
+        // gameInstance.SaveCurrentGridState(); // panin selle ActivateMoveGridMode() sisse
         var errorMessage = "";
         
         do
@@ -336,55 +353,6 @@ public static class GameController
             
         } while (true);
     }
-
-    // public static string ChooseConfigurationFromMenu(EMenuLevel menuLevel, string menuHeader)
-    // {
-    //     var configMenuItems = new List<MenuItem>();
-    //
-    //     for (var i = 0; i < _configRepository.GetConfigurationNames().Count; i++)
-    //     {
-    //         var returnValue = i.ToString();
-    //         configMenuItems.Add(new MenuItem()
-    //         {
-    //             Shortcut = (i + 1).ToString(),
-    //             Title = _configRepository.GetConfigurationNames()[i],
-    //             MenuItemAction = () => returnValue
-    //         });
-    //     }
-    //
-    //     var configMenu = new Menu(menuLevel,
-    //         menuHeader,
-    //         configMenuItems);
-    //
-    //     return configMenu.Run();
-    // }
-
-    // public static string ChooseGameFromMenu(EMenuLevel menuLevel, string menuHeader)
-    // {
-    //     var gameMenuItems = new List<MenuItem>();
-    //     
-    //     for (var i = 0; i < _gameRepository.GetGameNames().Count; i++)
-    //     {
-    //         var returnValue = i.ToString();
-    //         gameMenuItems.Add(new MenuItem()
-    //         {
-    //             Shortcut = (i + 1).ToString(),
-    //             Title = _gameRepository.GetGameNames()[i],
-    //             MenuItemAction = () => returnValue
-    //         });
-    //     }
-    //
-    //     if (gameMenuItems.Count == 0)
-    //     {
-    //         return ControllerHelper.NoSavedGamesMessage;
-    //     }
-    //
-    //     var configMenu = new Menu(menuLevel,
-    //         menuHeader,
-    //         gameMenuItems);
-    //
-    //     return configMenu.Run();
-    // }
 
     private static string GetStringInputWithCancelOption()
     {

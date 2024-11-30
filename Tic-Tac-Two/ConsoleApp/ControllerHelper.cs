@@ -63,4 +63,6 @@ public static class ControllerHelper
     public const string ChangeConfigMenuHeader = "TIC-TAC-TWO - choose game configuration to change";
     
     public const string ChooseConfigForNewGameMenuHeader = "TIC-TAC-TWO - choose configuration for new game";
+    
+    public const string ChooseGameModeMenuHeader = "TIC-TAC-TWO - choose game mode";
 }
