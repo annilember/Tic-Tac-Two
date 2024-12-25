@@ -9,30 +9,27 @@
 
 <h4>@Model.GameInstance.GetPlayerName(Model.GameInstance.GetNextMoveBy())'s turn</h4>
 <hr />
-<div class="row">
-    <div class="col-md-4">
-        <div class="container">
-            <div class="row">
-                @for (int y = 0; y < Model.GameInstance.DimY; y++)
-                {
-                    for (int x = 0; x < Model.GameInstance.DimX; x++)
-                    {
-                        var xValue = x;
-                        var yValue = y;
-                        <form method="post">
-                            <div class="col">
-                                <label hidden for="spot-@xValue-@yValue" class="control-label"></label>
-                                <input type="hidden" name="x" value="@xValue" />
-                                <input type="hidden" name="y" value="@yValue" />
-                                <input id="spot-@xValue-@yValue" type="submit" value="@Model.GameInstance.GetNextMoveBy().ToString()" class="btn btn-light btn-lg"/>
-                            </div>
-                        </form>
-                    }
-                    <div class="w-100"></div>
-                }
+
+<div class="container text-center">
+    @for (int y = 0; y < Model.GameInstance.DimY; y++)
+    {
+        <div class="row">
+        @for (int x = 0; x < Model.GameInstance.DimX; x++)
+        {
+            var xValue = x;
+            var yValue = y;
+            <div class="col">
+                <form method="post">
+            
+                    <label hidden for="spot-@xValue-@yValue" class="control-label"></label>
+                    <input type="hidden" name="x" value="@xValue" />
+                    <input type="hidden" name="y" value="@yValue" />
+                    <input id="spot-@xValue-@yValue" type="submit" value="@Model.GameInstance.GetNextMoveBy().ToString()" class="btn btn-light btn-lg"/>
+                </form>
             </div>
+        }
         </div>
-    </div>
+    }
 </div>
 
 @section Scripts {

@@ -6,30 +6,28 @@
 }
 
 <h1>Load Game</h1>
-
-<p>
-    <a asp-page="Create">Create New</a>
-</p>
+<h4>Human vs Human</h4>
 <table class="table">
     <thead>
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.SavedGame[0].Name)
+            @Html.DisplayNameFor(model => model.SavedGames[0].Name)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.SavedGame[0].CreatedAtDateTime)
+            @Html.DisplayNameFor(model => model.SavedGames[0].CreatedAtDateTime)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.SavedGame[0].State)
+            @Html.DisplayNameFor(model => model.SavedGames[0].State)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.SavedGame[0].Configuration)
+            @Html.DisplayNameFor(model => model.SavedGames[0].Configuration)
         </th>
+        <th></th>
         <th></th>
     </tr>
     </thead>
     <tbody>
-    @foreach (var item in Model.SavedGame) {
+    @foreach (var item in Model.SavedGames) {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.Name)
@@ -47,6 +45,24 @@
                 <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
                 <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
                 <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+            <td>
+                Join as:<br>
+                <form method="post">
+                    <input asp-for="GameName" type="hidden" value="@item.Name"/>
+                    <input asp-for="Password" type="hidden" value="@item.PlayerXPassword"/>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-dark btn-lg">@item.PlayerXName</button>
+                    </div>
+                </form>
+
+                <form method="post">
+                    <input asp-for="GameName" type="hidden" value="@item.Name"/>
+                    <input asp-for="Password" type="hidden" value="@item.PlayerOPassword"/>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-dark btn-lg">@item.PlayerOName</button>
+                    </div>
+                </form>
             </td>
         </tr>
     }

@@ -3,6 +3,7 @@ using Domain;
 using GameBrain;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 
 namespace WebApp.Pages;
 
@@ -37,9 +38,6 @@ public class GameModel : PageModel
         GameName = gameName;
         Password = password;
         SavedGame = _gameRepository.GetSavedGameByName(gameName);
-        _logger.LogInformation($"GET FROM GAME - Game Name: {gameName}, Password: {password}, Game State: {SavedGame.State}");
-        
-        // TODO: make sure this config finding works and isn't null.
         GameInstance = new TicTacTwoBrain(SavedGame, SavedGame.Configuration!);
         return Page();
     }

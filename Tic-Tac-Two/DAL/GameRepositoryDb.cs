@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Domain;
 using GameBrain;
+using Microsoft.EntityFrameworkCore;
 
 namespace DAL;
 
@@ -13,14 +14,10 @@ public class GameRepositoryDb(AppDbContext db) : IGameRepository
 
     public SavedGame GetSavedGameByName(string name)
     {
-        foreach (var savedGame in db.SavedGames)
-        {
-            if (savedGame.Name == name)
-            {
-                return savedGame;
-            }
-        }
-        return new SavedGame();
+        var savedGame = db.SavedGames
+            .Include(game => game.Configuration)
+            .FirstOrDefault(g => g.Name == name);
+        return savedGame ?? new SavedGame();
     }
 
     public GameState GetSavedGameState(SavedGame savedGame)

@@ -18,6 +18,7 @@ public class GameRepositoryJson : IGameRepository
 
     public SavedGame GetSavedGameByName(string name)
     {
+        //TODO: vaata, et selle SavedGame sees, mis siit võetakse, oleks config olemas! (nagu db JOIN puhul).
         return JsonSerializer.Deserialize<SavedGame>(GetSavedGameJsonByName(name))!;
     }
 

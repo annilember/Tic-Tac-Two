@@ -24,37 +24,24 @@ public class StartGameModel : PageModel
         _gameRepository = repoController.GameRepository;
     }
     
-    public SavedGame SavedGame { get; set; } = default!;
-    
+    [BindProperty]
     public string GameName { get; set; } = default!;
     
     public string PlayerXName { get; set; } = default!;
     
     public string PlayerOName { get; set; } = default!;
-    
-    public string PlayerXPassword { get; set; } = default!;
-    
-    public string PlayerOPassword { get; set; } = default!;
-    
-    // [BindProperty]
-    public string Password { get; set; } = default!;
-
 
     public IActionResult OnGet(string gameName)
     {
-        SavedGame = _gameRepository.GetSavedGameByName(gameName);
+        var savedGame = _gameRepository.GetSavedGameByName(gameName);
         GameName = gameName;
-        PlayerXName = SavedGame.PlayerXName;
-        PlayerOName = SavedGame.PlayerOName;
+        PlayerXName = savedGame.PlayerXName;
+        PlayerOName = savedGame.PlayerOName;
         return Page();
     }
     
-    public Task<IActionResult> OnPostAsync(string gameName, string password)
+    public Task<IActionResult> OnPostPlayerXAsync()
     {
-        _logger.LogInformation($"POST FROM START GAME - Game Name: {gameName}, Password: {password}");
-        GameName = gameName;
-        Password = password;
-        
         if (!ModelState.IsValid)
         {
             foreach (var error in ModelState)
@@ -64,9 +51,32 @@ public class StartGameModel : PageModel
             return Task.FromResult<IActionResult>(Page());
         }
         
+        var savedGame = _gameRepository.GetSavedGameByName(GameName);
+        _logger.LogInformation($"POST FROM START GAME - Game Name: {GameName}, Password: {savedGame.PlayerXPassword}");
+        
         return Task.FromResult<IActionResult>(RedirectToPage(
             "./Game", 
-            new { gameName = GameName, password = Password }
+            new { gameName = GameName, password = savedGame.PlayerXPassword }
+        ));
+    }
+    
+    public Task<IActionResult> OnPostPlayerOAsync()
+    {
+        if (!ModelState.IsValid)
+        {
+            foreach (var error in ModelState)
+            {
+                _logger.LogError($"{error.Key}: {string.Join(", ", error.Value.Errors.Select(e => e.ErrorMessage))}");
+            }
+            return Task.FromResult<IActionResult>(Page());
+        }
+        
+        var savedGame = _gameRepository.GetSavedGameByName(GameName);
+        _logger.LogInformation($"POST FROM START GAME - Game Name: {GameName}, Password: {savedGame.PlayerOPassword}");
+        
+        return Task.FromResult<IActionResult>(RedirectToPage(
+            "./Game", 
+            new { gameName = GameName, password = savedGame.PlayerOPassword }
         ));
     }
 }
