@@ -1,0 +1,91 @@
+@page
+@model WebApp.Pages.Configurations.DetailsModel
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>GameConfiguration</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.GameConfiguration.Name)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.GameConfiguration.Name)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.GameConfiguration.BoardSizeWidth)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.GameConfiguration.BoardSizeWidth)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.GameConfiguration.BoardSizeHeight)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.GameConfiguration.BoardSizeHeight)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.GameConfiguration.GridSizeWidth)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.GameConfiguration.GridSizeWidth)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.GameConfiguration.GridSizeHeight)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.GameConfiguration.GridSizeHeight)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.GameConfiguration.GridStartPosX)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.GameConfiguration.GridStartPosX)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.GameConfiguration.GridStartPosY)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.GameConfiguration.GridStartPosY)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.GameConfiguration.NumberOfPieces)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.GameConfiguration.NumberOfPieces)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.GameConfiguration.WinCondition)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.GameConfiguration.WinCondition)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.GameConfiguration.MaxGameRounds)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.GameConfiguration.MaxGameRounds)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.GameConfiguration.MoveGridAfterNMoves)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.GameConfiguration.MoveGridAfterNMoves)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.GameConfiguration.MovePieceAfterNMoves)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.GameConfiguration.MovePieceAfterNMoves)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-page="./Edit" asp-route-id="@Model.GameConfiguration.Id">Edit</a> |
+    <a asp-page="./Index">Back to List</a>
+</div>

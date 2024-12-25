@@ -1,0 +1,102 @@
+@page
+@model WebApp.Pages.Configurations.EditModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>GameConfiguration</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="GameConfiguration.Id" />
+            <div class="form-group">
+                
+                <label asp-for="GameConfiguration.Name" class="control-label"></label>
+                <input asp-for="GameConfiguration.Name" class="form-control" />
+                <span asp-validation-for="GameConfiguration.Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                
+                <label asp-for="GameConfiguration.BoardSizeWidth" class="control-label"></label>
+                <input asp-for="GameConfiguration.BoardSizeWidth" class="form-control" />
+                <span asp-validation-for="GameConfiguration.BoardSizeWidth" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                
+                <label asp-for="GameConfiguration.BoardSizeHeight" class="control-label"></label>
+                <input asp-for="GameConfiguration.BoardSizeHeight" class="form-control" />
+                <span asp-validation-for="GameConfiguration.BoardSizeHeight" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                
+                <label asp-for="GameConfiguration.GridSizeWidth" class="control-label"></label>
+                <input asp-for="GameConfiguration.GridSizeWidth" class="form-control" />
+                <span asp-validation-for="GameConfiguration.GridSizeWidth" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                
+                <label asp-for="GameConfiguration.GridSizeHeight" class="control-label"></label>
+                <input asp-for="GameConfiguration.GridSizeHeight" class="form-control" />
+                <span asp-validation-for="GameConfiguration.GridSizeHeight" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                
+                <label asp-for="GameConfiguration.GridStartPosX" class="control-label"></label>
+                <input asp-for="GameConfiguration.GridStartPosX" class="form-control" />
+                <span asp-validation-for="GameConfiguration.GridStartPosX" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                
+                <label asp-for="GameConfiguration.GridStartPosY" class="control-label"></label>
+                <input asp-for="GameConfiguration.GridStartPosY" class="form-control" />
+                <span asp-validation-for="GameConfiguration.GridStartPosY" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                
+                <label asp-for="GameConfiguration.NumberOfPieces" class="control-label"></label>
+                <input asp-for="GameConfiguration.NumberOfPieces" class="form-control" />
+                <span asp-validation-for="GameConfiguration.NumberOfPieces" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                
+                <label asp-for="GameConfiguration.WinCondition" class="control-label"></label>
+                <input asp-for="GameConfiguration.WinCondition" class="form-control" />
+                <span asp-validation-for="GameConfiguration.WinCondition" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                
+                <label asp-for="GameConfiguration.MaxGameRounds" class="control-label"></label>
+                <input asp-for="GameConfiguration.MaxGameRounds" class="form-control" />
+                <span asp-validation-for="GameConfiguration.MaxGameRounds" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                
+                <label asp-for="GameConfiguration.MoveGridAfterNMoves" class="control-label"></label>
+                <input asp-for="GameConfiguration.MoveGridAfterNMoves" class="form-control" />
+                <span asp-validation-for="GameConfiguration.MoveGridAfterNMoves" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                
+                <label asp-for="GameConfiguration.MovePieceAfterNMoves" class="control-label"></label>
+                <input asp-for="GameConfiguration.MovePieceAfterNMoves" class="form-control" />
+                <span asp-validation-for="GameConfiguration.MovePieceAfterNMoves" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="./Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
