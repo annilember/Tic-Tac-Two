@@ -30,12 +30,14 @@
                     }
                     else
                     {
-                        <form method="post">
+                        <form method="post" asp-page-handler="MakeAMove">
                             <label hidden for="spot-@xValue-@yValue" class="control-label"></label>
                             <input id="spot-@xValue-@yValue" type="submit"
                                    value="@Model.GameInstance.GetNextMoveBy().ToString()"
                                    class="btn btn-lg @(Model.GameInstance.GameGrid[xValue][yValue] ? 
                                                          "btn-outline-warning" : "btn-outline-light")"/>
+                            <input asp-for="GameName" type="hidden" value="@Model.GameName"/>
+                            <input asp-for="Password" type="hidden" value="@Model.Password"/>
                             <input asp-for="XCoordinate" type="hidden" value="@xValue"/>
                             <input asp-for="YCoordinate" type="hidden" value="@yValue"/>
                         </form>
@@ -53,10 +55,16 @@
     </div>
     <div class="row py-1">
         <div class="col px-1 col-auto">
-            <button type="button" class="btn btn-lg btn-outline-dark"
-                    @(Model.GameInstance.GetChosenMove() == EChosenMove.PlacePiece ||
-                        !Model.GameInstance.HasGamePiece(Model.GameInstance.GetNextMoveBy()) ?
-                        "disabled" : "")>Place a piece</button>
+            <form method="post" asp-page-handler="MoveTypeChosen">
+                <input asp-for="GameName" type="hidden" value="@Model.GameName"/>
+                <input asp-for="Password" type="hidden" value="@Model.Password"/>
+                <input asp-for="ChosenMove" type="hidden" value="@EChosenMove.PlacePiece.ToString()"/>
+                <button type="submit" class="btn btn-lg btn-outline-dark"
+                        @(Model.GameInstance.GetChosenMove() == EChosenMove.PlacePiece ||
+                          !Model.GameInstance.HasGamePiece(Model.GameInstance.GetNextMoveBy())
+                            ? "disabled"
+                            : "")>Place a piece</button>
+            </form>
         </div>
         <div class="col px-1 col-auto d-flex align-items-center">
             @(Model.GameInstance.GamePiecesLeft(Model.GameInstance.GetNextMoveBy())) left
@@ -64,18 +72,30 @@
     </div>
     <div class="row py-1">
         <div class="col px-1 col-auto">
-            <button type="button" class="btn btn-lg btn-outline-dark" 
-                    @(Model.GameInstance.GetChosenMove() == EChosenMove.MovePiece ||
-                        !Model.GameInstance.CanMovePiece() ?
-                        "disabled" : "")>Move a piece</button>
+            <form method="post" asp-page-handler="MoveTypeChosen">
+                <input asp-for="GameName" type="hidden" value="@Model.GameName"/>
+                <input asp-for="Password" type="hidden" value="@Model.Password"/>
+                <input asp-for="ChosenMove" type="hidden" value="@EChosenMove.MovePiece.ToString()"/>
+                <button type="submit" class="btn btn-lg btn-outline-dark"
+                        @(Model.GameInstance.GetChosenMove() == EChosenMove.MovePiece ||
+                          !Model.GameInstance.CanMovePiece()
+                            ? "disabled"
+                            : "")>Move a piece</button>
+            </form>
         </div>
     </div>
     <div class="row py-1">
         <div class="col px-1 col-auto">
-            <button type="button" class="btn btn-lg btn-outline-dark" 
-                    @(Model.GameInstance.GetChosenMove() == EChosenMove.MoveGrid ||
-                        !Model.GameInstance.CanMoveGrid() ?
-                        "disabled" : "")>Move grid</button>
+            <form method="post" asp-page-handler="MoveTypeChosen">
+                <input asp-for="GameName" type="hidden" value="@Model.GameName"/>
+                <input asp-for="Password" type="hidden" value="@Model.Password"/>
+                <input asp-for="ChosenMove" type="hidden" value="@EChosenMove.MoveGrid.ToString()"/>
+                <button type="submit" class="btn btn-lg btn-outline-dark"
+                        @(Model.GameInstance.GetChosenMove() == EChosenMove.MoveGrid ||
+                          !Model.GameInstance.CanMoveGrid()
+                            ? "disabled"
+                            : "")>Move grid</button>
+            </form>
         </div>
     </div>
 </div>

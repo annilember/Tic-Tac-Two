@@ -49,7 +49,7 @@ public class GameModel : PageModel
     [BindProperty]
     public int YCoordinate { get; set; }
     
-    public Task<IActionResult> OnPostAsync()
+    public Task<IActionResult> OnPostMakeAMoveAsync()
     {
         SavedGame = _gameRepository.GetSavedGameByName(GameName);
         GameInstance = new TicTacTwoBrain(SavedGame, SavedGame.Configuration!);
@@ -63,5 +63,58 @@ public class GameModel : PageModel
             "./Game", 
             new { gameName = GameName, password = Password }
         ));
+    }
+    
+    [BindProperty]
+    public string ChosenMove { get; set; } = default!;
+    
+    public Task<IActionResult> OnPostMoveTypeChosenAsync()
+    {
+        SavedGame = _gameRepository.GetSavedGameByName(GameName);
+        GameInstance = new TicTacTwoBrain(SavedGame, SavedGame.Configuration!);
+        
+        _logger.LogInformation("LOGGER!!! Chosen Move: " + ChosenMove);
+        
+        SavedGame.State = SetNewMoveTypeInGameState(ChosenMove, GameInstance);
+        
+        //TODO: check if saves correctly.
+        _gameRepository.SaveGame(SavedGame);
+        
+        return Task.FromResult<IActionResult>(RedirectToPage(
+            "./Game", 
+            new { gameName = GameName, password = Password }
+        ));
+    }
+
+    private string SetNewMoveTypeInGameState(string chosenMove, TicTacTwoBrain gameInstance)
+    {
+        if (chosenMove == EChosenMove.PlacePiece.ToString())
+        {
+            if (gameInstance.RemovePieceModeOn)
+            {
+                gameInstance.DeActivateRemovePieceMode();
+            }
+            if (gameInstance.MoveGridModeOn)
+            {
+                gameInstance.RestoreGridState();
+            }
+        }
+        else if (chosenMove == EChosenMove.MovePiece.ToString())
+        {
+            if (gameInstance.MoveGridModeOn)
+            {
+                gameInstance.RestoreGridState();
+            }
+            gameInstance.ActivateRemovePieceMode();
+        }
+        else if (chosenMove == EChosenMove.MoveGrid.ToString())
+        {
+            if (gameInstance.RemovePieceModeOn)
+            {
+                gameInstance.DeActivateRemovePieceMode();
+            }
+            gameInstance.ActivateMoveGridMode();
+        }
+        return gameInstance.GetGameStateJson();
     }
 }
