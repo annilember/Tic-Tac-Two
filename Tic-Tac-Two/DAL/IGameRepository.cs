@@ -10,6 +10,7 @@ public interface IGameRepository
     GameState GetSavedGameState(SavedGame savedGame);
     string GetSavedGameJsonByName(string name);
     bool GameExists(string name);
+    void SaveGame(SavedGame savedGame);
     void SaveGame(TicTacTwoBrain gameInstance, string name);
     void RenameGame(SavedGame savedGame, string newName);
     void DeleteGame(string name);

@@ -25,25 +25,40 @@ public class GameModel : PageModel
         _configRepository = repoController.ConfigRepository;
         _gameRepository = repoController.GameRepository;
     }
-
-    public SavedGame SavedGame { get; set; } = default!;
     
+    [BindProperty(SupportsGet = true)]
     public string GameName { get; set; } = default!;
+    
+    [BindProperty(SupportsGet = true)]
     public string Password { get; set; } = default!;
+    
+    public SavedGame SavedGame { get; set; } = default!;
     
     public TicTacTwoBrain GameInstance { get; set; } = default!;
     
-    public IActionResult OnGet(string gameName, string password)
+    public IActionResult OnGet()
     {
-        GameName = gameName;
-        Password = password;
-        SavedGame = _gameRepository.GetSavedGameByName(gameName);
+        SavedGame = _gameRepository.GetSavedGameByName(GameName);
         GameInstance = new TicTacTwoBrain(SavedGame, SavedGame.Configuration!);
         return Page();
     }
     
+    [BindProperty]
+    public int XCoordinate { get; set; }
+    
+    [BindProperty]
+    public int YCoordinate { get; set; }
+    
     public Task<IActionResult> OnPostAsync()
     {
+        SavedGame = _gameRepository.GetSavedGameByName(GameName);
+        GameInstance = new TicTacTwoBrain(SavedGame, SavedGame.Configuration!);
+        GameInstance.MakeAMove(XCoordinate, YCoordinate);
+        SavedGame.State = GameInstance.GetGameStateJson();
+        
+        //TODO: check if saves correctly.
+        _gameRepository.SaveGame(SavedGame);
+        
         return Task.FromResult<IActionResult>(RedirectToPage(
             "./Game", 
             new { gameName = GameName, password = Password }

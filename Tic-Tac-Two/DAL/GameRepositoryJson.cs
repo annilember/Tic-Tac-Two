@@ -37,6 +37,12 @@ public class GameRepositoryJson : IGameRepository
         return File.Exists(FileHelper.BasePath + name + FileHelper.GameExtension);
     }
     
+    public void SaveGame(SavedGame savedGame)
+    {
+        //TODO: added this because of DB, but haven't checked if works.
+        CreateNewSavedGameFile(savedGame);
+    }
+    
     public void SaveGame(TicTacTwoBrain gameInstance, string name)
     {
         var savedGame = CreateNewSavedGame(gameInstance, name);

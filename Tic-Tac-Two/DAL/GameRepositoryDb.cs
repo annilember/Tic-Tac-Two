@@ -35,6 +35,13 @@ public class GameRepositoryDb(AppDbContext db) : IGameRepository
     {
         return GetGameNames().Any(gameName => name == gameName);
     }
+    
+    public void SaveGame(SavedGame savedGame)
+    {
+        // .Update works, but not .Add !?
+        db.SavedGames.Update(savedGame);
+        db.SaveChanges();
+    }
 
     public void SaveGame(TicTacTwoBrain gameInstance, string name)
     {
@@ -79,8 +86,8 @@ public class GameRepositoryDb(AppDbContext db) : IGameRepository
             ModeName = gameInstance.GetGameModeName(),
             PlayerXName = gameInstance.GetPlayerName(EGamePiece.X),
             PlayerOName = gameInstance.GetPlayerName(EGamePiece.O),
-            PlayerXPassword = "xxx",
-            PlayerOPassword = "ooo",
+            PlayerXPassword = gameInstance.GetPlayerName(EGamePiece.X),
+            PlayerOPassword = gameInstance.GetPlayerName(EGamePiece.O),
             CreatedAtDateTime = DateTime.Now.ToString("O"),
             State = gameInstance.GetGameStateJson(),
             Configuration = gameInstance.GetGameConfig()

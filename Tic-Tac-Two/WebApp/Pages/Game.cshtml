@@ -1,4 +1,5 @@
 @page
+@using Domain
 @model WebApp.Pages.GameModel
 
 @{
@@ -10,22 +11,33 @@
 <h4>@Model.GameInstance.GetPlayerName(Model.GameInstance.GetNextMoveBy())'s turn</h4>
 <hr />
 
-<div class="container text-center">
+<div class="container bg-dark text-center">
     @for (int y = 0; y < Model.GameInstance.DimY; y++)
     {
-        <div class="row">
+        <div class="row py-1 justify-content-center">
         @for (int x = 0; x < Model.GameInstance.DimX; x++)
         {
             var xValue = x;
             var yValue = y;
-            <div class="col">
-                <form method="post">
-            
-                    <label hidden for="spot-@xValue-@yValue" class="control-label"></label>
-                    <input type="hidden" name="x" value="@xValue" />
-                    <input type="hidden" name="y" value="@yValue" />
-                    <input id="spot-@xValue-@yValue" type="submit" value="@Model.GameInstance.GetNextMoveBy().ToString()" class="btn btn-light btn-lg"/>
-                </form>
+            <div class="col px-1 col-sm-auto">
+                @if (Model.GameInstance.GameBoard[x][y] != EGamePiece.Empty)
+                {
+                    <button type="button"
+                            class="btn btn-lg @(Model.GameInstance.GameGrid[xValue][yValue] ? "btn-warning" : "btn-light")"
+                            disabled>@Model.GameInstance.GameBoard[xValue][yValue].ToString()</button>
+                }
+                else
+                {
+                    <form method="post">
+                        <label hidden for="spot-@xValue-@yValue" class="control-label"></label>
+                        <input id="spot-@xValue-@yValue" type="submit"
+                               value="@Model.GameInstance.GetNextMoveBy().ToString()"
+                               class="btn btn-lg @(Model.GameInstance.GameGrid[xValue][yValue] 
+    ? "btn-outline-warning" : "btn-outline-light")"/>
+                        <input asp-for="XCoordinate" type="hidden" value="@xValue"/>
+                        <input asp-for="YCoordinate" type="hidden" value="@yValue"/>
+                    </form>
+                }
             </div>
         }
         </div>
