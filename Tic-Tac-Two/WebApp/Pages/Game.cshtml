@@ -8,40 +8,77 @@
 
 <h1>@Model.GameName</h1>
 
-<h4>@Model.GameInstance.GetPlayerName(Model.GameInstance.GetNextMoveBy())'s turn</h4>
+<h4>Round @Model.GameInstance.GameRoundNumber/@Model.SavedGame.Configuration!.MaxGameRounds</h4>
 <hr />
 
-<div class="container bg-dark text-center">
+<div class="d-flex flex-lg-row flex-column gap-3" id="gameLayout">
+<div class="container-md bg-dark text-center" id="gameBoard">
     @for (int y = 0; y < Model.GameInstance.DimY; y++)
     {
-        <div class="row py-1 justify-content-center">
-        @for (int x = 0; x < Model.GameInstance.DimX; x++)
-        {
-            var xValue = x;
-            var yValue = y;
-            <div class="col px-1 col-sm-auto">
-                @if (Model.GameInstance.GameBoard[x][y] != EGamePiece.Empty)
-                {
-                    <button type="button"
-                            class="btn btn-lg @(Model.GameInstance.GameGrid[xValue][yValue] ? "btn-warning" : "btn-light")"
-                            disabled>@Model.GameInstance.GameBoard[xValue][yValue].ToString()</button>
-                }
-                else
-                {
-                    <form method="post">
-                        <label hidden for="spot-@xValue-@yValue" class="control-label"></label>
-                        <input id="spot-@xValue-@yValue" type="submit"
-                               value="@Model.GameInstance.GetNextMoveBy().ToString()"
-                               class="btn btn-lg @(Model.GameInstance.GameGrid[xValue][yValue] 
-    ? "btn-outline-warning" : "btn-outline-light")"/>
-                        <input asp-for="XCoordinate" type="hidden" value="@xValue"/>
-                        <input asp-for="YCoordinate" type="hidden" value="@yValue"/>
-                    </form>
-                }
-            </div>
-        }
+        <div class="row py-1 justify-content-center justify-content-lg-end">
+            @for (int x = 0; x < Model.GameInstance.DimX; x++)
+            {
+                var xValue = x;
+                var yValue = y;
+                <div class="col px-1 col-auto">
+                    @if (Model.GameInstance.GameBoard[x][y] != EGamePiece.Empty)
+                    {
+                        <button type="button"
+                                class="btn btn-lg @(Model.GameInstance.GameGrid[xValue][yValue] ? 
+                                                      "btn-warning" : "btn-light")"
+                                disabled>@Model.GameInstance.GameBoard[xValue][yValue].ToString()</button>
+                    }
+                    else
+                    {
+                        <form method="post">
+                            <label hidden for="spot-@xValue-@yValue" class="control-label"></label>
+                            <input id="spot-@xValue-@yValue" type="submit"
+                                   value="@Model.GameInstance.GetNextMoveBy().ToString()"
+                                   class="btn btn-lg @(Model.GameInstance.GameGrid[xValue][yValue] ? 
+                                                         "btn-outline-warning" : "btn-outline-light")"/>
+                            <input asp-for="XCoordinate" type="hidden" value="@xValue"/>
+                            <input asp-for="YCoordinate" type="hidden" value="@yValue"/>
+                        </form>
+                    }
+                </div>
+            }
         </div>
     }
+</div>
+<div class="container-md" id="moveOptions">
+    <div class="row py-1">
+        <div class="col px-1 col-auto">
+            <h4>@Model.GameInstance.GetPlayerName(Model.GameInstance.GetNextMoveBy())'s turn</h4>
+        </div>
+    </div>
+    <div class="row py-1">
+        <div class="col px-1 col-auto">
+            <button type="button" class="btn btn-lg btn-outline-dark"
+                    @(Model.GameInstance.GetChosenMove() == EChosenMove.PlacePiece ||
+                        !Model.GameInstance.HasGamePiece(Model.GameInstance.GetNextMoveBy()) ?
+                        "disabled" : "")>Place a piece</button>
+        </div>
+        <div class="col px-1 col-auto d-flex align-items-center">
+            @(Model.GameInstance.GamePiecesLeft(Model.GameInstance.GetNextMoveBy())) left
+        </div>
+    </div>
+    <div class="row py-1">
+        <div class="col px-1 col-auto">
+            <button type="button" class="btn btn-lg btn-outline-dark" 
+                    @(Model.GameInstance.GetChosenMove() == EChosenMove.MovePiece ||
+                        !Model.GameInstance.CanMovePiece() ?
+                        "disabled" : "")>Move a piece</button>
+        </div>
+    </div>
+    <div class="row py-1">
+        <div class="col px-1 col-auto">
+            <button type="button" class="btn btn-lg btn-outline-dark" 
+                    @(Model.GameInstance.GetChosenMove() == EChosenMove.MoveGrid ||
+                        !Model.GameInstance.CanMoveGrid() ?
+                        "disabled" : "")>Move grid</button>
+        </div>
+    </div>
+</div>
 </div>
 
 @section Scripts {

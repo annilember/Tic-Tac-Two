@@ -594,6 +594,19 @@ public class TicTacTwoBrain
         _gameState.GridStartPosY = startPosY;
     }
 
+    public EChosenMove GetChosenMove()
+    {
+        if (_gameState.MoveGridModeOn)
+        {
+            return EChosenMove.MoveGrid;
+        }
+        if (_gameState.RemovePieceModeOn || _gameState.MovePieceModeOn)
+        {
+            return EChosenMove.MovePiece;
+        }
+        return EChosenMove.PlacePiece;
+    }
+
     public void MakeAiMove()
     {
         var player = _gameState.NextMoveBy;
