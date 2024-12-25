@@ -7,12 +7,16 @@ public class ConfigRepositoryHardCoded: IConfigRepository
 {
     private List<GameConfiguration> _gameConfigurations = new List<GameConfiguration>()
     {
+        //TODO: kontrolli, et ID'de lisamine midagi tuksi ei keeranud nt andmebaasi init juures või failides.
+        
         new GameConfiguration()
         {
+            Id = 1,
             Name = "Classical"
         },
         new GameConfiguration()
         {
+            Id = 2,
             Name = "Big board",
             BoardSizeWidth = 10,
             BoardSizeHeight = 10,
@@ -28,6 +32,7 @@ public class ConfigRepositoryHardCoded: IConfigRepository
         },
         new GameConfiguration()
         {
+            Id = 3,
             Name = "Tic-Tac-Toe",
             BoardSizeWidth = 3,
             BoardSizeHeight = 3,
@@ -51,6 +56,11 @@ public class ConfigRepositoryHardCoded: IConfigRepository
     public GameConfiguration GetConfigurationByName(string name)
     {
         return _gameConfigurations.Single(c => c.Name == name);
+    }
+    
+    public GameConfiguration GetConfigurationById(int id)
+    {
+        return _gameConfigurations.Single(c => c.Id == id);
     }
     
     public bool ConfigurationExists(string name)

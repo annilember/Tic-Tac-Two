@@ -61,6 +61,14 @@ public class GameRepositoryDb(AppDbContext db) : IGameRepository
         db.SaveChanges();
     }
 
+    public async void CreateGame(SavedGame savedGame)
+    {
+        // TODO: for WebApp, check that it works.
+        db.SavedGames.Update(savedGame);
+        await db.SaveChangesAsync();
+
+    }
+
     public GameConfiguration GetGameConfiguration(SavedGame savedGame)
     {
         return db.Configurations.Find(savedGame.ConfigurationId)!;
@@ -71,6 +79,11 @@ public class GameRepositoryDb(AppDbContext db) : IGameRepository
         var savedGame = new SavedGame
         {
             Name = name,
+            ModeName = gameInstance.GetGameModeName(),
+            PlayerXName = gameInstance.GetPlayerName(EGamePiece.X),
+            PlayerOName = gameInstance.GetPlayerName(EGamePiece.O),
+            PlayerXPassword = "xxx",
+            PlayerOPassword = "ooo",
             CreatedAtDateTime = DateTime.Now.ToString("O"),
             State = gameInstance.GetGameStateJson(),
             Configuration = gameInstance.GetGameConfig()

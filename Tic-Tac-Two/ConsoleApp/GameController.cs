@@ -43,6 +43,7 @@ public static class GameController
                 }
                 return gameModeShortCut;
             }
+            
             var gameMode = GameMode.GetGameModes()[gameModeNo];
             
             Console.Clear();

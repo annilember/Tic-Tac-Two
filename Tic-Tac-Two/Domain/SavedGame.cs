@@ -8,6 +8,21 @@ public class SavedGame
     
     [MaxLength(128)]
     public string Name { get; set; } = default!;
+    
+    [MaxLength(128)]
+    public string ModeName { get; set; } = default!;
+    
+    [MaxLength(128)]
+    public string PlayerXName { get; set; } = default!;
+    
+    [MaxLength(128)]
+    public string PlayerOName { get; set; } = default!;
+    
+    [MaxLength(128)]
+    public string PlayerXPassword { get; set; } = default!;
+    
+    [MaxLength(128)]
+    public string PlayerOPassword { get; set; } = default!;
 
     [MaxLength(128)]
     public string CreatedAtDateTime { get; set; } = default!;

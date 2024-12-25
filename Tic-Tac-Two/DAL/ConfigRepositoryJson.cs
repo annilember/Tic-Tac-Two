@@ -23,6 +23,16 @@ public class ConfigRepositoryJson : IConfigRepository
         var config = JsonSerializer.Deserialize<GameConfiguration>(configJsonStr);
         return config!;
     }
+    
+    public GameConfiguration GetConfigurationById(int id)
+    {
+    // TODO: kontrolli, et töötab õigesti!
+        return Directory
+                   .GetFiles(FileHelper.BasePath, FileHelper.AsteriskSymbol + FileHelper.ConfigExtension)
+                   .Select(config => JsonSerializer.Deserialize<GameConfiguration>(config))
+                   .FirstOrDefault(config => config != null && config.Id == id) 
+                         ?? new GameConfiguration();
+    }
 
     public bool ConfigurationExists(string name)
     {

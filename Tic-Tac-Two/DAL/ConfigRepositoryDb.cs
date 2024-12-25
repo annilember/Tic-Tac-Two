@@ -23,6 +23,11 @@ public class ConfigRepositoryDb(AppDbContext db) : IConfigRepository
 
         return new GameConfiguration();
     }
+    
+    public GameConfiguration GetConfigurationById(int id)
+    {
+        return db.Configurations.FirstOrDefault(config => config.Id == id) ?? new GameConfiguration();
+    }
 
     public bool ConfigurationExists(string name)
     {

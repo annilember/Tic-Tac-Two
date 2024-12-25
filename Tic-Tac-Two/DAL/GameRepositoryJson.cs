@@ -54,6 +54,12 @@ public class GameRepositoryJson : IGameRepository
     {
         File.Delete(FileHelper.BasePath + name + FileHelper.GameExtension);
     }
+    
+    public void CreateGame(SavedGame savedGame)
+    {
+        // TODO: added with WebApp. Check that it works.
+        CreateNewSavedGameFile(savedGame);
+    }
 
     public GameConfiguration GetGameConfiguration(SavedGame savedGame)
     {
@@ -73,6 +79,11 @@ public class GameRepositoryJson : IGameRepository
         var savedGame = new SavedGame
         {
             Name = name,
+            ModeName = gameInstance.GetGameModeName(),
+            PlayerXName = gameInstance.GetPlayerName(EGamePiece.X),
+            PlayerOName = gameInstance.GetPlayerName(EGamePiece.O),
+            PlayerXPassword = "xxx",
+            PlayerOPassword = "ooo",
             CreatedAtDateTime = DateTime.Now.ToString("O"),
             State = gameInstance.GetGameStateJson(),
             Configuration = gameInstance.GetGameConfig()

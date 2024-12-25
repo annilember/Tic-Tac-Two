@@ -13,5 +13,6 @@ public interface IGameRepository
     void SaveGame(TicTacTwoBrain gameInstance, string name);
     void RenameGame(SavedGame savedGame, string newName);
     void DeleteGame(string name);
+    void CreateGame(SavedGame savedGame);
     GameConfiguration GetGameConfiguration(SavedGame savedGame);
 }
