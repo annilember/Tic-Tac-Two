@@ -117,4 +117,15 @@ public class GameModel : PageModel
         }
         return gameInstance.GetGameStateJson();
     }
+
+    public string GetButtonStyle(int x, int y)
+    {
+        var style = "btn";
+        if (GameInstance.RemovePieceModeOn && GameInstance.GameBoard[x][y] == GameInstance.GetNextMoveBy())
+        {
+            style += "-outline";
+        }
+        style += GameInstance.GameGrid[x][y] ? "-warning" : "-light";
+        return style;
+    }
 }

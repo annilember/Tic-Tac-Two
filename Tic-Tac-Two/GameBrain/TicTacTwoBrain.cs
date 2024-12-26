@@ -607,6 +607,11 @@ public class TicTacTwoBrain
         return EChosenMove.PlacePiece;
     }
 
+    public bool PlacePieceModeOn()
+    {
+        return GetChosenMove() == EChosenMove.PlacePiece;
+    }
+
     public void MakeAiMove()
     {
         var player = _gameState.NextMoveBy;

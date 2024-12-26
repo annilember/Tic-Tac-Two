@@ -24,18 +24,22 @@
                     @if (Model.GameInstance.GameBoard[x][y] != EGamePiece.Empty)
                     {
                         <button type="button"
-                                class="btn btn-lg @(Model.GameInstance.GameGrid[xValue][yValue] ? 
-                                                      "btn-warning" : "btn-light")"
-                                disabled>@Model.GameInstance.GameBoard[xValue][yValue].ToString()</button>
+                                class="btn btn-lg @(Model.GetButtonStyle(x, y))"
+                                @(!Model.GameInstance.RemovePieceModeOn || 
+                                  Model.GameInstance.GameBoard[x][y] != Model.GameInstance.GetNextMoveBy() ? 
+                                    "disabled" : "")
+                                >@Model.GameInstance.GameBoard[xValue][yValue].ToString()</button>
                     }
                     else
                     {
                         <form method="post" asp-page-handler="MakeAMove">
                             <label hidden for="spot-@xValue-@yValue" class="control-label"></label>
                             <input id="spot-@xValue-@yValue" type="submit"
-                                   value="@Model.GameInstance.GetNextMoveBy().ToString()"
+                                   value="@(Model.GameInstance.PlacePieceModeOn() ?
+                                        Model.GameInstance.GetNextMoveBy().ToString() : " " )"
                                    class="btn btn-lg @(Model.GameInstance.GameGrid[xValue][yValue] ? 
-                                                         "btn-outline-warning" : "btn-outline-light")"/>
+                                                         "btn-outline-warning" : "btn-outline-light")"
+                                   @(!Model.GameInstance.PlacePieceModeOn() ? "disabled" : "")/>
                             <input asp-for="GameName" type="hidden" value="@Model.GameName"/>
                             <input asp-for="Password" type="hidden" value="@Model.Password"/>
                             <input asp-for="XCoordinate" type="hidden" value="@xValue"/>
