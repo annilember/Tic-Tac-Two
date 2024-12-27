@@ -8,34 +8,28 @@
 <h1>Start Game</h1>
 
 <h4>@Model.GameName</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <label for="enterGameButtons" class="control-label">Enter as ...</label>
-        <div id="enterGameButtons" class="form-group">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            
-            <form method="post" asp-page-handler="PlayerX">
-                <input asp-for="GameName" type="hidden" value="@Model.GameName"/>
-                <div class="form-group">
-                    <button type="submit" class="btn btn-dark btn-lg">@Model.PlayerXName</button>
-                </div>
-            </form>
-
-            <form method="post" asp-page-handler="PlayerO">
-                <input asp-for="GameName" type="hidden" value="@Model.GameName"/>
-                <div class="form-group">
-                    <button type="submit" class="btn btn-dark btn-lg">@Model.PlayerOName</button>
-                </div>
-            </form>
-        </div>
+<hr/>
+<div class="row py-5">
+    <div class="col text-center">
+        <h1 class="col px-1 col-auto">ENTER AS</h1>
+    </div>
+</div>
+<div class="row justify-content-center">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="col px-5 col-auto form-group">
+        <form method="post" asp-page-handler="PlayerX">
+            <input asp-for="GameName" type="hidden" value="@Model.GameName"/>
+            <button type="submit" class="btn btn-dark btn-lg">@Model.PlayerXName</button>
+        </form>
+    </div>
+    <div class="col px-5 col-auto form-group">
+        <form method="post" asp-page-handler="PlayerO">
+            <input asp-for="GameName" type="hidden" value="@Model.GameName"/>
+            <button type="submit" class="btn btn-dark btn-lg">@Model.PlayerOName</button>
+        </form>
     </div>
 </div>
 
-<div>
-    <a asp-page="LoadGame">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
 }

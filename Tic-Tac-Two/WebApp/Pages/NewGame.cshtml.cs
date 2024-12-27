@@ -57,8 +57,7 @@ namespace WebApp.Pages
         
         [BindProperty]
         public string PlayerOPassword { get; set; } = default!;
-
-        // For more information, see https://aka.ms/RazorPagesCRUD.
+        
         public Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
