@@ -66,4 +66,17 @@ public class GameOverModel : PageModel
             new { gameName = GameName, password = Password }
         ));
     }
+    
+    public string YourName()
+    {
+        if (Password == SavedGame.PlayerXPassword)
+        {
+            return SavedGame.PlayerXName;
+        }
+        if (Password == SavedGame.PlayerOPassword)
+        {
+            return SavedGame.PlayerOName;
+        }
+        return Message.UnknownPlayerName;
+    }
 }

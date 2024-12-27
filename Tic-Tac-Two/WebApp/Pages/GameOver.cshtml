@@ -1,16 +1,28 @@
 @page
+@using GameBrain
+@using Microsoft.AspNetCore.Mvc.TagHelpers
 @model WebApp.Pages.GameOverModel
 
 @{
     ViewData["Title"] = "Game Over";
 }
 
-<h1>Game Over</h1>
+<div class="container-md">
+    <div class="row py-1">
+        <h1 class="col px-1 col-auto">Game Over</h1>
+        <h1 class="col px-1 col-auto ms-auto">@Model.YourName()</h1>
+    </div>
+</div>
 
 <h4>@Model.GameName</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
+<hr/>
+<div class="row py-1">
+    <div class="col text-center">
+        <h1 class="col px-1 col-auto">@Model.GameInstance.GetGameOverMessage()</h1>
+    </div>
+</div>
+<div class="row py-4">
+    <div class="col text-center">
         <div class="form-group">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
@@ -25,7 +37,27 @@
         </div>
     </div>
 </div>
+<div class="container-md d-flex justify-content-center" id="gameBoard">
+    <div class="bg-dark rounded d-inline-block p-5">
+        @for (int y = 0; y < Model.GameInstance.DimY; y++)
+        {
+            <div class="row py-1">
+                @for (int x = 0; x < Model.GameInstance.DimX; x++)
+                {
+                    <div class="col px-1 col-auto">
+                        <input id="slot-@x-@y" type="submit"
+                               class="btn btn-lg game-board-slot @(
+                                                                 Model.GameInstance.GameGrid[x][y] ? "btn-warning" : "btn-outline-light"
+                                                                 )"
+                               value="@Message.GamePieceAsString(Model.GameInstance.GameBoard[x][y])"
+                               disabled/>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
 }

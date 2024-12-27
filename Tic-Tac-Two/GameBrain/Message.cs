@@ -1,3 +1,5 @@
+using Domain;
+
 namespace GameBrain;
 
 public static class Message
@@ -39,9 +41,21 @@ public static class Message
     public const string PropertySavedMessage = "Property saved!";
     
     public const string FinalRoundMessage = "Final round!";
+    
+    public const string UnknownPlayerName = "Alien";
+    
+    public const string YouWonMessage = "You won!";
 
     public static string GetTheWinnerIsMessage(string name)
     {
-        return $"The winner is {name}! Awesome game!";
+        return $"The winner is {name}!";
     }
+    
+    public static string GamePieceAsString(EGamePiece piece) =>
+        piece switch
+        {
+            EGamePiece.O => "O",
+            EGamePiece.X => "X",
+            _ => " "
+        };
 }

@@ -100,7 +100,7 @@ public static class Visualizer
     {
         var playerType = GameMode.GetPlayerTypeName(gameMode, gamePiece);
         Console.Write("Enter player (");
-        Console.Write(gamePiece.ToString());
+        Console.Write(Message.GamePieceAsString(gamePiece));
         Console.Write(" / ");
         Console.Write(playerType);
         Console.Write(") <");
@@ -234,14 +234,6 @@ public static class Visualizer
         Console.ResetColor();
         Console.Write(">");
     }
-    
-    public static string DrawGamePiece(EGamePiece piece) =>
-        piece switch
-        {
-            EGamePiece.O => "O",
-            EGamePiece.X => "X",
-            _ => " "
-        };
 
     private static void DrawBoardBeginning(TicTacTwoBrain gameInstance)
     {
@@ -292,7 +284,7 @@ public static class Visualizer
                 {
                     Console.BackgroundColor = VisualizerHelper.GridColor;
                 }
-                Console.Write(" " + DrawGamePiece(gameInstance.GameBoard[x][y]) + " ");
+                Console.Write(" " + Message.GamePieceAsString(gameInstance.GameBoard[x][y]) + " ");
                 Console.ResetColor();
                 Console.Write(VisualizerHelper.BoardLineVertical);
             }

@@ -270,4 +270,30 @@ public class GameModel : PageModel
         }
         return style;
     }
+
+    public bool YourTurn()
+    {
+        if (Password == SavedGame.PlayerXPassword && GameInstance.GetNextMoveBy() == EGamePiece.X)
+        {
+            return true;
+        }
+        if (Password == SavedGame.PlayerOPassword && GameInstance.GetNextMoveBy() == EGamePiece.O)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    public string YourName()
+    {
+        if (Password == SavedGame.PlayerXPassword)
+        {
+            return SavedGame.PlayerXName;
+        }
+        if (Password == SavedGame.PlayerOPassword)
+        {
+            return SavedGame.PlayerOName;
+        }
+        return Message.UnknownPlayerName;
+    }
 }
