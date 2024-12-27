@@ -1,0 +1,31 @@
+@page
+@model WebApp.Pages.GameOverModel
+
+@{
+    ViewData["Title"] = "Game Over";
+}
+
+<h1>Game Over</h1>
+
+<h4>@Model.GameName</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <div class="form-group">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <form method="post">
+                <input asp-for="GameName" type="hidden" value="@Model.GameName"/>
+                <input asp-for="Password" type="hidden" value="@Model.Password"/>
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-dark btn-lg">Reset Game</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

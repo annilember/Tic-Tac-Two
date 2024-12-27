@@ -39,4 +39,9 @@ public static class Message
     public const string PropertySavedMessage = "Property saved!";
     
     public const string FinalRoundMessage = "Final round!";
+
+    public static string GetTheWinnerIsMessage(string name)
+    {
+        return $"The winner is {name}! Awesome game!";
+    }
 }

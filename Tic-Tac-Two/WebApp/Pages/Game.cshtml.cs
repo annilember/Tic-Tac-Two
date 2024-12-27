@@ -3,7 +3,6 @@ using Domain;
 using GameBrain;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
 
 namespace WebApp.Pages;
 
@@ -40,6 +39,13 @@ public class GameModel : PageModel
     {
         SavedGame = _gameRepository.GetSavedGameByName(GameName);
         GameInstance = new TicTacTwoBrain(SavedGame, SavedGame.Configuration!);
+        if (GameInstance.GameOver())
+        {
+            return RedirectToPage(
+                "./GameOver", 
+                new { gameName = GameName, password = Password }
+            );
+        }
         return Page();
     }
     
@@ -58,6 +64,13 @@ public class GameModel : PageModel
         
         //TODO: check if saves correctly.
         _gameRepository.SaveGame(SavedGame);
+        if (GameInstance.GameOver())
+        {
+            return Task.FromResult<IActionResult>(RedirectToPage(
+                "./GameOver", 
+                new { gameName = GameName, password = Password }
+            ));
+        }
         
         return Task.FromResult<IActionResult>(RedirectToPage(
             "./Game", 
@@ -93,6 +106,13 @@ public class GameModel : PageModel
         
         //TODO: check if saves correctly.
         _gameRepository.SaveGame(SavedGame);
+        if (GameInstance.GameOver())
+        {
+            return Task.FromResult<IActionResult>(RedirectToPage(
+                "./GameOver", 
+                new { gameName = GameName, password = Password }
+            ));
+        }
         
         return Task.FromResult<IActionResult>(RedirectToPage(
             "./Game", 
@@ -107,8 +127,6 @@ public class GameModel : PageModel
     {
         SavedGame = _gameRepository.GetSavedGameByName(GameName);
         GameInstance = new TicTacTwoBrain(SavedGame, SavedGame.Configuration!);
-        
-        _logger.LogInformation("LOGGER!!! Chosen Move: " + ChosenMove);
         
         SavedGame.State = SetNewMoveTypeInGameState();
         
@@ -173,6 +191,13 @@ public class GameModel : PageModel
         
             //TODO: check if saves correctly.
             _gameRepository.SaveGame(SavedGame);
+            if (GameInstance.GameOver())
+            {
+                return Task.FromResult<IActionResult>(RedirectToPage(
+                    "./GameOver", 
+                    new { gameName = GameName, password = Password }
+                ));
+            }
         }
         
         return Task.FromResult<IActionResult>(RedirectToPage(

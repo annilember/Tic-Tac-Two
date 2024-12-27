@@ -40,7 +40,7 @@ public class GameState()
 
     public bool[][] GameGrid { get; set; } = default!;
 
-    public bool MoveGridModeOn { get; set; } = false;
+    public bool MoveGridModeOn { get; set; }
     
     public bool[][] MoveGridStartState { get; set; } = default!;
     
@@ -48,8 +48,8 @@ public class GameState()
     
     public bool[][] GridMovingArea { get; set; } = default!;
     
-    public bool RemovePieceModeOn { get; set; } = false;
-    public bool MovePieceModeOn { get; set; } = false;
+    public bool RemovePieceModeOn { get; set; }
+    public bool MovePieceModeOn { get; set; }
     
     public int[] RemovedPieceLocation { get; set; } = new int[2];
     

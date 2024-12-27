@@ -148,7 +148,7 @@ public static class GameController
                 gameInstance.MakeAiMove();
             }
 
-            if (!string.IsNullOrEmpty(gameInstance.GetWinnerName()) || gameInstance.IsGameOverAnyway())
+            if (gameInstance.GameOver())
             {
                 var returnValue = GameOverLoop(gameInstance);
                 switch (returnValue)
@@ -168,23 +168,8 @@ public static class GameController
     {
         do
         {
-            var message = "";
             Visualizer.DrawBoard(gameInstance);
-            
-            if (gameInstance.CheckForDraw())
-            {
-                message = Message.GameOverDrawMessage;
-            } 
-            else if (!string.IsNullOrEmpty(gameInstance.GetWinnerName()))
-            {
-                message = $"The winner is {gameInstance.GetWinnerName()}! Whoop, whoop!";
-            }
-            else if (gameInstance.IsGameOverAnyway())
-            {
-                message = Message.GameOverNoMoreRoundsMessage;
-            }
-            
-            Visualizer.DisplayGameOverMessage(message);
+            Visualizer.DisplayGameOverMessage(gameInstance.GetGameOverMessage());
             var input = Console.ReadLine();
 
             if (input!.Equals(ControllerHelper.ReturnValue, StringComparison.InvariantCultureIgnoreCase))

@@ -64,6 +64,11 @@ public class TicTacTwoBrain
         };
     }
 
+    public bool GameOver()
+    {
+        return !string.IsNullOrEmpty(GetWinnerName()) || IsGameOverAnyway();
+    }
+
     public bool IsGameOverAnyway()
     {
         return (_gameState.GameRoundsLeft == 0 && _gameState.NextMoveBy == EGamePiece.X) ||
@@ -630,6 +635,23 @@ public class TicTacTwoBrain
         // MakeAMove(bestMove[0], bestMove[1]);
     }
 
+    public string GetGameOverMessage()
+    {
+        if (CheckForDraw())
+        {
+            return Message.GameOverDrawMessage;
+        } 
+        if (!string.IsNullOrEmpty(GetWinnerName()))
+        {
+            return Message.GetTheWinnerIsMessage(GetWinnerName());
+        }
+        if (IsGameOverAnyway())
+        {
+            return Message.GameOverNoMoreRoundsMessage;
+        }
+        return string.Empty;
+    }
+
     public void ResetGame()
     {
         var gameBoard = new EGamePiece[_gameConfiguration.BoardSizeWidth][];
@@ -644,6 +666,7 @@ public class TicTacTwoBrain
         _gameState.GameGrid = gameGrid;
         _gameState.MoveGridModeOn = false;
         _gameState.RemovePieceModeOn = false;
+        _gameState.MovePieceModeOn = false;
         _gameState.GridStartPosX = _gameConfiguration.GridStartPosX;
         _gameState.GridStartPosY = _gameConfiguration.GridStartPosY;
         _gameState.NextMoveBy = EGamePiece.X;
