@@ -40,7 +40,7 @@ public static class OptionsController
             }
             if (_configRepository.ConfigurationExists(input))
             {
-                errorMessage = ControllerHelper.ConfigNameAlreadyInUseMessage;
+                errorMessage = Message.ConfigNameAlreadyInUseMessage;
                 continue;
             }
             break;
@@ -90,11 +90,11 @@ public static class OptionsController
             {
                 if (!_configRepository.ConfigurationExists(input))
                     return SetNewStringValueProperty(config, propertyInfo, input);
-                errorMessage = ControllerHelper.ConfigNameAlreadyInUseMessage;
+                errorMessage = Message.ConfigNameAlreadyInUseMessage;
             }
             else
             {
-                errorMessage = ControllerHelper.InvalidInputMessage;
+                errorMessage = Message.InvalidInputMessage;
             }
             
         } while (true);
@@ -133,7 +133,7 @@ public static class OptionsController
             var configOldName = config.Name;
             config = ChangePropertyValueMode(config, propertyInfo);
             _configRepository.SaveConfigurationChanges(config, configOldName);
-            message = ControllerHelper.PropertySavedMessage;
+            message = Message.PropertySavedMessage;
 
         } while (true);
     }
@@ -167,7 +167,7 @@ public static class OptionsController
     {
         var chosenConfigShortcut = ChooseConfigurationFromMenu(
             EMenuLevel.Deep,
-            ControllerHelper.ChangeConfigMenuHeader
+            VisualizerHelper.ChangeConfigMenuHeader
         );
         
         if (!int.TryParse(chosenConfigShortcut, out var configNo))
@@ -184,7 +184,7 @@ public static class OptionsController
     {
         var chosenConfigShortcut = ChooseConfigurationFromMenu(
             EMenuLevel.Deep,
-            ControllerHelper.DeleteConfigMenuHeader
+            VisualizerHelper.DeleteConfigMenuHeader
         );
         
         if (!int.TryParse(chosenConfigShortcut, out var configNo))
@@ -195,7 +195,7 @@ public static class OptionsController
             _configRepository.GetConfigurationNames()[configNo]);
         _configRepository.DeleteConfiguration(chosenConfig);
         
-        return ControllerHelper.ConfigDeletedMessage;
+        return Message.ConfigDeletedMessage;
     }
     
     public static string ChooseConfigurationFromMenu(EMenuLevel menuLevel, string menuHeader)
@@ -237,7 +237,7 @@ public static class OptionsController
         }
     
         var gameModeMenu = new Menu(EMenuLevel.Deep,
-            ControllerHelper.ChooseGameModeMenuHeader,
+            VisualizerHelper.ChooseGameModeMenuHeader,
             gameModeMenuItems);
 
         return gameModeMenu.Run();
@@ -247,7 +247,7 @@ public static class OptionsController
     {
         var chosenGameShortcut = ChooseGameFromMenu(
             EMenuLevel.Deep, 
-            ControllerHelper.DeleteGameMenuHeader
+            VisualizerHelper.DeleteGameMenuHeader
             );
         
         if (!int.TryParse(chosenGameShortcut, out var gameNo))
@@ -257,7 +257,7 @@ public static class OptionsController
         var gameName = _gameRepository.GetGameNames()[gameNo];
         _gameRepository.DeleteGame(gameName);
         
-        return ControllerHelper.GameDeletedMessage;
+        return Message.GameDeletedMessage;
     }
     
     public static string RenameSavedGame()
@@ -266,7 +266,7 @@ public static class OptionsController
         {
             var chosenGameShortcut = ChooseGameFromMenu(
                 EMenuLevel.Deep, 
-                ControllerHelper.RenameGameMenuHeader
+                VisualizerHelper.RenameGameMenuHeader
             );
         
             if (!int.TryParse(chosenGameShortcut, out var gameNo))
@@ -280,7 +280,7 @@ public static class OptionsController
             if (newGameName == ControllerHelper.ReturnValue) continue;
         
             _gameRepository.RenameGame(savedGame, newGameName);
-            return ControllerHelper.GameRenamedMessage;
+            return Message.GameRenamedMessage;
             
         } while (true);
     }
@@ -302,7 +302,7 @@ public static class OptionsController
 
         if (gameMenuItems.Count == 0)
         {
-            return ControllerHelper.NoSavedGamesMessage;
+            return Message.NoSavedGamesMessage;
         }
     
         var configMenu = new Menu(menuLevel,
@@ -331,7 +331,7 @@ public static class OptionsController
 
             if (!_gameRepository.GameExists(input)) return input;
             
-            errorMessage = ControllerHelper.GameNameAlreadyInUseMessage;
+            errorMessage = Message.GameNameAlreadyInUseMessage;
 
         } while (true);
     }

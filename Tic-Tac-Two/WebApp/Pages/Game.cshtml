@@ -9,102 +9,181 @@
 <h1>@Model.GameName</h1>
 
 <h4>Round @Model.GameInstance.GameRoundNumber/@Model.SavedGame.Configuration!.MaxGameRounds</h4>
-<hr />
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @TempData["ErrorMessage"]
+    </div>
+}
+<hr/>
 
 <div class="d-flex flex-lg-row flex-column gap-3" id="gameLayout">
-<div class="container-md bg-dark text-center" id="gameBoard">
-    @for (int y = 0; y < Model.GameInstance.DimY; y++)
-    {
-        <div class="row py-1 justify-content-center justify-content-lg-end">
-            @for (int x = 0; x < Model.GameInstance.DimX; x++)
-            {
-                var xValue = x;
-                var yValue = y;
-                <div class="col px-1 col-auto">
-                    @if (Model.GameInstance.GameBoard[x][y] != EGamePiece.Empty)
-                    {
-                        <button type="button"
-                                class="btn btn-lg @(Model.GetButtonStyle(x, y))"
-                                @(!Model.GameInstance.RemovePieceModeOn || 
-                                  Model.GameInstance.GameBoard[x][y] != Model.GameInstance.GetNextMoveBy() ? 
-                                    "disabled" : "")
-                                >@Model.GameInstance.GameBoard[xValue][yValue].ToString()</button>
-                    }
-                    else
-                    {
-                        <form method="post" asp-page-handler="MakeAMove">
-                            <label hidden for="spot-@xValue-@yValue" class="control-label"></label>
-                            <input id="spot-@xValue-@yValue" type="submit"
-                                   value="@(Model.GameInstance.PlacePieceModeOn() ?
-                                        Model.GameInstance.GetNextMoveBy().ToString() : " " )"
-                                   class="btn btn-lg @(Model.GameInstance.GameGrid[xValue][yValue] ? 
-                                                         "btn-outline-warning" : "btn-outline-light")"
-                                   @(!Model.GameInstance.PlacePieceModeOn() ? "disabled" : "")/>
-                            <input asp-for="GameName" type="hidden" value="@Model.GameName"/>
-                            <input asp-for="Password" type="hidden" value="@Model.Password"/>
-                            <input asp-for="XCoordinate" type="hidden" value="@xValue"/>
-                            <input asp-for="YCoordinate" type="hidden" value="@yValue"/>
-                        </form>
-                    }
-                </div>
-            }
+    <div class="container-md bg-dark text-center" id="gameBoard">
+        @for (int y = 0; y < Model.GameInstance.DimY; y++)
+        {
+            <div class="row py-1 justify-content-center justify-content-lg-end">
+                @for (int x = 0; x < Model.GameInstance.DimX; x++)
+                {
+                    var xValue = x;
+                    var yValue = y;
+                    <div class="col px-1 col-auto">
+                        @if (Model.GameInstance.GameBoard[x][y] != EGamePiece.Empty)
+                        {
+                            <form method="post" asp-page-handler="RemovePiece">
+                                <input id="spot-@xValue-@yValue" type="submit"
+                                       class="btn btn-lg @(Model.StyleOccupiedSpot(xValue, yValue))"
+                                       value="@Model.GameInstance.GameBoard[xValue][yValue].ToString()"
+                                       @(!Model.GameInstance.RemovePieceModeOn ||
+                                         Model.GameInstance.GameBoard[xValue][yValue] != Model.GameInstance.GetNextMoveBy()
+                                           ? "disabled"
+                                           : "")>
+
+                                <input asp-for="GameName" type="hidden" value="@Model.GameName"/>
+                                <input asp-for="Password" type="hidden" value="@Model.Password"/>
+                                <input asp-for="XCoordinate" type="hidden" value="@xValue"/>
+                                <input asp-for="YCoordinate" type="hidden" value="@yValue"/>
+                            </form>
+                        }
+                        else if (Model.GameInstance.MovePieceModeOn)
+                        {
+                            <form method="post" asp-page-handler="PlaceRemovedPiece">
+                                <input id="spot-@xValue-@yValue" type="submit"
+                                       value="@(Model.GameInstance.RemovedPieceCoordinateClash(xValue, yValue)
+                                                  ? " "
+                                                  : Model.GameInstance.GetNextMoveBy().ToString())"
+                                       class="btn btn-lg @(Model.StyleFreeSpot(xValue,yValue))"
+                                       @(Model.GameInstance.RemovedPieceCoordinateClash(xValue, yValue) ? "disabled" : "")/>
+
+                                <input asp-for="GameName" type="hidden" value="@Model.GameName"/>
+                                <input asp-for="Password" type="hidden" value="@Model.Password"/>
+                                <input asp-for="XCoordinate" type="hidden" value="@xValue"/>
+                                <input asp-for="YCoordinate" type="hidden" value="@yValue"/>
+                            </form>
+                        }
+                        else
+                        {
+                            <form method="post" asp-page-handler="MakeAMove">
+                                <input id="spot-@xValue-@yValue" type="submit"
+                                       value="@(Model.GameInstance.PlacePieceModeOn()
+                                                  ? Model.GameInstance.GetNextMoveBy().ToString()
+                                                  : " ")"
+                                       class="btn btn-lg @(Model.StyleFreeSpot(xValue,yValue))"
+                                       @(Model.GameInstance.PlacePieceModeOn() ? "" : "disabled")/>
+
+                                <input asp-for="GameName" type="hidden" value="@Model.GameName"/>
+                                <input asp-for="Password" type="hidden" value="@Model.Password"/>
+                                <input asp-for="XCoordinate" type="hidden" value="@xValue"/>
+                                <input asp-for="YCoordinate" type="hidden" value="@yValue"/>
+                            </form>
+                        }
+                    </div>
+                }
+            </div>
+        }
+    </div>
+    <div class="container-md" id="moveOptions">
+        <div class="row py-1">
+            <div class="col px-1 col-auto">
+                <h4>@Model.GameInstance.GetPlayerName(Model.GameInstance.GetNextMoveBy())'s turn</h4>
+            </div>
         </div>
-    }
-</div>
-<div class="container-md" id="moveOptions">
-    <div class="row py-1">
-        <div class="col px-1 col-auto">
-            <h4>@Model.GameInstance.GetPlayerName(Model.GameInstance.GetNextMoveBy())'s turn</h4>
+        <div class="row py-1">
+            <div class="col px-1 col-auto">
+                <form method="post" asp-page-handler="MoveTypeChosen">
+                    <input asp-for="GameName" type="hidden" value="@Model.GameName"/>
+                    <input asp-for="Password" type="hidden" value="@Model.Password"/>
+                    <input asp-for="ChosenMove" type="hidden" value="@EChosenMove.PlacePiece.ToString()"/>
+                    <button type="submit" class="btn btn-lg btn-outline-dark"
+                            @(Model.GameInstance.GetChosenMove() == EChosenMove.PlacePiece ||
+                              Model.GameInstance.MovePieceModeOn ||
+                              !Model.GameInstance.HasGamePiece(Model.GameInstance.GetNextMoveBy())
+                                ? "disabled"
+                                : "")>Place a piece
+                    </button>
+                </form>
+            </div>
+            <div class="col px-1 col-auto d-flex align-items-center">
+                @(Model.GameInstance.GamePiecesLeft(Model.GameInstance.GetNextMoveBy())) left
+            </div>
+        </div>
+        <div class="row py-1">
+            <div class="col px-1 col-auto">
+                <form method="post" asp-page-handler="MoveTypeChosen">
+                    <input asp-for="GameName" type="hidden" value="@Model.GameName"/>
+                    <input asp-for="Password" type="hidden" value="@Model.Password"/>
+                    <input asp-for="ChosenMove" type="hidden" value="@EChosenMove.RemovePiece.ToString()"/>
+                    <button type="submit" class="btn btn-lg btn-outline-dark"
+                            @(Model.GameInstance.GetChosenMove() == EChosenMove.RemovePiece ||
+                              Model.GameInstance.GetChosenMove() == EChosenMove.MovePiece ||
+                              !Model.GameInstance.CanMovePiece()
+                                ? "disabled"
+                                : "")>Move a piece
+                    </button>
+                </form>
+            </div>
+        </div>
+        <div class="row py-1">
+            <div class="col px-1 col-auto">
+                <form method="post" asp-page-handler="MoveTypeChosen">
+                    <input asp-for="GameName" type="hidden" value="@Model.GameName"/>
+                    <input asp-for="Password" type="hidden" value="@Model.Password"/>
+                    <input asp-for="ChosenMove" type="hidden" value="@EChosenMove.MoveGrid.ToString()"/>
+                    <button type="submit" 
+                            class="btn btn-lg btn-outline-dark"
+                            @(Model.GameInstance.GetChosenMove() == EChosenMove.MoveGrid ||
+                              !Model.GameInstance.CanMoveGrid()
+                                ? "disabled"
+                                : "")>Move grid
+                    </button>
+                </form>
+                <form id="moveGridForm" method="post" asp-page-handler="MoveGrid">
+                    <input asp-for="GameName" type="hidden" value="@Model.GameName"/>
+                    <input asp-for="Password" type="hidden" value="@Model.Password"/>
+                    <input asp-for="MoveGridDirection" type="hidden" id="moveGridButton" 
+                           data-chosen=@(Model.GameInstance.GetChosenMove() == EChosenMove.MoveGrid ? "true" : "false")>
+                </form>
+            </div>
+            <div class="col px-1 col-auto">
+                <form method="post" asp-page-handler="SaveNewGridPosition">
+                    <input asp-for="GameName" type="hidden" value="@Model.GameName"/>
+                    <input asp-for="Password" type="hidden" value="@Model.Password"/>
+                    <input type=@(Model.GameInstance.GetChosenMove() == EChosenMove.MoveGrid ? "submit" : "hidden")
+                           class="btn btn-lg btn-info" value="Set">
+                </form>
+            </div>
         </div>
     </div>
-    <div class="row py-1">
-        <div class="col px-1 col-auto">
-            <form method="post" asp-page-handler="MoveTypeChosen">
-                <input asp-for="GameName" type="hidden" value="@Model.GameName"/>
-                <input asp-for="Password" type="hidden" value="@Model.Password"/>
-                <input asp-for="ChosenMove" type="hidden" value="@EChosenMove.PlacePiece.ToString()"/>
-                <button type="submit" class="btn btn-lg btn-outline-dark"
-                        @(Model.GameInstance.GetChosenMove() == EChosenMove.PlacePiece ||
-                          !Model.GameInstance.HasGamePiece(Model.GameInstance.GetNextMoveBy())
-                            ? "disabled"
-                            : "")>Place a piece</button>
-            </form>
-        </div>
-        <div class="col px-1 col-auto d-flex align-items-center">
-            @(Model.GameInstance.GamePiecesLeft(Model.GameInstance.GetNextMoveBy())) left
-        </div>
-    </div>
-    <div class="row py-1">
-        <div class="col px-1 col-auto">
-            <form method="post" asp-page-handler="MoveTypeChosen">
-                <input asp-for="GameName" type="hidden" value="@Model.GameName"/>
-                <input asp-for="Password" type="hidden" value="@Model.Password"/>
-                <input asp-for="ChosenMove" type="hidden" value="@EChosenMove.MovePiece.ToString()"/>
-                <button type="submit" class="btn btn-lg btn-outline-dark"
-                        @(Model.GameInstance.GetChosenMove() == EChosenMove.MovePiece ||
-                          !Model.GameInstance.CanMovePiece()
-                            ? "disabled"
-                            : "")>Move a piece</button>
-            </form>
-        </div>
-    </div>
-    <div class="row py-1">
-        <div class="col px-1 col-auto">
-            <form method="post" asp-page-handler="MoveTypeChosen">
-                <input asp-for="GameName" type="hidden" value="@Model.GameName"/>
-                <input asp-for="Password" type="hidden" value="@Model.Password"/>
-                <input asp-for="ChosenMove" type="hidden" value="@EChosenMove.MoveGrid.ToString()"/>
-                <button type="submit" class="btn btn-lg btn-outline-dark"
-                        @(Model.GameInstance.GetChosenMove() == EChosenMove.MoveGrid ||
-                          !Model.GameInstance.CanMoveGrid()
-                            ? "disabled"
-                            : "")>Move grid</button>
-            </form>
-        </div>
-    </div>
-</div>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+    <script>
+        const moveGridButton = document.getElementById('moveGridButton');
+        if (moveGridButton.getAttribute('data-chosen') === 'true') {
+            document.addEventListener('keydown', (event) => {
+                let direction = '';
+                
+                switch (event.key) {
+                    case "ArrowLeft":
+                        direction = "@EMoveGridDirection.Left.ToString()";
+                        break;
+                    case "ArrowRight":
+                        direction = "@EMoveGridDirection.Right.ToString()";
+                        break;
+                    case "ArrowUp":
+                        direction = "@EMoveGridDirection.Up.ToString()";
+                        break;
+                    case "ArrowDown":
+                        direction = "@EMoveGridDirection.Down.ToString()";
+                        break;
+                }
+
+                if (direction) {
+                    moveGridButton.value = direction;
+                    document.getElementById('moveGridForm').submit();
+                    event.preventDefault();
+                }
+            });
+        }
+    </script>
 }

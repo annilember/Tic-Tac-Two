@@ -16,28 +16,12 @@ public class TicTacTwoBrain
             mode,
             playerXName,
             playerOName);
-        
-        GridMovingArea = GetGridMovingArea();
-        CurrentGridState = GetGrid();
-        _currentGridStateStartPos = new Dictionary<string, int>
-        {
-            { "Xpos", _gameState.GridStartPosX },
-            { "Ypos", _gameState.GridStartPosY }
-        };
     }
     
     public TicTacTwoBrain(SavedGame savedGame, GameConfiguration config)
     {
         _gameConfiguration = config;
         _gameState = JsonSerializer.Deserialize<GameState>(savedGame.State)!;
-        Console.WriteLine(_gameConfiguration.BoardSizeWidth);
-        GridMovingArea = GetGridMovingArea();
-        CurrentGridState = GetGrid();
-        _currentGridStateStartPos = new Dictionary<string, int>
-        {
-            { "Xpos", _gameState.GridStartPosX },
-            { "Ypos", _gameState.GridStartPosY }
-        };
     }
     
     public string GetGameModeName() => _gameState.GameMode.ToString();
@@ -113,7 +97,7 @@ public class TicTacTwoBrain
     {
         SaveCurrentGridState();
         _gameState.MoveGridModeOn = true;
-        GridMovingArea = GetGridMovingArea();
+        _gameState.GridMovingArea = SetGridMovingArea();
     }
     
     public void DeActivateMoveGridMode()
@@ -122,12 +106,14 @@ public class TicTacTwoBrain
         CountAsMove();
     }
 
+    public bool[][] GridMovingArea => _gameState.GridMovingArea;
+
     public void RestoreGridState()
     {
         _gameState.MoveGridModeOn = false;
-        _gameState.GameGrid = CurrentGridState;
-        _gameState.GridStartPosX = _currentGridStateStartPos["Xpos"];
-        _gameState.GridStartPosY = _currentGridStateStartPos["Ypos"];
+        _gameState.GameGrid = _gameState.MoveGridStartState;
+        _gameState.GridStartPosX = _gameState.MoveGridStartStateLocation[0];
+        _gameState.GridStartPosY = _gameState.MoveGridStartStateLocation[1];
     }
 
     public void MakeGridMove(EMoveGridDirection direction)
@@ -145,8 +131,6 @@ public class TicTacTwoBrain
         _gameState.GameRoundNumber--;
         _gameState.GameRoundsLeft++;
     }
-
-    public bool[][] GridMovingArea { get; set; }
     
     public int DimX => _gameState.GameBoard.Length;
     public int DimY => _gameState.GameBoard[0].Length;
@@ -182,7 +166,7 @@ public class TicTacTwoBrain
         return copyOfGrid;
     }
     
-    private bool[][] GetGridMovingArea()
+    private bool[][] SetGridMovingArea()
     {
         var startPosX = _gameState.GridStartPosX;
         var startPosY = _gameState.GridStartPosY;
@@ -206,14 +190,37 @@ public class TicTacTwoBrain
             endPosY++;
         }
         
-        var gridMovingArea = _gameState.CreateGrid(DimX, DimY, startPosX, startPosY, endPosX, endPosY);
+        return _gameState.CreateGrid(DimX, DimY, startPosX, startPosY, endPosX, endPosY);
+    }
+
+    private void SetGridMovingBounds()
+    {
+        var startPosX = _gameState.MoveGridStartStateLocation[0];
+        var startPosY = _gameState.MoveGridStartStateLocation[1];
+        var endPosX = startPosX + _gameConfiguration.GridSizeWidth;
+        var endPosY = startPosY + _gameConfiguration.GridSizeHeight;
+        
+        if (startPosX > 0)
+        {
+            startPosX--;
+        }
+        if (startPosY > 0)
+        {
+            startPosY--;
+        }
+        if (endPosX < DimX)
+        {
+            endPosX++;
+        }
+        if (endPosY < DimY)
+        {
+            endPosY++;
+        }
         
         GridMovingLowerBoundX = startPosX;
         GridMovingLowerBoundY = startPosY;
         GridMovingUpperBoundX = endPosX;
         GridMovingUpperBoundY = endPosY;
-        
-        return gridMovingArea;
     }
 
     private int GridMovingLowerBoundX { get; set; }
@@ -249,8 +256,8 @@ public class TicTacTwoBrain
     public bool MakeAMove(int x, int y)
     {
         if (MovePieceModeOn && 
-            x == _removedPieceLocation[0] && 
-            y == _removedPieceLocation[1])
+            x == _gameState.RemovedPieceLocation[0] && 
+            y == _gameState.RemovedPieceLocation[1])
         {
             return false;
         }
@@ -297,18 +304,16 @@ public class TicTacTwoBrain
     public bool RemovedPieceCoordinateClash(int x, int y)
     {
         if (!MovePieceModeOn) return false;
-        return x == _removedPieceLocation[0] && 
-               y == _removedPieceLocation[1];
+        return x == _gameState.RemovedPieceLocation[0] && 
+               y == _gameState.RemovedPieceLocation[1];
     }
-
-    private readonly int[] _removedPieceLocation = new int[2];
     
     public bool RemovePiece(int x, int y)
     {
         if (_gameState.GameBoard[x][y] != _gameState.NextMoveBy) return false;
         _gameState.GameBoard[x][y] = EGamePiece.Empty;
-        _removedPieceLocation[0] = x;
-        _removedPieceLocation[1] = y;
+        _gameState.RemovedPieceLocation[0] = x;
+        _gameState.RemovedPieceLocation[1] = y;
         
         switch (_gameState.NextMoveBy)
         {
@@ -482,7 +487,8 @@ public class TicTacTwoBrain
                (
                    _gameConfiguration.BoardSizeWidth > _gameConfiguration.GridSizeWidth ||
                    _gameConfiguration.BoardSizeHeight > _gameConfiguration.GridSizeHeight
-                );
+                )
+               && !MovePieceModeOn;
     }
     
     public bool CanMovePiece()
@@ -521,15 +527,12 @@ public class TicTacTwoBrain
     {
         _gameState.MovePieceModeOn = false;
     }
-    
-    private bool[][] CurrentGridState { get; set; }
-    private readonly Dictionary<string, int> _currentGridStateStartPos;
-    
-    public void SaveCurrentGridState()
+
+    private void SaveCurrentGridState()
     {
-        CurrentGridState = GetGrid();
-        _currentGridStateStartPos["Xpos"] = _gameState.GridStartPosX;
-        _currentGridStateStartPos["Ypos"] = _gameState.GridStartPosY;
+        _gameState.MoveGridStartState = GetGrid();
+        _gameState.MoveGridStartStateLocation[0] = _gameState.GridStartPosX;
+        _gameState.MoveGridStartStateLocation[1] = _gameState.GridStartPosY;
     }
 
     public bool GridWasMoved()
@@ -538,7 +541,7 @@ public class TicTacTwoBrain
         {
             for (int y = 0; y < DimY; y++)
             {
-                if (CurrentGridState[x][y] != GameGrid[x][y])
+                if (_gameState.MoveGridStartState[x][y] != GameGrid[x][y])
                 {
                     return true;
                 }
@@ -554,6 +557,7 @@ public class TicTacTwoBrain
         var startPosY = _gameState.GridStartPosY;
         var endPosX = startPosX + _gameConfiguration.GridSizeWidth;
         var endPosY = startPosY + _gameConfiguration.GridSizeHeight;
+        SetGridMovingBounds();
         
         switch (direction)
         {
@@ -600,7 +604,11 @@ public class TicTacTwoBrain
         {
             return EChosenMove.MoveGrid;
         }
-        if (_gameState.RemovePieceModeOn || _gameState.MovePieceModeOn)
+        if (_gameState.RemovePieceModeOn)
+        {
+            return EChosenMove.RemovePiece;
+        }
+        if (_gameState.MovePieceModeOn)
         {
             return EChosenMove.MovePiece;
         }

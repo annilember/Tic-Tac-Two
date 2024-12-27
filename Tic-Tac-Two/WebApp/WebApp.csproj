@@ -20,4 +20,8 @@
         <ProjectReference Include="..\DTO\DTO.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <StaticWebAssetEndpoint Remove="js\site.js" />
+    </ItemGroup>
+
 </Project>

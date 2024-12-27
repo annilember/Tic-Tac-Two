@@ -2,7 +2,7 @@ namespace ConsoleUI;
 
 public static class VisualizerHelper
 {
-    public const string BoardLineHorisontal = "\u2550\u2550\u2550";
+    public const string BoardLineHorizontal = "\u2550\u2550\u2550";
     
     public const string BoardLineVertical = "\u2551";
     
@@ -48,9 +48,21 @@ public static class VisualizerHelper
     
     public const ConsoleColor ActionColor = ConsoleColor.Magenta;
     
-    public const string GameOverMessage = "  ____    _    __  __ _____    _____     _______ ____  \n / ___|  / \\  |  \\/  | ____|  / _ \\ \\   / / ____|  _ \\ \n| |  _  / _ \\ | |\\/| |  _|   | | | \\ \\ / /|  _| | |_) |\n| |_| |/ ___ \\| |  | | |___  | |_| |\\ V / | |___|  _ < \n \\____/_/   \\_\\_|  |_|_____|  \\___/  \\_/  |_____|_| \\_\\";
-    
-    public const string FinalRoundMessage = "Final round!";
+    public const string GameOverGraphics = "  ____    _    __  __ _____    _____     _______ ____  \n / ___|  / \\  |  \\/  | ____|  / _ \\ \\   / / ____|  _ \\ \n| |  _  / _ \\ | |\\/| |  _|   | | | \\ \\ / /|  _| | |_) |\n| |_| |/ ___ \\| |  | | |___  | |_| |\\ V / | |___|  _ < \n \\____/_/   \\_\\_|  |_|_____|  \\___/  \\_/  |_____|_| \\_\\";
     
     public const string Divider = "======================";
+    
+    public const string DeleteGameMenuHeader = "TIC-TAC-TWO - choose game to delete";
+    
+    public const string RenameGameMenuHeader = "TIC-TAC-TWO - choose game to rename";
+    
+    public const string LoadGameMenuHeader = "TIC-TAC-TWO - choose game to load";
+    
+    public const string DeleteConfigMenuHeader = "TIC-TAC-TWO - choose game configuration to delete";
+    
+    public const string ChangeConfigMenuHeader = "TIC-TAC-TWO - choose game configuration to change";
+    
+    public const string ChooseConfigForNewGameMenuHeader = "TIC-TAC-TWO - choose configuration for new game";
+    
+    public const string ChooseGameModeMenuHeader = "TIC-TAC-TWO - choose game mode";
 }

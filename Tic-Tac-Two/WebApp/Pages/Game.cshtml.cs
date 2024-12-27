@@ -65,6 +65,41 @@ public class GameModel : PageModel
         ));
     }
     
+    public Task<IActionResult> OnPostRemovePieceAsync()
+    {
+        SavedGame = _gameRepository.GetSavedGameByName(GameName);
+        GameInstance = new TicTacTwoBrain(SavedGame, SavedGame.Configuration!);
+        GameInstance.RemovePiece(XCoordinate, YCoordinate);
+        GameInstance.DeActivateRemovePieceMode();
+        GameInstance.ActivateMovePieceMode();
+        SavedGame.State = GameInstance.GetGameStateJson();
+        
+        //TODO: check if saves correctly.
+        _gameRepository.SaveGame(SavedGame);
+        
+        return Task.FromResult<IActionResult>(RedirectToPage(
+            "./Game", 
+            new { gameName = GameName, password = Password }
+        ));
+    }
+    
+    public Task<IActionResult> OnPostPlaceRemovedPieceAsync()
+    {
+        SavedGame = _gameRepository.GetSavedGameByName(GameName);
+        GameInstance = new TicTacTwoBrain(SavedGame, SavedGame.Configuration!);
+        GameInstance.MakeAMove(XCoordinate, YCoordinate);
+        GameInstance.DeActivateMovePieceMode();
+        SavedGame.State = GameInstance.GetGameStateJson();
+        
+        //TODO: check if saves correctly.
+        _gameRepository.SaveGame(SavedGame);
+        
+        return Task.FromResult<IActionResult>(RedirectToPage(
+            "./Game", 
+            new { gameName = GameName, password = Password }
+        ));
+    }
+    
     [BindProperty]
     public string ChosenMove { get; set; } = default!;
     
@@ -75,7 +110,7 @@ public class GameModel : PageModel
         
         _logger.LogInformation("LOGGER!!! Chosen Move: " + ChosenMove);
         
-        SavedGame.State = SetNewMoveTypeInGameState(ChosenMove, GameInstance);
+        SavedGame.State = SetNewMoveTypeInGameState();
         
         //TODO: check if saves correctly.
         _gameRepository.SaveGame(SavedGame);
@@ -85,47 +120,129 @@ public class GameModel : PageModel
             new { gameName = GameName, password = Password }
         ));
     }
-
-    private string SetNewMoveTypeInGameState(string chosenMove, TicTacTwoBrain gameInstance)
+    
+    [BindProperty]
+    public string MoveGridDirection { get; set; } = default!;
+    
+    public Task<IActionResult> OnPostMoveGridAsync()
     {
-        if (chosenMove == EChosenMove.PlacePiece.ToString())
+        SavedGame = _gameRepository.GetSavedGameByName(GameName);
+        GameInstance = new TicTacTwoBrain(SavedGame, SavedGame.Configuration!);
+
+        if (MoveGridDirection == EMoveGridDirection.Right.ToString())
         {
-            if (gameInstance.RemovePieceModeOn)
-            {
-                gameInstance.DeActivateRemovePieceMode();
-            }
-            if (gameInstance.MoveGridModeOn)
-            {
-                gameInstance.RestoreGridState();
-            }
+            GameInstance.MoveGrid(EMoveGridDirection.Right);
         }
-        else if (chosenMove == EChosenMove.MovePiece.ToString())
+        else if (MoveGridDirection == EMoveGridDirection.Left.ToString())
         {
-            if (gameInstance.MoveGridModeOn)
-            {
-                gameInstance.RestoreGridState();
-            }
-            gameInstance.ActivateRemovePieceMode();
+            GameInstance.MoveGrid(EMoveGridDirection.Left);
         }
-        else if (chosenMove == EChosenMove.MoveGrid.ToString())
+        else if (MoveGridDirection == EMoveGridDirection.Up.ToString())
         {
-            if (gameInstance.RemovePieceModeOn)
-            {
-                gameInstance.DeActivateRemovePieceMode();
-            }
-            gameInstance.ActivateMoveGridMode();
+            GameInstance.MoveGrid(EMoveGridDirection.Up);
         }
-        return gameInstance.GetGameStateJson();
+        else if (MoveGridDirection == EMoveGridDirection.Down.ToString())
+        {
+            GameInstance.MoveGrid(EMoveGridDirection.Down);
+        }
+        
+        SavedGame.State = GameInstance.GetGameStateJson();
+        
+        //TODO: check if saves correctly.
+        _gameRepository.SaveGame(SavedGame);
+        
+        return Task.FromResult<IActionResult>(RedirectToPage(
+            "./Game", 
+            new { gameName = GameName, password = Password }
+        ));
+    }
+    
+    public Task<IActionResult> OnPostSaveNewGridPositionAsync()
+    {
+        SavedGame = _gameRepository.GetSavedGameByName(GameName);
+        GameInstance = new TicTacTwoBrain(SavedGame, SavedGame.Configuration!);
+
+        if (!GameInstance.GridWasMoved())
+        {
+            TempData["ErrorMessage"] = Message.GridWasNotMovedMessage;
+        }
+        else
+        {
+            GameInstance.DeActivateMoveGridMode();
+            SavedGame.State = GameInstance.GetGameStateJson();
+        
+            //TODO: check if saves correctly.
+            _gameRepository.SaveGame(SavedGame);
+        }
+        
+        return Task.FromResult<IActionResult>(RedirectToPage(
+            "./Game", 
+            new { gameName = GameName, password = Password }
+        ));
     }
 
-    public string GetButtonStyle(int x, int y)
+    private string SetNewMoveTypeInGameState()
+    {
+        if (ChosenMove == EChosenMove.PlacePiece.ToString())
+        {
+            if (GameInstance.RemovePieceModeOn)
+            {
+                GameInstance.DeActivateRemovePieceMode();
+            }
+            if (GameInstance.MoveGridModeOn)
+            {
+                GameInstance.RestoreGridState();
+            }
+        }
+        else if (ChosenMove == EChosenMove.RemovePiece.ToString())
+        {
+            if (GameInstance.MoveGridModeOn)
+            {
+                GameInstance.RestoreGridState();
+            }
+            GameInstance.ActivateRemovePieceMode();
+        }
+        else if (ChosenMove == EChosenMove.MoveGrid.ToString())
+        {
+            if (GameInstance.RemovePieceModeOn)
+            {
+                GameInstance.DeActivateRemovePieceMode();
+            }
+            GameInstance.ActivateMoveGridMode();
+        }
+        return GameInstance.GetGameStateJson();
+    }
+
+    public string StyleOccupiedSpot(int x, int y)
     {
         var style = "btn";
         if (GameInstance.RemovePieceModeOn && GameInstance.GameBoard[x][y] == GameInstance.GetNextMoveBy())
         {
             style += "-outline";
         }
-        style += GameInstance.GameGrid[x][y] ? "-warning" : "-light";
+        return style + StyleSpot(x, y);
+    }
+
+    public string StyleFreeSpot(int x, int y)
+    {
+        return "btn-outline" + StyleSpot(x, y);
+    }
+
+    private string StyleSpot(int x, int y)
+    {
+        var style = "";
+        if (GameInstance.GameGrid[x][y])
+        {
+            style += "-warning";
+        }
+        else if (GameInstance.MoveGridModeOn && GameInstance.GridMovingArea[x][y])
+        {
+            style += "-info";
+        }
+        else
+        {
+            style += "-light";
+        }
         return style;
     }
 }

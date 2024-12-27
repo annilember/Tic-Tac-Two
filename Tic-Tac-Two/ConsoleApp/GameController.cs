@@ -23,7 +23,7 @@ public static class GameController
         {
             var chosenConfigShortcut = OptionsController.ChooseConfigurationFromMenu(
                 EMenuLevel.Secondary,
-                ControllerHelper.ChooseConfigForNewGameMenuHeader
+                VisualizerHelper.ChooseConfigForNewGameMenuHeader
                 );
         
             if (!int.TryParse(chosenConfigShortcut, out var configNo))
@@ -68,12 +68,12 @@ public static class GameController
         {
             var chosenGameShortcut = OptionsController.ChooseGameFromMenu(
                 EMenuLevel.Secondary,
-                ControllerHelper.LoadGameMenuHeader
+                VisualizerHelper.LoadGameMenuHeader
                 );
 
-            if (chosenGameShortcut == ControllerHelper.NoSavedGamesMessage)
+            if (chosenGameShortcut == Message.NoSavedGamesMessage)
             {
-                return ControllerHelper.NoSavedGamesMessage;
+                return Message.NoSavedGamesMessage;
             }
             
             if (!int.TryParse(chosenGameShortcut, out var gameNo))
@@ -173,7 +173,7 @@ public static class GameController
             
             if (gameInstance.CheckForDraw())
             {
-                message = ControllerHelper.GameOverDrawMessage;
+                message = Message.GameOverDrawMessage;
             } 
             else if (!string.IsNullOrEmpty(gameInstance.GetWinnerName()))
             {
@@ -181,7 +181,7 @@ public static class GameController
             }
             else if (gameInstance.IsGameOverAnyway())
             {
-                message = ControllerHelper.GameOverNoMoreRoundsMessage;
+                message = Message.GameOverNoMoreRoundsMessage;
             }
             
             Visualizer.DisplayGameOverMessage(message);
@@ -248,15 +248,15 @@ public static class GameController
         var inputSplit = input.Split(',');
         if (inputSplit.Length != 2)
         {
-            return ControllerHelper.InvalidCoordinatesMessage;
+            return Message.InvalidCoordinatesMessage;
         }
         if (!int.TryParse(inputSplit[0], out var inputX))
         {
-            return ControllerHelper.InvalidXCoordinateMessage;
+            return Message.InvalidXCoordinateMessage;
         }
         if (!int.TryParse(inputSplit[1], out var inputY))
         {
-            return ControllerHelper.InvalidYCoordinateMessage;
+            return Message.InvalidYCoordinateMessage;
         }
         
         return TryAndMakeAMove(gameInstance, inputX, inputY);
@@ -278,21 +278,21 @@ public static class GameController
             }
             if (!gameInstance.HasGamePiece(gameInstance.GetNextMoveBy()))
             {
-                return ControllerHelper.NotEnoughPiecesMessage;
+                return Message.NotEnoughPiecesMessage;
             }
             if (!gameInstance.MakeAMove(inputX, inputY))
             {
                 if (gameInstance.RemovedPieceCoordinateClash(inputX, inputY))
                 {
-                    return ControllerHelper.RemovedPieceCoordinateClashMessage;
+                    return Message.RemovedPieceCoordinateClashMessage;
                 }
-                return ControllerHelper.SpaceOccupiedMessage;
+                return Message.SpaceOccupiedMessage;
             }
             gameInstance.DeActivateMovePieceMode();
         }
         catch (Exception)
         {
-            return ControllerHelper.CoordinatesOutOfBoundsMessage;
+            return Message.CoordinatesOutOfBoundsMessage;
         }
 
         return "";
@@ -348,7 +348,7 @@ public static class GameController
                         gameInstance.DeActivateMoveGridMode();
                         return;
                     }
-                    errorMessage = ControllerHelper.GridWasNotMovedMessage;
+                    errorMessage = Message.GridWasNotMovedMessage;
                     break;
             }
             

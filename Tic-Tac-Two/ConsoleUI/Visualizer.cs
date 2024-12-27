@@ -261,7 +261,7 @@ public static class Visualizer
         Console.Write($"   {VisualizerHelper.BoardCornerNorthEast}");
         for (int x = 0; x < gameInstance.DimX; x++)
         {
-            Console.Write(VisualizerHelper.BoardLineHorisontal);
+            Console.Write(VisualizerHelper.BoardLineHorizontal);
             if (x != gameInstance.DimX - 1)
             {
                 Console.Write(VisualizerHelper.BoardCrossingSouth);
@@ -302,7 +302,7 @@ public static class Visualizer
             Console.Write($"   {VisualizerHelper.BoardCrossingWest}");
             for (int x = 0; x < gameInstance.DimX; x++)
             {
-                Console.Write(VisualizerHelper.BoardLineHorisontal);
+                Console.Write(VisualizerHelper.BoardLineHorizontal);
                 if (x != gameInstance.DimX - 1)
                 {
                     Console.Write(VisualizerHelper.BoardCrossing);
@@ -317,7 +317,7 @@ public static class Visualizer
         Console.Write($"   {VisualizerHelper.BoardCornerSouthEast}");
         for (int x = 0; x < gameInstance.DimX; x++)
         {
-            Console.Write(VisualizerHelper.BoardLineHorisontal);
+            Console.Write(VisualizerHelper.BoardLineHorizontal);
             if (x != gameInstance.DimX - 1)
             {
                 Console.Write(VisualizerHelper.BoardCrossingNorth);
@@ -331,7 +331,7 @@ public static class Visualizer
         Console.ForegroundColor = VisualizerHelper.MessageColor;
         Console.WriteLine(message);
         Console.ResetColor();
-        Console.WriteLine(VisualizerHelper.GameOverMessage);
+        Console.WriteLine(VisualizerHelper.GameOverGraphics);
         Console.Write("Press <");
         Console.ForegroundColor = VisualizerHelper.ActionColor;
         Console.Write("R");
@@ -346,7 +346,7 @@ public static class Visualizer
     public static void DisplayFinalRoundMessage()
     {
         Console.ForegroundColor = VisualizerHelper.ErrorMessageColor;
-        Console.WriteLine(VisualizerHelper.FinalRoundMessage);
+        Console.WriteLine(Message.FinalRoundMessage);
         Console.ResetColor();
     }
 

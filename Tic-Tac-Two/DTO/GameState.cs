@@ -42,8 +42,16 @@ public class GameState()
 
     public bool MoveGridModeOn { get; set; } = false;
     
+    public bool[][] MoveGridStartState { get; set; } = default!;
+    
+    public int[] MoveGridStartStateLocation { get; set; } = new int[2];
+    
+    public bool[][] GridMovingArea { get; set; } = default!;
+    
     public bool RemovePieceModeOn { get; set; } = false;
     public bool MovePieceModeOn { get; set; } = false;
+    
+    public int[] RemovedPieceLocation { get; set; } = new int[2];
     
     public int GridStartPosX { get; set; }
     public int GridStartPosY { get; set; }
