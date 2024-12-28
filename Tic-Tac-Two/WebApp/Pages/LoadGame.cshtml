@@ -11,57 +11,52 @@
     <thead>
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.SavedGames[0].Name)
+            @Html.DisplayNameFor(model => model.HumanVsHumanGames[0].Name)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.SavedGames[0].CreatedAtDateTime)
+            Join as
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.SavedGames[0].State)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.SavedGames[0].Configuration)
+            @Html.DisplayNameFor(model => model.HumanVsHumanGames[0].Configuration)
         </th>
         <th></th>
         <th></th>
     </tr>
     </thead>
     <tbody>
-    @foreach (var item in Model.SavedGames) {
+    @foreach (var item in Model.HumanVsHumanGames)
+    {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.CreatedAtDateTime)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.State)
+                <div class="form-group d-flex gap-2">
+                    <form method="post" asp-page-handler="JoinGame">
+                        <input asp-for="GameName" type="hidden" value="@item.Name"/>
+                        <input asp-for="Password" type="hidden" value="@item.PlayerXPassword"/>
+                        <button type="submit" class="btn btn-outline-dark join-as-button">@item.PlayerXName</button>
+                    </form>
+                    <form method="post" asp-page-handler="JoinGame">
+                        <input asp-for="GameName" type="hidden" value="@item.Name"/>
+                        <input asp-for="Password" type="hidden" value="@item.PlayerOPassword"/>
+                        <button type="submit" class="btn btn-outline-dark join-as-button">@item.PlayerOName</button>
+                    </form>
+                </div>
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Configuration!.Name)
             </td>
             <td>
-                <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
+                <form method="post" asp-page-handler="RenameGame">
+                    <input asp-for="GameName" type="hidden" value="@item.Name"/>
+                    <button type="submit" class="btn btn-outline-dark rename-delete-button">Rename</button>
+                </form>
             </td>
             <td>
-                Join as:<br>
-                <form method="post">
+                <form method="post" asp-page-handler="DeleteGame">
                     <input asp-for="GameName" type="hidden" value="@item.Name"/>
-                    <input asp-for="Password" type="hidden" value="@item.PlayerXPassword"/>
-                    <div class="form-group">
-                        <button type="submit" class="btn btn-dark btn-lg">@item.PlayerXName</button>
-                    </div>
-                </form>
-
-                <form method="post">
-                    <input asp-for="GameName" type="hidden" value="@item.Name"/>
-                    <input asp-for="Password" type="hidden" value="@item.PlayerOPassword"/>
-                    <div class="form-group">
-                        <button type="submit" class="btn btn-dark btn-lg">@item.PlayerOName</button>
-                    </div>
+                    <button type="submit" class="btn btn-outline-dark rename-delete-button">Delete</button>
                 </form>
             </td>
         </tr>

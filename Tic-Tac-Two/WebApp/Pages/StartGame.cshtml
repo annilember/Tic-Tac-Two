@@ -19,13 +19,13 @@
     <div class="col px-5 col-auto form-group">
         <form method="post" asp-page-handler="PlayerX">
             <input asp-for="GameName" type="hidden" value="@Model.GameName"/>
-            <button type="submit" class="btn btn-dark btn-lg">@Model.PlayerXName</button>
+            <button type="submit" class="btn btn-dark btn-lg join-as-button">@Model.PlayerXName</button>
         </form>
     </div>
     <div class="col px-5 col-auto form-group">
         <form method="post" asp-page-handler="PlayerO">
             <input asp-for="GameName" type="hidden" value="@Model.GameName"/>
-            <button type="submit" class="btn btn-dark btn-lg">@Model.PlayerOName</button>
+            <button type="submit" class="btn btn-dark btn-lg join-as-button">@Model.PlayerOName</button>
         </form>
     </div>
 </div>

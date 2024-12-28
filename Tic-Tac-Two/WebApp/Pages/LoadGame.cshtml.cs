@@ -25,12 +25,24 @@ public class LoadGameModel : PageModel
         _context = context;
     }
 
-    public IList<SavedGame> SavedGames { get;set; } = default!;
+    public IList<SavedGame> HumanVsHumanGames { get;set; } = default!;
+    
+    public IList<SavedGame> HumanVsAiGames { get;set; } = default!;
+    
+    public IList<SavedGame> AiVsAiGames { get;set; } = default!;
 
     public async Task OnGetAsync()
     {
-        SavedGames = await _context.SavedGames
+        HumanVsHumanGames = await _context.SavedGames
             .Where(savedGame => savedGame.ModeName == "Human vs Human")
+            .Include(s => s.Configuration).ToListAsync();
+        
+        HumanVsAiGames = await _context.SavedGames
+            .Where(savedGame => savedGame.ModeName == "Human vs AI" || savedGame.ModeName == "AI vs Human")
+            .Include(s => s.Configuration).ToListAsync();
+  
+        AiVsAiGames = await _context.SavedGames
+            .Where(savedGame => savedGame.ModeName == "AI vs AI")
             .Include(s => s.Configuration).ToListAsync();
     }
     
@@ -40,7 +52,7 @@ public class LoadGameModel : PageModel
     [BindProperty]
     public string Password { get; set; } = default!;
     
-    public Task<IActionResult> OnPostAsync()
+    public Task<IActionResult> OnPostJoinGameAsync()
     {
         if (!ModelState.IsValid)
         {
