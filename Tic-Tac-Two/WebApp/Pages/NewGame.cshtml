@@ -6,51 +6,70 @@
 }
 
 <h1>New Game</h1>
-        
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @TempData["ErrorMessage"]
+    </div>
+}
 <hr/>
-<div class="row">
-    <div class="col-md-4">
-        <form method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="GameName" class="control-label">Name:</label>
-                <input asp-for="GameName" class="form-control"/>
-                <span asp-validation-for="GameName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ConfigurationName" class="control-label">Configuration:</label>
-                <select asp-for="ConfigurationName" class="form-control" asp-items="ViewBag.ConfigurationName"></select>
-                <span asp-validation-for="ConfigurationName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ModeName" class="control-label">Game Mode:</label>
-                <select asp-for="ModeName" class="form-control" asp-items="ViewBag.GameMode"></select>
-                <span asp-validation-for="ModeName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="PlayerXName" class="control-label"></label>
-                <input asp-for="PlayerXName" class="form-control"/>
-                <span asp-validation-for="PlayerXName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="PlayerOName" class="control-label"></label>
-                <input asp-for="PlayerOName" class="form-control"/>
-                <span asp-validation-for="PlayerOName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="PlayerXPassword" class="control-label"></label>
-                <input asp-for="PlayerXPassword" class="form-control"/>
-                <span asp-validation-for="PlayerXPassword" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="PlayerOPassword" class="control-label"></label>
-                <input asp-for="PlayerOPassword" class="form-control"/>
-                <span asp-validation-for="PlayerOPassword" class="text-danger"></span>
-            </div>
-            <div class="form-group py-4">
-                <input type="submit" value="Create" class="btn btn-dark"/>
-            </div>
-        </form>
+<div class="container">
+    <div class="row justify-content-md-center">
+        <div class="col-md-4">
+            <form method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group py-2">
+                    <h5><label asp-for="GameName" class="control-label text-center d-block">Game name</label></h5>
+                    <input asp-for="GameName" class="form-control text-center"/>
+                    <span asp-validation-for="GameName" class="text-danger"></span>
+                </div>
+                <div class="form-group py-2">
+                    <h5><label asp-for="ConfigurationName"
+                               class="control-label text-center d-block">Configuration</label></h5>
+                    <select asp-for="ConfigurationName" class="form-select text-center"
+                            asp-items="ViewBag.ConfigurationName"></select>
+                    <span asp-validation-for="ConfigurationName" class="text-danger"></span>
+                </div>
+                <div class="form-group py-2">
+                    <h5><label asp-for="ModeName" class="control-label text-center d-block">Game Mode</label></h5>
+                    <select asp-for="ModeName" class="form-select text-center" asp-items="ViewBag.GameMode"></select>
+                    <span asp-validation-for="ModeName" class="text-danger"></span>
+                </div>
+
+                <div class="row py-4">
+                    <div class="col-md-6">
+                        <h4 class="text-center d-block">Player X</h4>
+                        <div class="form-group py-2">
+                            <label asp-for="PlayerXName" class="control-label text-center d-block">Name</label>
+                            <input asp-for="PlayerXName" class="form-control text-center"/>
+                            <span asp-validation-for="PlayerXName" class="text-danger"></span>
+                        </div>
+                        <div class="form-group py-2">
+                            <label asp-for="PlayerXPassword" class="control-label text-center d-block">Password</label>
+                            <input asp-for="PlayerXPassword" class="form-control text-center"/>
+                            <span asp-validation-for="PlayerXPassword" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h4 class="text-center d-block">Player O</h4>
+                        <div class="form-group py-2">
+                            <label asp-for="PlayerOName" class="control-label text-center d-block">Name</label>
+                            <input asp-for="PlayerOName" class="form-control text-center"/>
+                            <span asp-validation-for="PlayerOName" class="text-danger"></span>
+                        </div>
+                        <div class="form-group py-2">
+                            <label asp-for="PlayerOPassword" class="control-label text-center d-block">Password</label>
+                            <input asp-for="PlayerOPassword" class="form-control text-center"/>
+                            <span asp-validation-for="PlayerOPassword" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group py-2 text-center">
+                    <input type="submit" value="Create" class="btn btn-dark w-100"/>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 

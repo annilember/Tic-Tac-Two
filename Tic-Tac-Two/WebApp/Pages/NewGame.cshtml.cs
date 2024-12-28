@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using DAL;
 using Domain;
+using GameBrain;
+using Microsoft.Build.Framework;
 
 namespace WebApp.Pages
 {
@@ -24,36 +26,52 @@ namespace WebApp.Pages
             _context = context;
             _logger = logger;
         }
-        
-        [BindProperty(SupportsGet = true)] public string GameModeName { get; set; } = default!;
 
         public IActionResult OnGet()
         {
             ViewData["ConfigurationName"] = new SelectList(_configRepository.GetConfigurationNames());
             ViewData["GameMode"] = new SelectList(GameMode.GetGameModeNames());
-            ModeName = GameModeName;
+            if (!string.IsNullOrEmpty(GameModeName))
+            {
+                ModeName = GameModeName;
+            }
+            if (TempData["FormValues"] is Dictionary<string, string> formValues)
+            {
+                GameName = formValues.GetValueOrDefault("GameName", "");
+                ConfigurationName = formValues.GetValueOrDefault("ConfigurationName", "");
+                ModeName = formValues.GetValueOrDefault("ModeName", "");
+                PlayerXName = formValues.GetValueOrDefault("PlayerXName", "");
+                PlayerOName = formValues.GetValueOrDefault("PlayerOName", "");
+                PlayerXPassword = formValues.GetValueOrDefault("PlayerXPassword", "");
+                PlayerOPassword = formValues.GetValueOrDefault("PlayerOPassword", "");
+            }
             return Page();
         }
 
+        [BindProperty(SupportsGet = true)] public string? GameModeName { get; set; } = default!;
 
-        [BindProperty] public string GameName { get; set; } = default!;
+        [Required] [BindProperty] public string GameName { get; set; } = default!;
 
-        [BindProperty] public string ConfigurationName { get; set; } = default!;
+        [Required] [BindProperty] public string ConfigurationName { get; set; } = default!;
 
-        [BindProperty] public string ModeName { get; set; } = default!;
+        [Required] [BindProperty] public string ModeName { get; set; } = default!;
 
-        [BindProperty] public string PlayerXName { get; set; } = default!;
+        [Required] [BindProperty] public string PlayerXName { get; set; } = default!;
 
-        [BindProperty] public string PlayerOName { get; set; } = default!;
+        [Required] [BindProperty] public string PlayerOName { get; set; } = default!;
 
-        [BindProperty] public string PlayerXPassword { get; set; } = default!;
+        [Required] [BindProperty] public string PlayerXPassword { get; set; } = default!;
 
-        [BindProperty] public string PlayerOPassword { get; set; } = default!;
+        [Required] [BindProperty] public string PlayerOPassword { get; set; } = default!;
 
         public Task<IActionResult> OnPostAsync()
         {
+            ModelState.Remove("GameModeName");
+            
             if (!ModelState.IsValid)
             {
+                ViewData["ConfigurationName"] = new SelectList(_configRepository.GetConfigurationNames());
+                ViewData["GameMode"] = new SelectList(GameMode.GetGameModeNames());
                 foreach (var error in ModelState)
                 {
                     _logger.LogError(
@@ -61,6 +79,22 @@ namespace WebApp.Pages
                 }
 
                 return Task.FromResult<IActionResult>(Page());
+            }
+
+            if (_gameRepository.GameExists(GameName))
+            {
+                TempData["FormValues"] = new Dictionary<string, string>
+                {
+                    { "GameName", GameName },
+                    { "ConfigurationName", ConfigurationName },
+                    { "ModeName", ModeName },
+                    { "PlayerXName", PlayerXName },
+                    { "PlayerOName", PlayerOName },
+                    { "PlayerXPassword", PlayerXPassword },
+                    { "PlayerOPassword", PlayerOPassword }
+                };
+                TempData["ErrorMessage"] = Message.GameNameAlreadyInUseMessage;
+                return Task.FromResult<IActionResult>(RedirectToPage());
             }
 
             var savedGame = CreateSavedGame();
