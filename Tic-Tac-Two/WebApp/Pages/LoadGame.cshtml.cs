@@ -1,5 +1,7 @@
+using System.ComponentModel.DataAnnotations;
 using DAL;
 using Domain;
+using GameBrain;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -25,28 +27,32 @@ public class LoadGameModel : PageModel
         _context = context;
     }
 
+    [BindProperty(SupportsGet = true)]
     public IList<SavedGame> HumanVsHumanGames { get;set; } = default!;
     
+    [BindProperty(SupportsGet = true)]
     public IList<SavedGame> HumanVsAiGames { get;set; } = default!;
     
+    [BindProperty(SupportsGet = true)]
     public IList<SavedGame> AiVsAiGames { get;set; } = default!;
 
     public async Task OnGetAsync()
     {
         HumanVsHumanGames = await _context.SavedGames
-            .Where(savedGame => savedGame.ModeName == "Human vs Human")
+            .Where(savedGame => savedGame.ModeName == GameMode.GetModeName(EGameMode.HumanVsHuman.ToString()))
             .Include(s => s.Configuration).ToListAsync();
         
         HumanVsAiGames = await _context.SavedGames
-            .Where(savedGame => savedGame.ModeName == "Human vs AI" || savedGame.ModeName == "AI vs Human")
+            .Where(savedGame => savedGame.ModeName == GameMode.GetModeName(EGameMode.HumanVsAi.ToString()) || 
+                                savedGame.ModeName == GameMode.GetModeName(EGameMode.AiVsHuman.ToString()))
             .Include(s => s.Configuration).ToListAsync();
   
         AiVsAiGames = await _context.SavedGames
-            .Where(savedGame => savedGame.ModeName == "AI vs AI")
+            .Where(savedGame => savedGame.ModeName == GameMode.GetModeName(EGameMode.AiVsAi.ToString()))
             .Include(s => s.Configuration).ToListAsync();
     }
     
-    [BindProperty]
+    [BindProperty(SupportsGet = true)]
     public string GameName { get; set; } = default!;
     
     [BindProperty]
@@ -54,20 +60,48 @@ public class LoadGameModel : PageModel
     
     public Task<IActionResult> OnPostJoinGameAsync()
     {
-        if (!ModelState.IsValid)
-        {
-            foreach (var error in ModelState)
-            {
-                _logger.LogError($"{error.Key}: {string.Join(", ", error.Value.Errors.Select(e => e.ErrorMessage))}");
-            }
-            return Task.FromResult<IActionResult>(Page());
-        }
-        
-        _logger.LogInformation($"POST FROM LOAD GAME - Game Name: {GameName}, Password: {Password}");
-        
         return Task.FromResult<IActionResult>(RedirectToPage(
             "./Game", 
             new { gameName = GameName, password = Password }
+        ));
+    }
+    
+    [BindProperty]
+    [Required(ErrorMessage = "New game name is required")]
+    public string NewGameName { get; set; } = default!;
+    
+    public Task<IActionResult> OnPostRenameGameAsync()
+    {
+        if (_gameRepository.GameExists(NewGameName))
+        {
+            TempData["ErrorMessage"] = Message.GameNameAlreadyInUseMessage;
+            TempData["NewGameName"] = NewGameName;
+            return Task.FromResult<IActionResult>(RedirectToPage(
+                "./LoadGame", 
+                new { gameName = GameName }
+            ));
+        }
+
+        var savedGame = _gameRepository.GetSavedGameByName(GameName);
+        _gameRepository.RenameGame(savedGame, NewGameName);
+        TempData["Message"] = Message.GameRenamedMessage;
+        return Task.FromResult<IActionResult>(RedirectToPage());
+    }
+    
+    public Task<IActionResult> OnPostDeleteGameAsync()
+    {
+        _gameRepository.DeleteGame(GameName);
+        TempData["Message"] = Message.GameDeletedMessage;
+        return Task.FromResult<IActionResult>(RedirectToPage());
+    }
+    
+    [BindProperty]
+    public string GameModeName { get; set; } = default!;
+    public Task<IActionResult> OnPostNewGameAsync()
+    {
+        return Task.FromResult<IActionResult>(RedirectToPage(
+            "./NewGame", 
+            new { gameModeName = GameModeName }
         ));
     }
 }

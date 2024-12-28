@@ -48,3 +48,21 @@ body {
 .rename-delete-button {
   width: 5.6rem;
 }
+
+.ai-vs-ai-button {
+  width: 14rem;
+}
+
+.column-name {
+  width: 20%;
+}
+.column-rename,
+.column-join {
+  width: 25%;
+}
+.column-config {
+  width: 20%;
+}
+.column-delete {
+  width: 10%;
+}

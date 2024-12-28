@@ -87,7 +87,7 @@ public record GameMode()
         };
     }
 
-    private static string GetModeName(string modeName)
+    public static string GetModeName(string modeName)
     {
         return modeName switch
         {
