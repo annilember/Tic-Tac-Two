@@ -189,6 +189,18 @@
                 </form>
             </div>
         </div>
+        <div class="row py-1">
+            <div class="col px-1 col-auto">
+                <form method="post" asp-page-handler="AiMove">
+                    <input asp-for="GameName" type="hidden" value="@Model.GameName"/>
+                    <input asp-for="Password" type="hidden" value="@Model.Password"/>
+                    <button class="btn btn-lg btn-outline-warning chosen-move-button"
+                            type="submit"
+                            @(Model.AiTurn() ? "" : "hidden")>AI move
+                    </button>
+                </form>
+            </div>
+        </div>
     </div>
 </div>
 

@@ -290,4 +290,11 @@ public class GameModel : PageModel
         }
         return Message.UnknownPlayerName;
     }
+
+    public bool AiTurn()
+    {
+        var gameMode = GameMode.GetMode(SavedGame.ModeName);
+        var playerType = GameMode.GetPlayerType(gameMode, GameInstance.GetNextMoveBy());
+        return playerType == EPlayerType.Ai;
+    }
 }
