@@ -191,6 +191,14 @@
                 </form>
             </div>
         </div>
+        @if (Model.GameInstance.GetChosenMove() == EChosenMove.MoveGrid)
+        {
+            <div class="row py-2">
+                <div class="col col-auto alert alert-info" role="alert">
+                    Use arrow keys to move the grid.
+                </div>
+            </div>
+        }
         <div class="row py-1">
             <div class="col px-1 col-auto">
                 <form method="post" asp-page-handler="AiMove">
