@@ -4,7 +4,21 @@
     ViewData["Title"] = "Home";
 }
 
-<div class="text-center">
-    <h1 class="display-4">TIC-TAC-TWO</h1>
-    Welcome to Tic-Tac-Two, dear adventurer!
+<div class="text-center pt-5">
+    <h1 class="display-6">Welcome to...</h1>
+</div>
+<div class="text-center py-5">
+    <h1 class="display-1">TIC-TAC-TWO</h1>
+</div>
+<div class="row justify-content-center">
+    <div class="col px-3 col-auto form-group">
+        <form method="post" asp-page-handler="NewGame">
+            <button type="submit" class="btn btn-outline-dark btn-lg chosen-move-button">New Game</button>
+        </form>
+    </div>
+    <div class="col px-3 col-auto form-group">
+        <form method="post" asp-page-handler="LoadGame">
+            <button type="submit" class="btn btn-outline-dark btn-lg chosen-move-button">Load Game</button>
+        </form>
+    </div>
 </div>
