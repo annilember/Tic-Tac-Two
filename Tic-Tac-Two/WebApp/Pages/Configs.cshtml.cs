@@ -3,40 +3,31 @@ using Domain;
 using GameBrain;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
 
 namespace WebApp.Pages;
 
 public class ConfigsModel : PageModel
 {
     private readonly ILogger<ConfigsModel> _logger;
-    
-    private readonly AppDbContext _context;
         
     private readonly IConfigRepository _configRepository;
-        
-    private readonly IGameRepository _gameRepository;
 
     public ConfigsModel(ILogger<ConfigsModel> logger, AppDbContext context)
     {
         _logger = logger;
         var repoController = new RepoController(context);
         _configRepository = repoController.ConfigRepository;
-        _gameRepository = repoController.GameRepository;
-        _context = context;
     }
 
-    public IList<GameConfiguration> GameConfiguration { get;set; } = default!;
+    public IList<GameConfiguration> GameConfigurations { get;set; } = default!;
     
     [BindProperty]
     public string ConfigName { get; set; } = default!;
 
-    public async Task OnGetAsync()
+    public Task OnGetAsync()
     {
-        _configRepository.CheckAndCreateInitialConfig();
-        // TODO: must get GameConfigurations through configRepository because of filesystem!!!
-        // Mitte midagi ei tohi käia otse läbi contexti!
-        GameConfiguration = await _context.Configurations.ToListAsync();
+        GameConfigurations = _configRepository.GetConfigurations();
+        return Task.CompletedTask;
     }
     
     public Task<IActionResult> OnPostNewConfigAsync()

@@ -5,6 +5,7 @@ namespace DAL;
 
 public interface IConfigRepository
 {
+    List<GameConfiguration> GetConfigurations();
     List<string> GetConfigurationNames();
     GameConfiguration GetConfigurationByName(string name);
     GameConfiguration GetConfigurationById(int id);

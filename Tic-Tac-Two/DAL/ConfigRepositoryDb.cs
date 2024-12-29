@@ -1,13 +1,18 @@
 using Domain;
+using GameBrain;
 
 namespace DAL;
 
 public class ConfigRepositoryDb(AppDbContext db) : IConfigRepository
 {
+    public List<GameConfiguration> GetConfigurations()
+    {
+        CheckAndCreateInitialConfig();
+        return db.Configurations.ToList();
+    }
     public List<string> GetConfigurationNames()
     {
         CheckAndCreateInitialConfig();
-
         return db.Configurations.Select(config => config.Name).ToList();
     }
 
@@ -85,12 +90,12 @@ public class ConfigRepositoryDb(AppDbContext db) : IConfigRepository
             if (configCount != 0) return;
             
             var hardcodedRepo = new ConfigRepositoryHardCoded();
-            var configNames = hardcodedRepo.GetConfigurationNames();
-            foreach (var configName in configNames)
+            var configs = hardcodedRepo.GetConfigurations();
+            foreach (var config in configs)
             {
-                var gameConfig = hardcodedRepo.GetConfigurationByName(configName);
-                db.Configurations.Add(gameConfig);
+                db.Configurations.Add(config);
             }
+            
             db.SaveChanges();
     }
 }

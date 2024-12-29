@@ -48,6 +48,11 @@ public class ConfigRepositoryHardCoded: IConfigRepository
         }
     };
 
+    public List<GameConfiguration> GetConfigurations()
+    {
+        return _gameConfigurations;
+    }
+    
     public List<string> GetConfigurationNames()
     {
         return _gameConfigurations.Select(config => config.Name).ToList();

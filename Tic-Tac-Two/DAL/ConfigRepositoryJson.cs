@@ -6,6 +6,12 @@ namespace DAL;
 
 public class ConfigRepositoryJson : IConfigRepository
 {
+    public List<GameConfiguration> GetConfigurations()
+    {
+        var configNames = GetConfigurationNames();
+        return configNames.Select(GetConfigurationByName).ToList();
+    }
+    
     public List<string> GetConfigurationNames()
     {
         CheckAndCreateInitialConfig();
@@ -26,7 +32,7 @@ public class ConfigRepositoryJson : IConfigRepository
     
     public GameConfiguration GetConfigurationById(int id)
     {
-    // TODO: kontrolli, et töötab õigesti!
+    // TODO: kontrolli, et töötab õigesti! + Kas ma üldse kasutan seda kuskil??
         return Directory
                    .GetFiles(FileHelper.BasePath, FileHelper.AsteriskSymbol + FileHelper.ConfigExtension)
                    .Select(config => JsonSerializer.Deserialize<GameConfiguration>(config))
