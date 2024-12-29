@@ -1,11 +1,19 @@
 using System.Text.Json;
 using Domain;
+using DTO;
 using GameBrain;
 
 namespace DAL;
 
 public class GameRepositoryJson : IGameRepository
 {
+    public List<SavedGame> GetSavedGames()
+    {
+        //TODO: vaata, et selle SavedGame sees, mis siit võetakse, oleks config olemas! (nagu db JOIN puhul).
+        var gameNames = GetGameNames();
+        return gameNames.Select(GetSavedGameByName).ToList();
+    }
+    
     public List<string> GetGameNames()
     {
         CheckAndCreateInitialFolder();

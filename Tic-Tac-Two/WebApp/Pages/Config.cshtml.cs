@@ -12,19 +12,13 @@ public class ConfigModel : PageModel
 {
     private readonly ILogger<ConfigModel> _logger;
 
-    private readonly AppDbContext _context;
-
     private readonly IConfigRepository _configRepository;
-
-    private readonly IGameRepository _gameRepository;
 
     public ConfigModel(ILogger<ConfigModel> logger, AppDbContext context)
     {
         _logger = logger;
         var repoController = new RepoController(context);
         _configRepository = repoController.ConfigRepository;
-        _gameRepository = repoController.GameRepository;
-        _context = context;
     }
 
     [BindProperty(SupportsGet = true)] public string? ConfigName { get; set; }

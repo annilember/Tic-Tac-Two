@@ -1,10 +1,12 @@
 using Domain;
+using DTO;
 using GameBrain;
 
 namespace DAL;
 
 public interface IGameRepository
 {
+    List<SavedGame> GetSavedGames();
     List<string> GetGameNames();
     SavedGame GetSavedGameByName(string name);
     GameState GetSavedGameState(SavedGame savedGame);

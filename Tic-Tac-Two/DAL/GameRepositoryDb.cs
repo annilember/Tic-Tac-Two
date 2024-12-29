@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Domain;
+using DTO;
 using GameBrain;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,6 +8,10 @@ namespace DAL;
 
 public class GameRepositoryDb(AppDbContext db) : IGameRepository
 {
+    public List<SavedGame> GetSavedGames()
+    {
+        return db.SavedGames.Include(s => s.Configuration).ToList();
+    }
     public List<string> GetGameNames()
     {
         return db.SavedGames.Select(savedGame => savedGame.Name).ToList();

@@ -4,17 +4,12 @@ using Domain;
 using GameBrain;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
 
 namespace WebApp.Pages;
 
 public class LoadGameModel : PageModel
 {
     private readonly ILogger<LoadGameModel> _logger;
-    
-    private readonly AppDbContext _context;
-        
-    private readonly IConfigRepository _configRepository;
         
     private readonly IGameRepository _gameRepository;
 
@@ -22,9 +17,7 @@ public class LoadGameModel : PageModel
     {
         _logger = logger;
         var repoController = new RepoController(context);
-        _configRepository = repoController.ConfigRepository;
         _gameRepository = repoController.GameRepository;
-        _context = context;
     }
 
     [BindProperty(SupportsGet = true)]
@@ -36,20 +29,22 @@ public class LoadGameModel : PageModel
     [BindProperty(SupportsGet = true)]
     public IList<SavedGame> AiVsAiGames { get;set; } = default!;
 
-    public async Task OnGetAsync()
+    public Task OnGetAsync()
     {
-        HumanVsHumanGames = await _context.SavedGames
+        HumanVsHumanGames = _gameRepository.GetSavedGames()
             .Where(savedGame => savedGame.ModeName == GameMode.GetModeName(EGameMode.HumanVsHuman.ToString()))
-            .Include(s => s.Configuration).ToListAsync();
+            .ToList();
         
-        HumanVsAiGames = await _context.SavedGames
+        HumanVsAiGames = _gameRepository.GetSavedGames()
             .Where(savedGame => savedGame.ModeName == GameMode.GetModeName(EGameMode.HumanVsAi.ToString()) || 
                                 savedGame.ModeName == GameMode.GetModeName(EGameMode.AiVsHuman.ToString()))
-            .Include(s => s.Configuration).ToListAsync();
-  
-        AiVsAiGames = await _context.SavedGames
+            .ToList();
+        
+        AiVsAiGames = _gameRepository.GetSavedGames()
             .Where(savedGame => savedGame.ModeName == GameMode.GetModeName(EGameMode.AiVsAi.ToString()))
-            .Include(s => s.Configuration).ToListAsync();
+            .ToList();
+        
+        return Task.CompletedTask;
     }
     
     [BindProperty(SupportsGet = true)]

@@ -9,19 +9,13 @@ namespace WebApp.Pages;
 public class GameModel : PageModel
 {
     private readonly ILogger<GameModel> _logger;
-    
-    private readonly AppDbContext _context;
-        
-    private readonly IConfigRepository _configRepository;
         
     private readonly IGameRepository _gameRepository;
 
     public GameModel(ILogger<GameModel> logger, AppDbContext context)
     {
         _logger = logger;
-        _context = context;
         var repoController = new RepoController(context);
-        _configRepository = repoController.ConfigRepository;
         _gameRepository = repoController.GameRepository;
     }
     

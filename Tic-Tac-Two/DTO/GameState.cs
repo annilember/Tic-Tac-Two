@@ -1,4 +1,6 @@
-namespace Domain;
+using Domain;
+
+namespace DTO;
 
 public class GameState()
 {

@@ -7,19 +7,13 @@ namespace WebApp.Pages;
 public class StartGameModel : PageModel
 {
     private readonly ILogger<StartGameModel> _logger;
-    
-    private readonly AppDbContext _context;
-        
-    private readonly IConfigRepository _configRepository;
         
     private readonly IGameRepository _gameRepository;
 
     public StartGameModel(ILogger<StartGameModel> logger, AppDbContext context)
     {
         _logger = logger;
-        _context = context;
         var repoController = new RepoController(context);
-        _configRepository = repoController.ConfigRepository;
         _gameRepository = repoController.GameRepository;
     }
     
@@ -51,7 +45,6 @@ public class StartGameModel : PageModel
         }
         
         var savedGame = _gameRepository.GetSavedGameByName(GameName);
-        _logger.LogInformation($"POST FROM START GAME - Game Name: {GameName}, Password: {savedGame.PlayerXPassword}");
         
         return Task.FromResult<IActionResult>(RedirectToPage(
             "./Game", 
@@ -71,7 +64,6 @@ public class StartGameModel : PageModel
         }
         
         var savedGame = _gameRepository.GetSavedGameByName(GameName);
-        _logger.LogInformation($"POST FROM START GAME - Game Name: {GameName}, Password: {savedGame.PlayerOPassword}");
         
         return Task.FromResult<IActionResult>(RedirectToPage(
             "./Game", 

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using DAL;
 using Domain;
+using DTO;
 using GameBrain;
 using Microsoft.Build.Framework;
 
@@ -11,8 +12,6 @@ namespace WebApp.Pages
     public class NewGameModel : PageModel
     {
         private readonly ILogger<NewGameModel> _logger;
-
-        private readonly AppDbContext _context;
 
         private readonly IConfigRepository _configRepository;
 
@@ -23,7 +22,6 @@ namespace WebApp.Pages
             var repoController = new RepoController(context);
             _configRepository = repoController.ConfigRepository;
             _gameRepository = repoController.GameRepository;
-            _context = context;
             _logger = logger;
         }
 
