@@ -34,7 +34,7 @@ public class GameModel : PageModel
     {
         SavedGame = _gameRepository.GetSavedGameByName(GameName);
         GameInstance = new TicTacTwoBrain(SavedGame, SavedGame.Configuration!);
-        if (GameInstance.GameOver())
+        if (!GameInstance.MoveGridModeOn && GameInstance.GameOver())
         {
             return RedirectToPage(
                 "./GameOver", 
@@ -201,6 +201,30 @@ public class GameModel : PageModel
         ));
     }
 
+    public Task<IActionResult> OnPostAiMoveAsync()
+    {
+        SavedGame = _gameRepository.GetSavedGameByName(GameName);
+        GameInstance = new TicTacTwoBrain(SavedGame, SavedGame.Configuration!);
+        
+        GameInstance.MakeAiMove();
+        SavedGame.State = GameInstance.GetGameStateJson();
+        
+        //TODO: check if saves correctly.
+        _gameRepository.SaveGame(SavedGame);
+        if (GameInstance.GameOver())
+        {
+            return Task.FromResult<IActionResult>(RedirectToPage(
+                "./GameOver", 
+                new { gameName = GameName, password = Password }
+            ));
+        }
+        
+        return Task.FromResult<IActionResult>(RedirectToPage(
+            "./Game", 
+            new { gameName = GameName, password = Password }
+        ));
+    }
+
     private string SetNewMoveTypeInGameState()
     {
         if (ChosenMove == EChosenMove.PlacePiece.ToString())
@@ -268,6 +292,10 @@ public class GameModel : PageModel
 
     public bool YourTurn()
     {
+        if (AiTurn())
+        {
+            return false;
+        }
         if (Password == SavedGame.PlayerXPassword && GameInstance.GetNextMoveBy() == EGamePiece.X)
         {
             return true;

@@ -132,10 +132,11 @@
                     <input asp-for="ChosenMove" type="hidden" value="@EChosenMove.PlacePiece.ToString()"/>
                     <button class="btn btn-lg btn-outline-dark chosen-move-button"
                             type="submit"
-                            @(!Model.YourTurn() || 
+                            @(!Model.YourTurn() ||
                               !Model.GameInstance.HasGamePiece(Model.GameInstance.GetNextMoveBy()) ||
-                              Model.GameInstance.MovePieceModeOn ?
-                                "hidden" : "")
+                              Model.GameInstance.MovePieceModeOn
+                                ? "hidden"
+                                : "")
                             @(Model.GameInstance.GetChosenMove() == EChosenMove.PlacePiece
                                 ? "disabled"
                                 : "")>Place a piece
@@ -197,7 +198,7 @@
                     <input asp-for="Password" type="hidden" value="@Model.Password"/>
                     <button class="btn btn-lg btn-outline-warning chosen-move-button"
                             type="submit"
-                            @(Model.AiTurn() ? "" : "hidden")>AI move
+                            @(Model.AiTurn() ? "" : "hidden")>Make AI move
                     </button>
                 </form>
             </div>
