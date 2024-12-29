@@ -43,10 +43,19 @@ public static class Message
     public const string FinalRoundMessage = "Final round!";
     
     public const string UnknownPlayerName = "Alien";
+    
+    public const string NewConfigCreatedMessage = "New configuration created!";
+    
+    public const string ConfigUpdatedMessage = "Configuration updated!";
 
     public static string GetTheWinnerIsMessage(string name)
     {
         return $"The winner is {name}!";
+    }
+    
+    public static string GetValueOutOfBoundsError(string propertyName, int min, int max)
+    {
+        return $"{propertyName} value has to range from {min} to {max}!";
     }
     
     public static string GamePieceAsString(EGamePiece piece) =>

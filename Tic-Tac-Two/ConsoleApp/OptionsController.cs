@@ -1,4 +1,3 @@
-using System.Globalization;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using ConsoleUI;
@@ -74,16 +73,11 @@ public static class OptionsController
             
             if (propertyInfo.PropertyType == typeof(int) && int.TryParse(input, out var value))
             {
-                var propertyBoundsDictionary = GameConfigurationHelper.GetConfigPropertyBoundsDictionary(config);
-                var minBound = propertyBoundsDictionary[propertyInfo.Name][0];
-                var maxBound = propertyBoundsDictionary[propertyInfo.Name][1];
-            
-                if (value >= minBound && value <= maxBound)
+                errorMessage = GameConfigurationHelper.CheckBoundsAndGetErrorMessage(config, propertyInfo.Name, value);
+                if (errorMessage.Length == 0)
                 {
                     return SetNewIntValueProperty(config, propertyInfo, value);
                 }
-                errorMessage = $"{propertyInfo.Name} value has to range from {minBound} to {maxBound}!";
-                
             }
             else if (propertyInfo.PropertyType == typeof(string) &&
                      propertyInfo.Name.Equals("Name", StringComparison.InvariantCultureIgnoreCase))
@@ -157,7 +151,7 @@ public static class OptionsController
         }
     
         var propertyMenu = new Menu(EMenuLevel.Deep,
-            "TIC-TAC-TWO: - choose property to change",
+            VisualizerHelper.ChoosePropertyMenuHeader,
             propertyMenuItems);
 
         return propertyMenu.Run(message);

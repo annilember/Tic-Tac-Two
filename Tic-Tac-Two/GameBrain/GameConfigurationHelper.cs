@@ -10,7 +10,7 @@ public static class GameConfigurationHelper
         return config.GetType().GetProperties();
     }
 
-    public static Dictionary<string, int[]> GetConfigPropertyBoundsDictionary(GameConfiguration config)
+    private static Dictionary<string, int[]> GetConfigPropertyBoundsDictionary(GameConfiguration config)
     {
         var maxNumberOfPieces = (int)Math.Ceiling((decimal)(config.BoardSizeWidth * config.BoardSizeHeight) / 2);
         
@@ -28,5 +28,18 @@ public static class GameConfigurationHelper
             { "MoveGridAfterNMoves", [0, config.MaxGameRounds] },
             { "MovePieceAfterNMoves", [1, config.MaxGameRounds] }
         };
+    }
+
+    public static string CheckBoundsAndGetErrorMessage(GameConfiguration config, string propertyName, int value)
+    {
+        var propertyBoundsDictionary = GetConfigPropertyBoundsDictionary(config);
+        var minBound = propertyBoundsDictionary[propertyName][0];
+        var maxBound = propertyBoundsDictionary[propertyName][1];
+            
+        if (value >= minBound && value <= maxBound)
+        {
+            return "";
+        }
+        return Message.GetValueOutOfBoundsError(propertyName, minBound, maxBound);
     }
 }

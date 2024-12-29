@@ -42,8 +42,35 @@ public class ConfigRepositoryDb(AppDbContext db) : IConfigRepository
 
     public void SaveConfigurationChanges(GameConfiguration config, string previousName)
     {
+        var updatedConfig = SetNewPropertyValues(config, previousName);
+        if (updatedConfig != null)
+        {
+            config = updatedConfig;
+        }
         db.Configurations.Update(config);
         db.SaveChanges();
+    }
+
+    private GameConfiguration? SetNewPropertyValues(GameConfiguration newConfig, string previousName)
+    {
+        var config = GetConfigurationByName(previousName);
+        if (config.Id == 0)
+        {
+            return null;
+        }
+        config.Name = newConfig.Name;
+        config.BoardSizeWidth = newConfig.BoardSizeWidth;
+        config.BoardSizeHeight = newConfig.BoardSizeHeight;
+        config.GridSizeWidth = newConfig.GridSizeWidth;
+        config.GridSizeHeight = newConfig.GridSizeHeight;
+        config.GridStartPosX = newConfig.GridStartPosX;
+        config.GridStartPosY = newConfig.GridStartPosY;
+        config.NumberOfPieces = newConfig.NumberOfPieces;
+        config.WinCondition = newConfig.WinCondition;
+        config.MaxGameRounds = newConfig.MaxGameRounds;
+        config.MoveGridAfterNMoves = newConfig.MoveGridAfterNMoves;
+        config.MovePieceAfterNMoves = newConfig.MovePieceAfterNMoves;
+        return config;
     }
 
     public void DeleteConfiguration(GameConfiguration gameConfig)

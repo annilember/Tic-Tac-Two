@@ -34,6 +34,8 @@ public class ConfigsModel : PageModel
     public async Task OnGetAsync()
     {
         _configRepository.CheckAndCreateInitialConfig();
+        // TODO: must get GameConfigurations through configRepository because of filesystem!!!
+        // Mitte midagi ei tohi käia otse läbi contexti!
         GameConfiguration = await _context.Configurations.ToListAsync();
     }
     

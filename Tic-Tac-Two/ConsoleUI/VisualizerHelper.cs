@@ -65,4 +65,6 @@ public static class VisualizerHelper
     public const string ChooseConfigForNewGameMenuHeader = "TIC-TAC-TWO - choose configuration for new game";
     
     public const string ChooseGameModeMenuHeader = "TIC-TAC-TWO - choose game mode";
+
+    public const string ChoosePropertyMenuHeader = "TIC-TAC-TWO - choose property to change";
 }
