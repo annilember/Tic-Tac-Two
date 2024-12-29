@@ -1,0 +1,141 @@
+@page
+@model WebApp.Pages.Configurations.CreateModel
+
+@{
+    ViewData["Title"] = "Configuration";
+}
+
+<h1>Configuration</h1>
+
+<hr/>
+
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group py-3">
+                <h5 class="text-center d-block">
+                    <label asp-for="GameConfiguration.Name" class="control-label"></label>
+                </h5>
+                <input asp-for="GameConfiguration.Name" class="form-control"/>
+                <span asp-validation-for="GameConfiguration.Name" class="text-danger"></span>
+            </div>
+            <div class="row">
+                <h5 class="text-center d-block">Board size</h5>
+                <div class="col-md-6">
+                    <div class="input-group py-3">
+                        <span class="input-group-text column-label-small justify-content-center">
+                            <label asp-for="GameConfiguration.BoardSizeWidth" class="control-label">Width</label>
+                        </span>
+                        <input asp-for="GameConfiguration.BoardSizeWidth" class="form-control rounded-end"/>
+                        <span asp-validation-for="GameConfiguration.BoardSizeWidth" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="input-group py-3">
+                        <span class="input-group-text column-label-small justify-content-center">
+                            <label asp-for="GameConfiguration.BoardSizeHeight" class="control-label">Height</label>
+                        </span>
+                        <input asp-for="GameConfiguration.BoardSizeHeight" class="form-control rounded-end"/>
+                        <span asp-validation-for="GameConfiguration.BoardSizeHeight" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <h5 class="text-center d-block">Grid size</h5>
+                <div class="col-md-6">
+                    <div class="input-group py-3">
+                        <span class="input-group-text column-label-small justify-content-center">
+                            <label asp-for="GameConfiguration.GridSizeWidth" class="control-label">Width</label>
+                        </span>
+                        <input asp-for="GameConfiguration.GridSizeWidth" class="form-control rounded-end"/>
+                        <span asp-validation-for="GameConfiguration.GridSizeWidth" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="input-group py-3">
+                        <span class="input-group-text column-label-small justify-content-center">
+                            <label asp-for="GameConfiguration.GridSizeHeight" class="control-label">Height</label>
+                        </span>
+                        <input asp-for="GameConfiguration.GridSizeHeight" class="form-control rounded-end"/>
+                        <span asp-validation-for="GameConfiguration.GridSizeHeight" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <h5 class="text-center d-block">Grid starting position</h5>
+                <div class="col-md-6">
+                    <div class="input-group py-3">
+                        <span class="input-group-text column-label-small justify-content-center">
+                            <label asp-for="GameConfiguration.GridStartPosX" class="control-label">X</label>
+                        </span>
+                        <input asp-for="GameConfiguration.GridStartPosX" class="form-control rounded-end"/>
+                        <span asp-validation-for="GameConfiguration.GridStartPosX" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="input-group py-3">
+                        <span class="input-group-text column-label-small justify-content-center">
+                            <label asp-for="GameConfiguration.GridStartPosY" class="control-label">Y</label>
+                        </span>
+                        <input asp-for="GameConfiguration.GridStartPosY" class="form-control rounded-end"/>
+                        <span asp-validation-for="GameConfiguration.GridStartPosY" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="input-group py-3">
+                <span class="input-group-text column-label-large justify-content-center">
+                    <label asp-for="GameConfiguration.NumberOfPieces" class="control-label">
+                        Number of pieces by player
+                    </label>
+                </span>
+                <input asp-for="GameConfiguration.NumberOfPieces" class="form-control rounded-end"/>
+                <span asp-validation-for="GameConfiguration.NumberOfPieces" class="text-danger"></span>
+            </div>
+            <div class="input-group py-3">
+                <span class="input-group-text column-label-large justify-content-center">
+                    <label asp-for="GameConfiguration.WinCondition" class="control-label">
+                        Winning condition
+                    </label>
+                </span>
+                <input asp-for="GameConfiguration.WinCondition" class="form-control rounded-end"/>
+                <span asp-validation-for="GameConfiguration.WinCondition" class="text-danger"></span>
+            </div>
+            <div class="input-group py-3">
+                <span class="input-group-text column-label-large justify-content-center">
+                    <label asp-for="GameConfiguration.MaxGameRounds" class="control-label">
+                        Maximum number of game rounds
+                    </label>
+                </span>
+                <input asp-for="GameConfiguration.MaxGameRounds" class="form-control rounded-end"/>
+                <span asp-validation-for="GameConfiguration.MaxGameRounds" class="text-danger"></span>
+            </div>
+            <div class="input-group py-3">
+                <span class="input-group-text column-label-large justify-content-center">
+                    <label asp-for="GameConfiguration.MoveGridAfterNMoves" class="control-label">
+                        Move grid after n rounds
+                    </label>
+                </span>
+                <input asp-for="GameConfiguration.MoveGridAfterNMoves" class="form-control rounded-end"/>
+                <span asp-validation-for="GameConfiguration.MoveGridAfterNMoves" class="text-danger"></span>
+            </div>
+            <div class="input-group py-3">
+                <span class="input-group-text column-label-large justify-content-center">
+                    <label asp-for="GameConfiguration.MovePieceAfterNMoves" class="control-label">
+                        Move piece after n rounds
+                    </label>
+                </span>
+                <input asp-for="GameConfiguration.MovePieceAfterNMoves" class="form-control rounded-end"/>
+                <span asp-validation-for="GameConfiguration.MovePieceAfterNMoves" class="text-danger"></span>
+            </div>
+            
+            <div class="form-group py-3 text-center">
+                <input type="submit" value="Create" class="btn btn-dark w-100"/>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

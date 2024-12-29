@@ -58,7 +58,7 @@ public class ConfigRepositoryJson : IConfigRepository
         File.Delete(FileHelper.BasePath + config.Name + FileHelper.ConfigExtension);
     }
 
-    private void CheckAndCreateInitialConfig()
+    public void CheckAndCreateInitialConfig()
     {
         if (!Directory.Exists(FileHelper.BasePath))
         {

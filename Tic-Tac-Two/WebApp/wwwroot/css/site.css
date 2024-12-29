@@ -53,6 +53,10 @@ body {
   width: 14rem;
 }
 
+.create-new-config-button {
+  width: 14rem;
+}
+
 .column-name {
   width: 20%;
 }
@@ -65,4 +69,12 @@ body {
 }
 .column-delete {
   width: 10%;
+}
+
+.column-label-small {
+  width: 35%;
+}
+
+.column-label-large {
+  width: 70%;
 }

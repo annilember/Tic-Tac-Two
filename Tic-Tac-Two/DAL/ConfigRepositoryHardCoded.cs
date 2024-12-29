@@ -102,4 +102,6 @@ public class ConfigRepositoryHardCoded: IConfigRepository
             }
         }
     }
+    
+    public void CheckAndCreateInitialConfig() {}
 }

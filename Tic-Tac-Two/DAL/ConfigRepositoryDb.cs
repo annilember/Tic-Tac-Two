@@ -52,7 +52,7 @@ public class ConfigRepositoryDb(AppDbContext db) : IConfigRepository
         db.SaveChanges();
     }
     
-    private void CheckAndCreateInitialConfig()
+    public void CheckAndCreateInitialConfig()
     {
             var configCount = db.Configurations.Count();
             if (configCount != 0) return;

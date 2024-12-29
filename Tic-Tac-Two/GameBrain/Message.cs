@@ -43,8 +43,6 @@ public static class Message
     public const string FinalRoundMessage = "Final round!";
     
     public const string UnknownPlayerName = "Alien";
-    
-    public const string YouWonMessage = "You won!";
 
     public static string GetTheWinnerIsMessage(string name)
     {

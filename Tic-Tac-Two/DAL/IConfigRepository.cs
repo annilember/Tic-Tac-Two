@@ -12,4 +12,5 @@ public interface IConfigRepository
     void AddNewConfiguration(GameConfiguration gameConfiguration);
     void SaveConfigurationChanges(GameConfiguration gameConfiguration, string previousName);
     void DeleteConfiguration(GameConfiguration gameConfiguration);
+    void CheckAndCreateInitialConfig();
 }

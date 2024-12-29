@@ -5,96 +5,153 @@
     ViewData["Title"] = "Configurations";
 }
 
-<h1>Configurations</h1>
+<div class="container-md">
+    <div class="row py-1 align-items-center">
+        <div class="col-auto px-1">
+            <h1>Configurations</h1>
+        </div>
+        <div class="col text-end">
+            <form method="post" asp-page-handler="NewConfig">
+                <button type="submit" 
+                        class="btn btn-dark create-new-config-button">Create new configuration</button>
+            </form>
+        </div>
+    </div>
+</div>
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-warning" role="alert">
+        @TempData["Message"]
+    </div>
+}
 
-<p>
-    <a asp-page="Create">Create New</a>
-</p>
 <table class="table">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.GameConfiguration[0].Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.GameConfiguration[0].BoardSizeWidth)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.GameConfiguration[0].BoardSizeHeight)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.GameConfiguration[0].GridSizeWidth)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.GameConfiguration[0].GridSizeHeight)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.GameConfiguration[0].GridStartPosX)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.GameConfiguration[0].GridStartPosY)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.GameConfiguration[0].NumberOfPieces)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.GameConfiguration[0].WinCondition)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.GameConfiguration[0].MaxGameRounds)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.GameConfiguration[0].MoveGridAfterNMoves)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.GameConfiguration[0].MovePieceAfterNMoves)
-            </th>
+            <th class="column-name"></th>
             <th></th>
+            <th class="column-delete"></th>
+            <th class="column-delete"></th>
         </tr>
     </thead>
     <tbody>
 @foreach (var item in Model.GameConfiguration) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Name)
+                <h4>@Html.DisplayFor(modelItem => item.Name)</h4>
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.BoardSizeWidth)
+                <p class="d-inline-flex gap-1">
+                    <button class="btn btn-outline-dark" type="button" data-bs-toggle="collapse" data-bs-target="#@(item.Id)-specs" aria-expanded="false" aria-controls="@(item.Id)-specs">
+                        See specifications
+                    </button>
+                </p>
+                <div class="collapse" id="@(item.Id)-specs">
+                    <div class="card card-body">
+                        <table class="table table-dark table-hover">
+                            <tr>
+                                <td>
+                                    @Html.DisplayNameFor(model => model.GameConfiguration[0].BoardSizeWidth)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.BoardSizeWidth)
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    @Html.DisplayNameFor(model => model.GameConfiguration[0].BoardSizeHeight)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.BoardSizeHeight)
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    @Html.DisplayNameFor(model => model.GameConfiguration[0].GridSizeWidth)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.GridSizeWidth)
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    @Html.DisplayNameFor(model => model.GameConfiguration[0].GridSizeHeight)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.GridSizeHeight)
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    @Html.DisplayNameFor(model => model.GameConfiguration[0].GridStartPosX)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.GridStartPosX)
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    @Html.DisplayNameFor(model => model.GameConfiguration[0].GridStartPosY)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.GridStartPosY)
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    @Html.DisplayNameFor(model => model.GameConfiguration[0].NumberOfPieces)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.NumberOfPieces)
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    @Html.DisplayNameFor(model => model.GameConfiguration[0].WinCondition)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.WinCondition)
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    @Html.DisplayNameFor(model => model.GameConfiguration[0].MaxGameRounds)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.MaxGameRounds)
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    @Html.DisplayNameFor(model => model.GameConfiguration[0].MoveGridAfterNMoves)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.MoveGridAfterNMoves)
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    @Html.DisplayNameFor(model => model.GameConfiguration[0].MovePieceAfterNMoves)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.MovePieceAfterNMoves)
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.BoardSizeHeight)
+                <form method="post" asp-page-handler="ChangeConfig">
+                    <input asp-for="ConfigName" type="hidden" value="@item.Name"/>
+                    <button type="submit" class="btn btn-outline-dark rename-delete-button">Modify</button>
+                </form>
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.GridSizeWidth)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.GridSizeHeight)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.GridStartPosX)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.GridStartPosY)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.NumberOfPieces)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.WinCondition)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.MaxGameRounds)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.MoveGridAfterNMoves)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.MovePieceAfterNMoves)
-            </td>
-            <td>
-                <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
+                <form method="post" asp-page-handler="DeleteConfig">
+                    <input asp-for="ConfigName" type="hidden" value="@item.Name"/>
+                    <button type="submit" class="btn btn-outline-dark rename-delete-button">Delete</button>
+                </form>
             </td>
         </tr>
 }
