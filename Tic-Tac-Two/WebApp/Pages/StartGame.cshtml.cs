@@ -22,14 +22,20 @@ public class StartGameModel : PageModel
     
     public string PlayerXName { get; set; } = default!;
     
+    public string PlayerXPassword { get; set; } = default!;
+    
     public string PlayerOName { get; set; } = default!;
+    
+    public string PlayerOPassword { get; set; } = default!;
 
     public IActionResult OnGet(string gameName)
     {
         var savedGame = _gameRepository.GetSavedGameByName(gameName);
         GameName = gameName;
         PlayerXName = savedGame.PlayerXName;
+        PlayerXPassword = savedGame.PlayerXPassword;
         PlayerOName = savedGame.PlayerOName;
+        PlayerOPassword = savedGame.PlayerOPassword;
         return Page();
     }
     

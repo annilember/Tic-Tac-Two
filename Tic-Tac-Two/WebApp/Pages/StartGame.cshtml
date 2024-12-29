@@ -11,23 +11,57 @@
 <hr/>
 <div class="row py-5">
     <div class="col text-center">
-        <h1 class="col px-1 col-auto">ENTER AS</h1>
+        <h1 class="display-1 col px-1 col-auto">ENTER AS</h1>
     </div>
 </div>
-<div class="row justify-content-center">
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-    <div class="col px-5 col-auto form-group">
-        <form method="post" asp-page-handler="PlayerX">
-            <input asp-for="GameName" type="hidden" value="@Model.GameName"/>
-            <button type="submit" class="btn btn-dark btn-lg join-as-button">@Model.PlayerXName</button>
-        </form>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="col col-md-4 px-5 col-auto form-group text-center">
+            <form method="post" asp-page-handler="PlayerX">
+                <input asp-for="GameName" type="hidden" value="@Model.GameName"/>
+                <button type="submit" class="btn btn-dark btn-lg join-as-button">@Model.PlayerXName</button>
+            </form>
+        </div>
+        <div class="col col-md-4 px-5 col-auto form-group text-center">
+            <form method="post" asp-page-handler="PlayerO">
+                <input asp-for="GameName" type="hidden" value="@Model.GameName"/>
+                <button type="submit" class="btn btn-dark btn-lg join-as-button">@Model.PlayerOName</button>
+            </form>
+        </div>
     </div>
-    <div class="col px-5 col-auto form-group">
-        <form method="post" asp-page-handler="PlayerO">
-            <input asp-for="GameName" type="hidden" value="@Model.GameName"/>
-            <button type="submit" class="btn btn-dark btn-lg join-as-button">@Model.PlayerOName</button>
-        </form>
+    <div class="row justify-content-center">
+        <div class="col col-md-4 text-center">
+            <div class="d-flex align-items-center justify-content-center pt-5 pb-4 fw-light">
+                OR
+            </div>
+            <button class="btn btn-outline-dark join-as-button mt-2" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#playerX-link" aria-expanded="false" aria-controls="playerX-link">
+                Get link
+            </button>
+            <div class="collapse mt-2" id="playerX-link">
+                <div class="card card-body player-link font-monospace">
+                    @(Url.Page("/Game", "", new { gameName = Model.GameName, password = Model.PlayerXPassword }, Request.Scheme))
+                </div>
+            </div>
+        </div>
+        <div class="col col-md-4 text-center">
+            <div class="d-flex align-items-center justify-content-center pt-5 pb-4 fw-light">
+                OR
+            </div>
+            <button class="btn btn-outline-dark join-as-button mt-2" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#playerO-link" aria-expanded="false" aria-controls="playerO-link">
+                Get link
+            </button>
+            <div class="collapse mt-2" id="playerO-link">
+                <div class="card card-body player-link font-monospace">
+                    @(Url.Page("/Game", "", new { gameName = Model.GameName, password = Model.PlayerOPassword }, Request.Scheme))
+                </div>
+            </div>
+        </div>
     </div>
+
 </div>
 
 @section Scripts {

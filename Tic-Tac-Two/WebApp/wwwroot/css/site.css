@@ -78,3 +78,7 @@ body {
 .column-label-large {
   width: 70%;
 }
+
+.player-link {
+  color: var(--bs-tertiary-color);
+}
