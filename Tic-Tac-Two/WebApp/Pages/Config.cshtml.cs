@@ -35,6 +35,26 @@ public class ConfigModel : PageModel
     {
         GameConfiguration = new GameConfiguration();
         if (ConfigName != null) GameConfiguration = _configRepository.GetConfigurationByName(ConfigName);
+        
+        if (TempData["FormValues"] is Dictionary<string, string> formValues)
+        {
+            GameConfiguration.Name = formValues.GetValueOrDefault("Name", "");
+            
+            int ParseValue(string key) => 
+                int.TryParse(formValues.GetValueOrDefault(key), out var result) ? result : 0;
+            
+            GameConfiguration.BoardSizeWidth = ParseValue("BoardSizeWidth");
+            GameConfiguration.BoardSizeHeight = ParseValue("BoardSizeHeight");
+            GameConfiguration.GridSizeWidth = ParseValue("GridSizeWidth");
+            GameConfiguration.GridSizeHeight = ParseValue("GridSizeHeight");
+            GameConfiguration.GridStartPosX = ParseValue("GridStartPosX");
+            GameConfiguration.GridStartPosY = ParseValue("GridStartPosY");
+            GameConfiguration.NumberOfPieces = ParseValue("NumberOfPieces");
+            GameConfiguration.WinCondition = ParseValue("WinCondition");
+            GameConfiguration.MaxGameRounds = ParseValue("MaxGameRounds");
+            GameConfiguration.MoveGridAfterNMoves = ParseValue("MoveGridAfterNMoves");
+            GameConfiguration.MovePieceAfterNMoves = ParseValue("MovePieceAfterNMoves");
+        }
         return Page();
     }
 
@@ -54,8 +74,22 @@ public class ConfigModel : PageModel
         if (errorMessages.Length > 0)
         {
             TempData["ErrorMessages"] = JsonSerializer.Serialize(errorMessages);
-            
-            // siin peab andmed kaasa andma kuidagi nii, et ei nulliks ära
+            TempData["FormValues"] = new Dictionary<string, string>
+            {
+                { "Name", GameConfiguration.Name },
+                { "BoardSizeWidth", GameConfiguration.BoardSizeWidth.ToString() },
+                { "BoardSizeHeight", GameConfiguration.BoardSizeHeight.ToString() },
+                { "GridSizeWidth", GameConfiguration.GridSizeWidth.ToString() },
+                { "GridSizeHeight", GameConfiguration.GridSizeHeight.ToString() },
+                { "GridStartPosX", GameConfiguration.GridStartPosX.ToString() },
+                { "GridStartPosY", GameConfiguration.GridStartPosY.ToString() },
+                { "NumberOfPieces", GameConfiguration.NumberOfPieces.ToString() },
+                { "WinCondition", GameConfiguration.WinCondition.ToString() },
+                { "MaxGameRounds", GameConfiguration.MaxGameRounds.ToString() },
+                { "MoveGridAfterNMoves", GameConfiguration.MoveGridAfterNMoves.ToString() },
+                { "MovePieceAfterNMoves", GameConfiguration.MovePieceAfterNMoves.ToString() }
+            };
+
             return Task.FromResult<IActionResult>(RedirectToPage(
                 "./Config", 
                 new { configName = ConfigName }
