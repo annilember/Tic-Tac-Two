@@ -10,7 +10,7 @@ namespace WebApp.Pages;
 public class GameModel : PageModel
 {
     private readonly ILogger<GameModel> _logger;
-        
+
     private readonly IGameRepository _gameRepository;
 
     public GameModel(ILogger<GameModel> logger, AppDbContext context)
@@ -19,129 +19,126 @@ public class GameModel : PageModel
         var repoController = new RepoController(context);
         _gameRepository = repoController.GameRepository;
     }
-    
-    [BindProperty(SupportsGet = true)]
-    public string GameName { get; set; } = default!;
-    
-    [BindProperty(SupportsGet = true)]
-    public string Password { get; set; } = default!;
-    
+
+    [BindProperty(SupportsGet = true)] public string GameName { get; set; } = default!;
+
+    [BindProperty(SupportsGet = true)] public string Password { get; set; } = default!;
+
     public SavedGame SavedGame { get; set; } = default!;
-    
+
     public TicTacTwoBrain GameInstance { get; set; } = default!;
+
+    [BindProperty] public int XCoordinate { get; set; }
+
+    [BindProperty] public int YCoordinate { get; set; }
+
+    [BindProperty] public string ChosenMove { get; set; } = default!;
     
+    [BindProperty] public string MoveGridDirection { get; set; } = default!;
+
     public IActionResult OnGet()
     {
-        SavedGame = _gameRepository.GetSavedGameByName(GameName);
-        GameInstance = new TicTacTwoBrain(SavedGame, SavedGame.Configuration!);
+        SetMainProperties();
         if (!GameInstance.MoveGridModeOn && GameInstance.GameOver())
         {
             return RedirectToPage(
-                "./GameOver", 
+                "./GameOver",
                 new { gameName = GameName, password = Password }
             );
         }
+
         return Page();
     }
     
-    [BindProperty]
-    public int XCoordinate { get; set; }
-    
-    [BindProperty]
-    public int YCoordinate { get; set; }
-    
-    public Task<IActionResult> OnPostMakeAMoveAsync()
+    private enum GameAction
     {
-        SavedGame = _gameRepository.GetSavedGameByName(GameName);
-        GameInstance = new TicTacTwoBrain(SavedGame, SavedGame.Configuration!);
-        GameInstance.MakeAMove(XCoordinate, YCoordinate);
-        SavedGame.State = GameInstance.GetGameStateJson();
-        
-        //TODO: check if saves correctly.
-        _gameRepository.SaveGame(SavedGame);
-        if (GameInstance.GameOver())
-        {
-            return Task.FromResult<IActionResult>(RedirectToPage(
-                "./GameOver", 
-                new { gameName = GameName, password = Password }
-            ));
-        }
-        
-        return Task.FromResult<IActionResult>(RedirectToPage(
-            "./Game", 
-            new { gameName = GameName, password = Password }
-        ));
+        MakeAMove,
+        RemovePiece,
+        PlaceRemovedPiece,
+        MoveTypeChosen,
+        MoveGrid,
+        SaveNewGridPosition,
+        AiMove
     }
-    
-    public Task<IActionResult> OnPostRemovePieceAsync()
-    {
-        SavedGame = _gameRepository.GetSavedGameByName(GameName);
-        GameInstance = new TicTacTwoBrain(SavedGame, SavedGame.Configuration!);
-        GameInstance.RemovePiece(XCoordinate, YCoordinate);
-        GameInstance.DeActivateRemovePieceMode();
-        GameInstance.ActivateMovePieceMode();
-        SavedGame.State = GameInstance.GetGameStateJson();
-        
-        //TODO: check if saves correctly.
-        _gameRepository.SaveGame(SavedGame);
-        
-        return Task.FromResult<IActionResult>(RedirectToPage(
-            "./Game", 
-            new { gameName = GameName, password = Password }
-        ));
-    }
-    
-    public Task<IActionResult> OnPostPlaceRemovedPieceAsync()
-    {
-        SavedGame = _gameRepository.GetSavedGameByName(GameName);
-        GameInstance = new TicTacTwoBrain(SavedGame, SavedGame.Configuration!);
-        GameInstance.MakeAMove(XCoordinate, YCoordinate);
-        GameInstance.DeActivateMovePieceMode();
-        SavedGame.State = GameInstance.GetGameStateJson();
-        
-        //TODO: check if saves correctly.
-        _gameRepository.SaveGame(SavedGame);
-        if (GameInstance.GameOver())
-        {
-            return Task.FromResult<IActionResult>(RedirectToPage(
-                "./GameOver", 
-                new { gameName = GameName, password = Password }
-            ));
-        }
-        
-        return Task.FromResult<IActionResult>(RedirectToPage(
-            "./Game", 
-            new { gameName = GameName, password = Password }
-        ));
-    }
-    
-    [BindProperty]
-    public string ChosenMove { get; set; } = default!;
-    
-    public Task<IActionResult> OnPostMoveTypeChosenAsync()
-    {
-        SavedGame = _gameRepository.GetSavedGameByName(GameName);
-        GameInstance = new TicTacTwoBrain(SavedGame, SavedGame.Configuration!);
-        
-        SavedGame.State = SetNewMoveTypeInGameState();
-        
-        //TODO: check if saves correctly.
-        _gameRepository.SaveGame(SavedGame);
-        
-        return Task.FromResult<IActionResult>(RedirectToPage(
-            "./Game", 
-            new { gameName = GameName, password = Password }
-        ));
-    }
-    
-    [BindProperty]
-    public string MoveGridDirection { get; set; } = default!;
-    
-    public Task<IActionResult> OnPostMoveGridAsync()
-    {
-        SavedGame = _gameRepository.GetSavedGameByName(GameName);
-        GameInstance = new TicTacTwoBrain(SavedGame, SavedGame.Configuration!);
 
+    public Task<IActionResult> OnPostAsync(string handler)
+    {
+        var action = Enum.Parse<GameAction>(handler);
+        SetMainProperties();
+        var errorMessage = DoOnPostAction(action);
+        SaveGameState();
+        if (errorMessage != null)
+        {
+            TempData["ErrorMessage"] = errorMessage;
+        }
+        
+        if (GameInstance.GameOver() && !GameInstance.MoveGridModeOn && !GameInstance.MovePieceModeOn)
+        {
+            return Task.FromResult<IActionResult>(RedirectToPage(
+                "./GameOver",
+                new { gameName = GameName, password = Password }
+            ));
+        }
+
+        return Task.FromResult<IActionResult>(RedirectToPage(
+            "./Game",
+            new { gameName = GameName, password = Password }
+        ));
+        
+    }
+
+    private string? DoOnPostAction(GameAction action)
+    {
+        switch (action)
+        {
+            case GameAction.MakeAMove:
+                GameInstance.MakeAMove(XCoordinate, YCoordinate);
+                break;
+            case GameAction.RemovePiece:
+                GameInstance.RemovePiece(XCoordinate, YCoordinate);
+                GameInstance.DeActivateRemovePieceMode();
+                GameInstance.ActivateMovePieceMode();
+                break;
+            case GameAction.PlaceRemovedPiece:
+                GameInstance.MakeAMove(XCoordinate, YCoordinate);
+                GameInstance.DeActivateMovePieceMode();
+                break;
+            case GameAction.MoveTypeChosen:
+                SetNewMoveTypeInGameState();
+                break;
+            case GameAction.MoveGrid:
+                HandleMoveGrid();
+                break;
+            case GameAction.SaveNewGridPosition:
+                if (!GameInstance.GridWasMoved())
+                {
+                    return Message.GridWasNotMovedMessage;
+                }
+                GameInstance.DeActivateMoveGridMode();
+                break;
+            case GameAction.AiMove:
+                GameInstance.MakeAiMove();
+                break;
+        }
+        return null;
+    }
+
+    private void SetMainProperties()
+    {
+        SavedGame = _gameRepository.GetSavedGameByName(GameName);
+        GameInstance = new TicTacTwoBrain(SavedGame, SavedGame.Configuration!);
+    }
+    
+    private void SaveGameState()
+    {
+        SavedGame.State = GameInstance.GetGameStateJson();
+
+        //TODO: check if saves correctly.
+        _gameRepository.SaveGame(SavedGame);
+    }
+    
+    private void HandleMoveGrid()
+    {
         if (MoveGridDirection == EMoveGridDirection.Right.ToString())
         {
             GameInstance.MoveGrid(EMoveGridDirection.Right);
@@ -158,74 +155,9 @@ public class GameModel : PageModel
         {
             GameInstance.MoveGrid(EMoveGridDirection.Down);
         }
-        
-        SavedGame.State = GameInstance.GetGameStateJson();
-        
-        //TODO: check if saves correctly.
-        _gameRepository.SaveGame(SavedGame);
-        
-        return Task.FromResult<IActionResult>(RedirectToPage(
-            "./Game", 
-            new { gameName = GameName, password = Password }
-        ));
-    }
-    
-    public Task<IActionResult> OnPostSaveNewGridPositionAsync()
-    {
-        SavedGame = _gameRepository.GetSavedGameByName(GameName);
-        GameInstance = new TicTacTwoBrain(SavedGame, SavedGame.Configuration!);
-
-        if (!GameInstance.GridWasMoved())
-        {
-            TempData["ErrorMessage"] = Message.GridWasNotMovedMessage;
-        }
-        else
-        {
-            GameInstance.DeActivateMoveGridMode();
-            SavedGame.State = GameInstance.GetGameStateJson();
-        
-            //TODO: check if saves correctly.
-            _gameRepository.SaveGame(SavedGame);
-            if (GameInstance.GameOver())
-            {
-                return Task.FromResult<IActionResult>(RedirectToPage(
-                    "./GameOver", 
-                    new { gameName = GameName, password = Password }
-                ));
-            }
-        }
-        
-        return Task.FromResult<IActionResult>(RedirectToPage(
-            "./Game", 
-            new { gameName = GameName, password = Password }
-        ));
     }
 
-    public Task<IActionResult> OnPostAiMoveAsync()
-    {
-        SavedGame = _gameRepository.GetSavedGameByName(GameName);
-        GameInstance = new TicTacTwoBrain(SavedGame, SavedGame.Configuration!);
-        
-        GameInstance.MakeAiMove();
-        SavedGame.State = GameInstance.GetGameStateJson();
-        
-        //TODO: check if saves correctly.
-        _gameRepository.SaveGame(SavedGame);
-        if (GameInstance.GameOver())
-        {
-            return Task.FromResult<IActionResult>(RedirectToPage(
-                "./GameOver", 
-                new { gameName = GameName, password = Password }
-            ));
-        }
-        
-        return Task.FromResult<IActionResult>(RedirectToPage(
-            "./Game", 
-            new { gameName = GameName, password = Password }
-        ));
-    }
-
-    private string SetNewMoveTypeInGameState()
+    private void SetNewMoveTypeInGameState()
     {
         if (ChosenMove == EChosenMove.PlacePiece.ToString())
         {
@@ -233,6 +165,7 @@ public class GameModel : PageModel
             {
                 GameInstance.DeActivateRemovePieceMode();
             }
+
             if (GameInstance.MoveGridModeOn)
             {
                 GameInstance.RestoreGridState();
@@ -244,6 +177,7 @@ public class GameModel : PageModel
             {
                 GameInstance.RestoreGridState();
             }
+
             GameInstance.ActivateRemovePieceMode();
         }
         else if (ChosenMove == EChosenMove.MoveGrid.ToString())
@@ -252,9 +186,9 @@ public class GameModel : PageModel
             {
                 GameInstance.DeActivateRemovePieceMode();
             }
+
             GameInstance.ActivateMoveGridMode();
         }
-        return GameInstance.GetGameStateJson();
     }
 
     public string StyleOccupiedSpot(int x, int y)
@@ -264,6 +198,7 @@ public class GameModel : PageModel
         {
             style += "-outline";
         }
+
         return style + StyleSpot(x, y);
     }
 
@@ -287,6 +222,7 @@ public class GameModel : PageModel
         {
             style += "-light";
         }
+
         return style;
     }
 
@@ -323,7 +259,6 @@ public class GameModel : PageModel
     public bool AiTurn()
     {
         var gameMode = GameMode.GetMode(SavedGame.ModeName);
-        _logger.LogInformation(gameMode.ToString());
         var playerType = GameMode.GetPlayerType(gameMode, GameInstance.GetNextMoveBy());
         return playerType == EPlayerType.Ai;
     }
