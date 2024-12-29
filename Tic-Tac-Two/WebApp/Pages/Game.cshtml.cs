@@ -1,5 +1,6 @@
 using DAL;
 using Domain;
+using DTO;
 using GameBrain;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -294,6 +295,7 @@ public class GameModel : PageModel
     public bool AiTurn()
     {
         var gameMode = GameMode.GetMode(SavedGame.ModeName);
+        _logger.LogInformation(gameMode.ToString());
         var playerType = GameMode.GetPlayerType(gameMode, GameInstance.GetNextMoveBy());
         return playerType == EPlayerType.Ai;
     }

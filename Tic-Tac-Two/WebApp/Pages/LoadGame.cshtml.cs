@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using DAL;
 using Domain;
+using DTO;
 using GameBrain;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;

@@ -1,5 +1,6 @@
 ﻿using DAL;
 using Domain;
+using DTO;
 using GameBrain;
 
 namespace ConsoleUI;

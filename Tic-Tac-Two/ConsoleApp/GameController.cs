@@ -1,6 +1,7 @@
 using ConsoleUI;
 using DAL;
 using Domain;
+using DTO;
 using GameBrain;
 using MenuSystem;
 

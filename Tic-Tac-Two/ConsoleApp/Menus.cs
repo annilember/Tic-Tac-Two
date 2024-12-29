@@ -109,11 +109,4 @@ public static class Menus
                 MenuItemAction = OptionsController.DisplayGameRules
             }
         ]);
-
-    public static string DummyMethod()
-    {
-        Console.Write("Press any key to exit...");
-        Console.ReadKey();
-        return "Dummy";
-    }
 }

@@ -12,8 +12,8 @@ public class GameState()
     ) : this()
     {
         GameMode = gameMode;
-        PlayerXType = Domain.GameMode.GetPlayerType(gameMode, EGamePiece.X);
-        PlayerOType = Domain.GameMode.GetPlayerType(gameMode, EGamePiece.O);
+        PlayerXType = DTO.GameMode.GetPlayerType(gameMode, EGamePiece.X);
+        PlayerOType = DTO.GameMode.GetPlayerType(gameMode, EGamePiece.O);
         PlayerXName = playerXName;
         PlayerOName = playerOName;
         GameBoard = new EGamePiece[gameConfiguration.BoardSizeWidth][];

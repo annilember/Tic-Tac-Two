@@ -1,7 +1,20 @@
-namespace Domain;
+using Domain;
+
+namespace DTO;
 
 public record GameMode()
 {
+    private const string HumanPlayerTypeName = "Human";
+    private const string AiPlayerTypeName = "AI";
+    private const string HumanVsHumanGameModeName = "Human vs Human";
+    private const string HumanVsAiGameModeName = "Human vs AI";
+    private const string AiVsHumanGameModeName = "AI vs Human";
+    private const string AiVsAiGameModeName = "AI vs AI";
+    private const string HumanVsHumanConstrictedName = "humanvshuman";
+    private const string HumanVsAiConstrictedName = "humanvsai";
+    private const string AiVsHumanConstrictedName = "aivshuman";
+    private const string AiVsAiConstrictedName = "aivsai";
+    
     public static List<string> GetGameModeNames()
     {
         return Enum.GetNames<EGameMode>().Select(GetModeName).ToList();
@@ -19,11 +32,11 @@ public record GameMode()
         {
             case EPlayerType.Human:
             {
-                return "Human";
+                return HumanPlayerTypeName;
             }
             case EPlayerType.Ai:
             {
-                return "AI";
+                return AiPlayerTypeName;
             }
         }
 
@@ -79,22 +92,23 @@ public record GameMode()
         modeName = modeName.Replace(" ", "").ToLower();
         return modeName switch
         {
-            "humanvshuman" => EGameMode.HumanVsHuman,
-            "humanvsai" => EGameMode.HumanVsAi,
-            "aivshuman" => EGameMode.AiVsHuman,
-            "aivsai" => EGameMode.AiVsAi,
+            HumanVsHumanConstrictedName => EGameMode.HumanVsHuman,
+            HumanVsAiConstrictedName => EGameMode.HumanVsAi,
+            AiVsHumanConstrictedName => EGameMode.AiVsHuman,
+            AiVsAiConstrictedName => EGameMode.AiVsAi,
             _ => throw new InvalidOperationException("Game Mode does not exist: " + modeName)
         };
     }
 
     public static string GetModeName(string modeName)
     {
+        modeName = modeName.Replace(" ", "").ToLower();
         return modeName switch
         {
-            "HumanVsHuman" => "Human vs Human",
-            "HumanVsAi" => "Human vs AI",
-            "AiVsHuman" => "AI vs Human",
-            "AiVsAi" => "AI vs AI",
+            HumanVsHumanConstrictedName => HumanVsHumanGameModeName,
+            HumanVsAiConstrictedName => HumanVsAiGameModeName,
+            AiVsHumanConstrictedName => AiVsHumanGameModeName,
+            AiVsAiConstrictedName => AiVsAiGameModeName,
             _ => throw new InvalidOperationException("Game Mode does not exist: " + modeName)
         };
     }
