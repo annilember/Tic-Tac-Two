@@ -51,7 +51,7 @@
                                            class="btn btn-lg game-board-slot @(Model.StyleOccupiedSpot(xValue, yValue))"
                                            value="@Model.GameInstance.GameBoard[xValue][yValue].ToString()"
                                            @(!Model.GameInstance.RemovePieceModeOn ||
-                                             Model.GameInstance.GameBoard[xValue][yValue] != Model.GameInstance.GetNextMoveBy()
+                                             Model.GameInstance.GameBoard[xValue][yValue] != Model.GameInstance.NextMoveBy
                                                ? "disabled"
                                                : "")>
 
@@ -67,7 +67,7 @@
                                     <input id="slot-@xValue-@yValue" type="submit"
                                            value="@(Model.GameInstance.RemovedPieceCoordinateClash(xValue, yValue)
                                                       ? " "
-                                                      : Model.GameInstance.GetNextMoveBy().ToString())"
+                                                      : Model.GameInstance.NextMoveBy.ToString())"
                                            class="btn btn-lg game-board-slot @(Model.StyleFreeSpot(xValue, yValue))"
                                            @(Model.GameInstance.RemovedPieceCoordinateClash(xValue, yValue) ? "disabled" : "")/>
 
@@ -82,7 +82,7 @@
                                 <form method="post" asp-page-handler="MakeAMove">
                                     <input id="slot-@xValue-@yValue" type="submit"
                                            value="@(Model.GameInstance.PlacePieceModeOn()
-                                                      ? Model.GameInstance.GetNextMoveBy().ToString()
+                                                      ? Model.GameInstance.NextMoveBy.ToString()
                                                       : " ")"
                                            class="btn btn-lg game-board-slot @(Model.StyleFreeSpot(xValue, yValue))"
                                            @(Model.GameInstance.PlacePieceModeOn() ? "" : "disabled")/>
@@ -108,19 +108,19 @@
                 }
                 else
                 {
-                    <h2>@Model.GameInstance.GetPlayerName(Model.GameInstance.GetNextMoveBy())'s turn</h2>
+                    <h2>@Model.GameInstance.GetPlayerName(Model.GameInstance.NextMoveBy)'s turn</h2>
                 }
             </div>
         </div>
         <div class="row py-1">
             <div class="col px-1 col-auto">
-                @if (Model.GameInstance.GamePiecesLeft(Model.GameInstance.GetNextMoveBy()) == 1)
+                @if (Model.GameInstance.GamePiecesLeft(Model.GameInstance.NextMoveBy) == 1)
                 {
                     <h5>1 piece left</h5>
                 }
                 else
                 {
-                    <h5>@(Model.GameInstance.GamePiecesLeft(Model.GameInstance.GetNextMoveBy())) pieces left</h5>
+                    <h5>@(Model.GameInstance.GamePiecesLeft(Model.GameInstance.NextMoveBy)) pieces left</h5>
                 }
             </div>
         </div>
@@ -133,7 +133,7 @@
                     <button class="btn btn-lg btn-outline-dark chosen-move-button"
                             type="submit"
                             @(!Model.YourTurn() ||
-                              !Model.GameInstance.HasGamePiece(Model.GameInstance.GetNextMoveBy()) ||
+                              !Model.GameInstance.HasGamePiece(Model.GameInstance.NextMoveBy) ||
                               Model.GameInstance.MovePieceModeOn
                                 ? "hidden"
                                 : "")

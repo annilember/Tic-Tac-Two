@@ -27,10 +27,7 @@ public class TicTacTwoBrain
     
     public bool[][] GameGrid => GetGrid();
     
-    public EGamePiece GetNextMoveBy()
-    {
-        return _gameState.NextMoveBy;
-    }
+    public EGamePiece NextMoveBy => _gameState.NextMoveBy;
 
     public string GetNextMoveByPlayerName() => GetPlayerName(_gameState.NextMoveBy);
 
@@ -439,11 +436,8 @@ public class TicTacTwoBrain
     }
     
     public int GameRoundNumber => _gameState.GameRoundNumber;
-
-    public int GetRoundsLeft()
-    {
-        return _gameState.GameRoundsLeft;
-    }
+    
+    public int GameRoundsLeft => _gameState.GameRoundsLeft;
 
     private string GetWinnerName()
     {

@@ -37,9 +37,9 @@ public static class Visualizer
     public static void WriteAisTurnMessage(TicTacTwoBrain gameInstance)
     {
         Console.ForegroundColor = VisualizerHelper.MessageColor;
-        Console.Write($"{gameInstance.GetNextMoveByPlayerName()}'s turn ({gameInstance.GetNextMoveBy()})! ");
-        Console.Write($"{gameInstance.GamePiecesLeft(gameInstance.GetNextMoveBy())} pieces left, ");
-        Console.WriteLine($"{gameInstance.GetRoundsLeft()} rounds left!");
+        Console.Write($"{gameInstance.GetNextMoveByPlayerName()}'s turn ({gameInstance.NextMoveBy})! ");
+        Console.Write($"{gameInstance.GamePiecesLeft(gameInstance.NextMoveBy)} pieces left, ");
+        Console.WriteLine($"{gameInstance.GameRoundsLeft} rounds left!");
         Console.ForegroundColor = VisualizerHelper.AiColor;
         Console.Write($"{gameInstance.GetNextMoveByPlayerName()} is thinking.");
         Thread.Sleep(1000);
@@ -164,9 +164,9 @@ public static class Visualizer
     private static void WriteBasicGamePlayInstructions(TicTacTwoBrain gameInstance, string errorMessage)
     {
         Console.ForegroundColor = VisualizerHelper.MessageColor;
-        Console.Write($"{gameInstance.GetNextMoveByPlayerName()}'s turn ({gameInstance.GetNextMoveBy()})! ");
-        Console.Write($"You have {gameInstance.GamePiecesLeft(gameInstance.GetNextMoveBy())} pieces left, ");
-        Console.WriteLine($"{gameInstance.GetRoundsLeft()} rounds left!");
+        Console.Write($"{gameInstance.GetNextMoveByPlayerName()}'s turn ({gameInstance.NextMoveBy})! ");
+        Console.Write($"You have {gameInstance.GamePiecesLeft(gameInstance.NextMoveBy)} pieces left, ");
+        Console.WriteLine($"{gameInstance.GameRoundsLeft} rounds left!");
         WriteErrorMessage(errorMessage);
         Console.WriteLine();
     }

@@ -145,7 +145,7 @@ public static class GameController
                 }
             }
             Visualizer.DrawBoard(gameInstance);
-            if (gameInstance.GetRoundsLeft() == 1)
+            if (gameInstance.GameRoundsLeft == 1)
             {
                 Visualizer.DisplayFinalRoundMessage();
             }
@@ -262,7 +262,7 @@ public static class GameController
                 gameInstance.ActivateMovePieceMode();
                 return ControllerHelper.ReturnValue;
             }
-            if (!gameInstance.HasGamePiece(gameInstance.GetNextMoveBy()))
+            if (!gameInstance.HasGamePiece(gameInstance.NextMoveBy))
             {
                 return Message.NotEnoughPiecesMessage;
             }

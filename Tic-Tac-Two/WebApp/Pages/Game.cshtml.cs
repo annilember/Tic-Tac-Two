@@ -185,7 +185,7 @@ public class GameModel : PageModel
     public string StyleOccupiedSpot(int x, int y)
     {
         var style = "btn";
-        if (GameInstance.RemovePieceModeOn && GameInstance.GameBoard[x][y] == GameInstance.GetNextMoveBy())
+        if (GameInstance.RemovePieceModeOn && GameInstance.GameBoard[x][y] == GameInstance.NextMoveBy)
         {
             style += "-outline";
         }
@@ -223,11 +223,11 @@ public class GameModel : PageModel
         {
             return false;
         }
-        if (Password == SavedGame.PlayerXPassword && GameInstance.GetNextMoveBy() == EGamePiece.X)
+        if (Password == SavedGame.PlayerXPassword && GameInstance.NextMoveBy == EGamePiece.X)
         {
             return true;
         }
-        if (Password == SavedGame.PlayerOPassword && GameInstance.GetNextMoveBy() == EGamePiece.O)
+        if (Password == SavedGame.PlayerOPassword && GameInstance.NextMoveBy == EGamePiece.O)
         {
             return true;
         }
@@ -250,7 +250,7 @@ public class GameModel : PageModel
     public bool AiTurn()
     {
         var gameMode = GameMode.GetMode(SavedGame.ModeName);
-        var playerType = GameMode.GetPlayerType(gameMode, GameInstance.GetNextMoveBy());
+        var playerType = GameMode.GetPlayerType(gameMode, GameInstance.NextMoveBy);
         return playerType == EPlayerType.Ai;
     }
 }
