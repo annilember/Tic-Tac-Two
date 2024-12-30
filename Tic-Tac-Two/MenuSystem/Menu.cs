@@ -1,11 +1,11 @@
 using ConsoleUI;
+using GameBrain;
 
 namespace MenuSystem;
 
 public class Menu
 {
     private string MenuHeader { get; }
-    private const string MenuDivider = "======================";
     private List<MenuItem> MenuItems { get; }
     private readonly MenuItem _menuItemExit = new()
     {
@@ -129,7 +129,7 @@ public class Menu
             
             if (string.IsNullOrWhiteSpace(userInput))
             {
-                errorMessage = "Please choose an option.";
+                errorMessage = Message.MenuChooseOptionMessage;
             }
             else
             {
@@ -140,8 +140,8 @@ public class Menu
                     if (menuItem.Shortcut.ToUpper() != userInput) continue;
                     return menuItem;
                 }
-                
-                errorMessage = "Please choose a valid option.";
+
+                errorMessage = Message.MenuChooseValidOptionMessage;
                 Console.WriteLine();
             }
             
@@ -152,7 +152,7 @@ public class Menu
     {
         Console.Clear();
         Console.WriteLine(MenuHeader);
-        Console.WriteLine(MenuDivider);
+        Console.WriteLine(VisualizerHelper.Divider);
         
         foreach (var t in MenuItems)
         {
@@ -164,6 +164,6 @@ public class Menu
             Visualizer.WriteErrorMessage(errorMessage);
         }
         Console.WriteLine();
-        Console.Write(">");
+        Console.Write(VisualizerHelper.MenuInputArrow);
     }
 }

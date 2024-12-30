@@ -1,4 +1,4 @@
-using Domain;
+using DTO;
 
 namespace GameBrain;
 
@@ -47,6 +47,10 @@ public static class Message
     public const string NewConfigCreatedMessage = "New configuration created!";
     
     public const string ConfigUpdatedMessage = "Configuration updated!";
+    
+    public const string MenuChooseOptionMessage = "Please choose an option.";
+    
+    public const string MenuChooseValidOptionMessage = "Please choose a valid option.";
 
     public static string GetTheWinnerIsMessage(string name)
     {

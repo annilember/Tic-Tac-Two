@@ -1,8 +1,6 @@
-using Domain;
-
 namespace DTO;
 
-public record GameMode()
+public record GameMode
 {
     private const string HumanPlayerTypeName = "Human";
     private const string AiPlayerTypeName = "AI";

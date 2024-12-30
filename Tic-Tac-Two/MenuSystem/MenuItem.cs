@@ -1,4 +1,6 @@
-﻿namespace MenuSystem;
+﻿using ConsoleUI;
+
+namespace MenuSystem;
 
 public class MenuItem
 {
@@ -35,6 +37,6 @@ public class MenuItem
 
     public override string ToString()
     {
-        return Shortcut + ") " + Title;
+        return Shortcut + VisualizerHelper.MenuItemParentheses + Title;
     }
 }

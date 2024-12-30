@@ -1,4 +1,4 @@
-using Domain;
+using DTO;
 
 namespace GameBrain;
 

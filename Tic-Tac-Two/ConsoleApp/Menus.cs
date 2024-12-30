@@ -4,24 +4,24 @@ namespace ConsoleApp;
 
 public static class Menus
 {
-    private static readonly Menu ConfigOptionsMenu = new Menu(
+    private static readonly Menu ConfigOptionsMenu = new(
         EMenuLevel.Deep,
         "TIC-TAC-TWO - Config options", [
-            new MenuItem()
+            new MenuItem
             {
                 Shortcut = "N",
                 Title = "Create new config",
                 MenuItemAction = OptionsController.CreateNewConfig
             },
 
-            new MenuItem()
+            new MenuItem
             {
                 Shortcut = "C",
                 Title = "Change config",
                 MenuItemAction = OptionsController.ChangeExistingConfiguration
             },
             
-            new MenuItem()
+            new MenuItem
             {
                 Shortcut = "D",
                 Title = "Delete config",
@@ -29,17 +29,17 @@ public static class Menus
             }
         ]);
 
-    private static readonly Menu GameOptionsMenu = new Menu(
+    private static readonly Menu GameOptionsMenu = new(
         EMenuLevel.Deep,
         "TIC-TAC-TWO - Game options", [
-            new MenuItem()
+            new MenuItem
             {
                 Shortcut = "D",
                 Title = "Delete saved game",
                 MenuItemAction = OptionsController.DeleteSavedGame
             },
             
-            new MenuItem()
+            new MenuItem
             {
                 Shortcut = "N",
                 Title = "Rename saved game",
@@ -47,17 +47,17 @@ public static class Menus
             }
         ]);
 
-    private static readonly Menu OptionsMenu = new Menu(
+    private static readonly Menu OptionsMenu = new(
         EMenuLevel.Secondary,
         "TIC-TAC-TWO Options", [
-            new MenuItem()
+            new MenuItem
             {
                 Shortcut = "C",
                 Title = "Config options",
                 MenuItemAction = ConfigOptionsMenu.Run
             },
             
-            new MenuItem()
+            new MenuItem
             {
                 Shortcut = "G",
                 Title = "Game options",
@@ -65,32 +65,32 @@ public static class Menus
             }
         ]);
     
-    public static Menu MainMenu = new Menu(
+    public static Menu MainMenu = new(
         EMenuLevel.Main,
         "TIC-TAC-TWO", [
             
-            new MenuItem()
+            new MenuItem
             {
                 Shortcut = "N",
                 Title = "New Game",
                 MenuItemAction = GameController.StartNewGame
             },
 
-            new MenuItem()
+            new MenuItem
             {
                 Shortcut = "L",
                 Title = "Load Game",
                 MenuItemAction = GameController.LoadSavedGame
             },
             
-            new MenuItem()
+            new MenuItem
             {
                 Shortcut = "O",
                 Title = "Options",
                 MenuItemAction = OptionsMenu.Run
             },
             
-            new MenuItem()
+            new MenuItem
             {
                 Shortcut = "G",
                 Title = "Game Rules",
