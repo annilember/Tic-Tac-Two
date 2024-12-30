@@ -69,8 +69,7 @@ public class GameModel : PageModel
         GameInstance = new TicTacTwoBrain(SavedGame, SavedGame.Configuration!);
         var action = Enum.Parse<GameAction>(handler);
         var errorMessage = DoOnPostAction(action);
-
-        //TODO: check if saves correctly.
+        
         _gameRepository.SaveGame(GameInstance);
         
         if (errorMessage != null)

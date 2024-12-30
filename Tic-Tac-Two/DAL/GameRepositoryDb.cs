@@ -1,4 +1,3 @@
-using System.Text.Json;
 using Domain;
 using DTO;
 using GameBrain;
@@ -12,6 +11,7 @@ public class GameRepositoryDb(AppDbContext db) : IGameRepository
     {
         return db.SavedGames.Include(s => s.Configuration).ToList();
     }
+    
     public List<string> GetGameNames()
     {
         return db.SavedGames.Select(savedGame => savedGame.Name).ToList();
@@ -25,17 +25,6 @@ public class GameRepositoryDb(AppDbContext db) : IGameRepository
         return savedGame ?? new SavedGame();
     }
 
-    public GameState GetSavedGameState(SavedGame savedGame)
-    {
-        return JsonSerializer.Deserialize<GameState>(savedGame.State)!;
-    }
-
-    public string GetSavedGameJsonByName(string name)
-    {
-        var savedGame = GetSavedGameByName(name);
-        return savedGame.State;
-    }
-
     public bool GameExists(string name)
     {
         return GetGameNames().Any(gameName => name == gameName);
@@ -46,7 +35,6 @@ public class GameRepositoryDb(AppDbContext db) : IGameRepository
         var savedGame = gameInstance.SavedGame;
         savedGame.State = gameInstance.GetGameStateJson();
         
-        // .Update works, but not .Add !?
         db.SavedGames.Update(savedGame);
         db.SaveChanges();
     }
@@ -102,8 +90,7 @@ public class GameRepositoryDb(AppDbContext db) : IGameRepository
             Configuration = config
         };
         
-        // Update vs Add ???
-        db.SavedGames.Update(savedGame);
+        db.SavedGames.Add(savedGame);
         db.SaveChangesAsync();
         
         return savedGame;

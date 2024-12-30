@@ -1,6 +1,5 @@
 using System.Text.Json;
 using Domain;
-using GameBrain;
 
 namespace DAL;
 
@@ -29,16 +28,6 @@ public class ConfigRepositoryJson : IConfigRepository
         var config = JsonSerializer.Deserialize<GameConfiguration>(configJsonStr);
         return config!;
     }
-    
-    public GameConfiguration GetConfigurationById(int id)
-    {
-    // TODO: kontrolli, et töötab õigesti! + Kas ma üldse kasutan seda kuskil??
-        return Directory
-                   .GetFiles(FileHelper.BasePath, FileHelper.AsteriskSymbol + FileHelper.ConfigExtension)
-                   .Select(config => JsonSerializer.Deserialize<GameConfiguration>(config))
-                   .FirstOrDefault(config => config != null && config.Id == id) 
-                         ?? new GameConfiguration();
-    }
 
     public bool ConfigurationExists(string name)
     {
@@ -64,7 +53,7 @@ public class ConfigRepositoryJson : IConfigRepository
         File.Delete(FileHelper.BasePath + config.Name + FileHelper.ConfigExtension);
     }
 
-    public void CheckAndCreateInitialConfig()
+    private void CheckAndCreateInitialConfig()
     {
         if (!Directory.Exists(FileHelper.BasePath))
         {

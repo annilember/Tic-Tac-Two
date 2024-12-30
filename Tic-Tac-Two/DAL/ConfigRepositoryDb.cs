@@ -17,20 +17,7 @@ public class ConfigRepositoryDb(AppDbContext db) : IConfigRepository
 
     public GameConfiguration GetConfigurationByName(string name)
     {
-        foreach (var config in db.Configurations)
-        {
-            if (config.Name == name)
-            {
-                return config;
-            }
-        }
-
-        return new GameConfiguration();
-    }
-    
-    public GameConfiguration GetConfigurationById(int id)
-    {
-        return db.Configurations.FirstOrDefault(config => config.Id == id) ?? new GameConfiguration();
+        return db.Configurations.FirstOrDefault(config => config.Name == name) ?? new GameConfiguration();
     }
 
     public bool ConfigurationExists(string name)
@@ -83,7 +70,7 @@ public class ConfigRepositoryDb(AppDbContext db) : IConfigRepository
         db.SaveChanges();
     }
     
-    public void CheckAndCreateInitialConfig()
+    private void CheckAndCreateInitialConfig()
     {
             var configCount = db.Configurations.Count();
             if (configCount != 0) return;

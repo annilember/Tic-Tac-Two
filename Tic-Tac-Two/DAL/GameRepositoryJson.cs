@@ -9,7 +9,6 @@ public class GameRepositoryJson : IGameRepository
 {
     public List<SavedGame> GetSavedGames()
     {
-        //TODO: vaata, et selle SavedGame sees, mis siit võetakse, oleks config olemas! (nagu db JOIN puhul).
         var gameNames = GetGameNames();
         return gameNames.Select(GetSavedGameByName).ToList();
     }
@@ -26,16 +25,10 @@ public class GameRepositoryJson : IGameRepository
 
     public SavedGame GetSavedGameByName(string name)
     {
-        //TODO: vaata, et selle SavedGame sees, mis siit võetakse, oleks config olemas! (nagu db JOIN puhul).
         return JsonSerializer.Deserialize<SavedGame>(GetSavedGameJsonByName(name))!;
     }
 
-    public GameState GetSavedGameState(SavedGame savedGame)
-    {
-        return JsonSerializer.Deserialize<GameState>(savedGame.State)!;
-    }
-
-    public string GetSavedGameJsonByName(string name)
+    private string GetSavedGameJsonByName(string name)
     {
         return GameExists(name) ? File.ReadAllText(FileHelper.BasePath + name + FileHelper.GameExtension) : "";
     }
@@ -49,8 +42,6 @@ public class GameRepositoryJson : IGameRepository
     {
         var savedGame = gameInstance.SavedGame;
         savedGame.State = gameInstance.GetGameStateJson();
-        
-        //TODO: added this because of DB, but haven't checked if works.
         CreateNewSavedGameFile(savedGame);
     }
 
@@ -105,9 +96,7 @@ public class GameRepositoryJson : IGameRepository
             Configuration = config
         };
         
-        // TODO: Check that it works with files.
         CreateNewSavedGameFile(savedGame);
-        
         return savedGame;
     }
 

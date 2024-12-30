@@ -10,8 +10,9 @@ var options = new DbContextOptionsBuilder<AppDbContext>()
     .Options;
 using var db = new AppDbContext(options);
 
-var configRepository = new ConfigRepositoryDb(db);
-var gameRepository = new GameRepositoryDb(db);
+var repoController = new RepoController(db);
+var configRepository = repoController.ConfigRepository;
+var gameRepository = repoController.GameRepository;
 
 OptionsController.Init(configRepository, gameRepository);
 GameController.Init(configRepository, gameRepository);

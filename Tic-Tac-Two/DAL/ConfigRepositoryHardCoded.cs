@@ -1,20 +1,18 @@
 ﻿using Domain;
-using GameBrain;
 
 namespace DAL;
 
 public class ConfigRepositoryHardCoded: IConfigRepository
 {
-    private List<GameConfiguration> _gameConfigurations = new List<GameConfiguration>()
-    {
-        //TODO: kontrolli, et ID'de lisamine midagi tuksi ei keeranud nt andmebaasi init juures või failides.
-        
-        new GameConfiguration()
+    private readonly List<GameConfiguration> _gameConfigurations =
+    [
+        new()
         {
             Id = 1,
             Name = "Classical"
         },
-        new GameConfiguration()
+
+        new()
         {
             Id = 2,
             Name = "Big board",
@@ -30,7 +28,8 @@ public class ConfigRepositoryHardCoded: IConfigRepository
             MoveGridAfterNMoves = 3,
             MovePieceAfterNMoves = 3
         },
-        new GameConfiguration()
+
+        new()
         {
             Id = 3,
             Name = "Tic-Tac-Toe",
@@ -46,7 +45,7 @@ public class ConfigRepositoryHardCoded: IConfigRepository
             MoveGridAfterNMoves = 5,
             MovePieceAfterNMoves = 5
         }
-    };
+    ];
 
     public List<GameConfiguration> GetConfigurations()
     {
@@ -107,6 +106,4 @@ public class ConfigRepositoryHardCoded: IConfigRepository
             }
         }
     }
-    
-    public void CheckAndCreateInitialConfig() {}
 }
