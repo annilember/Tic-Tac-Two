@@ -16,14 +16,21 @@ public class TicTacTwoBrain
         _gameState = JsonSerializer.Deserialize<GameState>(savedGame.State)!;
         SavedGame = savedGame;
     }
-    
-    public string GetGameModeName() => GameMode.GetModeName(_gameState.GameMode.ToString());
 
     public string GetGameStateJson() => _gameState.ToString();
-
-    public string GetGameConfigName() => _gameConfiguration.Name;
     
-    public GameConfiguration GetGameConfig() => _gameConfiguration;
+    public int DimX => _gameState.GameBoard.Length;
+    
+    public int DimY => _gameState.GameBoard[0].Length;
+    
+    public EGamePiece[][] GameBoard => GetBoard();
+    
+    public bool[][] GameGrid => GetGrid();
+    
+    public EGamePiece GetNextMoveBy()
+    {
+        return _gameState.NextMoveBy;
+    }
 
     public string GetNextMoveByPlayerName() => GetPlayerName(_gameState.NextMoveBy);
 
@@ -47,48 +54,128 @@ public class TicTacTwoBrain
         };
     }
     
-    public string GetWinnerName()
+    public EChosenMove GetChosenMove()
     {
-        return CheckForWinner() switch
+        if (_gameState.MoveGridModeOn)
         {
-            EGamePiece.X => _gameState.PlayerXName,
-            EGamePiece.O => _gameState.PlayerOName,
-            _ => ""
+            return EChosenMove.MoveGrid;
+        }
+        if (_gameState.RemovePieceModeOn)
+        {
+            return EChosenMove.RemovePiece;
+        }
+        if (_gameState.MovePieceModeOn)
+        {
+            return EChosenMove.MovePiece;
+        }
+        return EChosenMove.PlacePiece;
+    }
+    
+    public bool PlacePieceModeOn()
+    {
+        return GetChosenMove() == EChosenMove.PlacePiece;
+    }
+        
+    public bool HasGamePiece(EGamePiece piece)
+    {
+        return piece switch
+        {
+            EGamePiece.X => _gameState.NumberOfPiecesLeftX > 0,
+            EGamePiece.O => _gameState.NumberOfPiecesLeftO > 0,
+            _ => false
         };
     }
-
-    public bool GameOver()
+    
+    public int GamePiecesLeft(EGamePiece piece)
     {
-        return !string.IsNullOrEmpty(GetWinnerName()) || IsGameOverAnyway();
-    }
-
-    public bool IsGameOverAnyway()
-    {
-        return (_gameState.GameRoundsLeft == 0 && _gameState.NextMoveBy == EGamePiece.X) ||
-               (GameBoardEmptySpacesCount() == 0 && !CanMoveGrid());
+        return piece switch
+        {
+            EGamePiece.X => _gameState.NumberOfPiecesLeftX,
+            EGamePiece.O => _gameState.NumberOfPiecesLeftO,
+            _ => 0
+        };
     }
     
-    public EGamePiece[][] GameBoard
+    public void MakeAiMove()
     {
-        get => GetBoard();
-        private set => _gameState.GameBoard = value;
+        var player = _gameState.NextMoveBy;
+        var opponent = _gameState.NextMoveBy == EGamePiece.X ? EGamePiece.O : EGamePiece.X;
+        var ai = new Ai(this, player, opponent);
+        ai.FindBestMove();
+        // Console.WriteLine($"AI chose <{bestMove[0]}, {bestMove[1]}>");
+        // MakeAMove(bestMove[0], bestMove[1]);
     }
     
-    public bool[][] GameGrid
+    public bool MakeAMove(int x, int y)
     {
-        get => GetGrid();
-        private set => _gameState.GameGrid = value;
+        if (MovePieceModeOn && 
+            x == _gameState.RemovedPieceLocation[0] && 
+            y == _gameState.RemovedPieceLocation[1])
+        {
+            return false;
+        }
+        
+        if (_gameState.GameBoard[x][y] != EGamePiece.Empty)
+        {
+            return false;
+        }
+        _gameState.GameBoard[x][y] = _gameState.NextMoveBy;
+        
+        switch (_gameState.NextMoveBy)
+        {
+            case EGamePiece.X:
+                _gameState.NumberOfPiecesLeftX--;
+                break;
+            case EGamePiece.O:
+                _gameState.NumberOfPiecesLeftO--;
+                break;
+        }
+
+        CountAsMove();
+
+        return true;
     }
     
-    public bool MoveGridModeOn
+    public void CancelMove(int x, int y)
     {
-        get => GetMoveGridModeOn();
-        set => _gameState.MoveGridModeOn = value;
+        _gameState.GameBoard[x][y] = EGamePiece.Empty;
+        _gameState.NextMoveBy = _gameState.NextMoveBy == EGamePiece.X ? EGamePiece.O : EGamePiece.X;
+        
+        switch (_gameState.NextMoveBy)
+        {
+            case EGamePiece.X:
+                _gameState.NumberOfPiecesLeftX++;
+                break;
+            case EGamePiece.O:
+                _gameState.NumberOfPiecesLeftO++;
+                _gameState.GameRoundNumber--;
+                _gameState.GameRoundsLeft++;
+                break;
+        }
     }
 
-    private bool GetMoveGridModeOn()
+    private void CountAsMove()
     {
-        return _gameState.MoveGridModeOn;
+        if (_gameState.NextMoveBy == EGamePiece.O)
+        {
+            _gameState.GameRoundNumber++;
+            _gameState.GameRoundsLeft--;
+        }
+        _gameState.NextMoveBy = _gameState.NextMoveBy == EGamePiece.X ? EGamePiece.O : EGamePiece.X;
+    }
+    
+    public bool[][] GridMovingArea => _gameState.GridMovingArea;
+
+    public bool MoveGridModeOn => _gameState.MoveGridModeOn;
+    
+    public bool CanMoveGrid()
+    {
+        return GameRoundNumber > _gameConfiguration.MoveGridAfterNMoves &&
+               (
+                   _gameConfiguration.BoardSizeWidth > _gameConfiguration.GridSizeWidth ||
+                   _gameConfiguration.BoardSizeHeight > _gameConfiguration.GridSizeHeight
+               )
+               && !MovePieceModeOn;
     }
 
     public void ActivateMoveGridMode()
@@ -103,8 +190,6 @@ public class TicTacTwoBrain
         _gameState.MoveGridModeOn = false;
         CountAsMove();
     }
-
-    public bool[][] GridMovingArea => _gameState.GridMovingArea;
 
     public void RestoreGridState()
     {
@@ -129,9 +214,6 @@ public class TicTacTwoBrain
         _gameState.GameRoundNumber--;
         _gameState.GameRoundsLeft++;
     }
-    
-    public int DimX => _gameState.GameBoard.Length;
-    public int DimY => _gameState.GameBoard[0].Length;
 
     private EGamePiece[][] GetBoard()
     {
@@ -164,6 +246,13 @@ public class TicTacTwoBrain
         return copyOfGrid;
     }
     
+    private void SaveCurrentGridState()
+    {
+        _gameState.MoveGridStartState = GetGrid();
+        _gameState.MoveGridStartStateLocation[0] = _gameState.GridStartPosX;
+        _gameState.MoveGridStartStateLocation[1] = _gameState.GridStartPosY;
+    }
+    
     private bool[][] SetGridMovingArea()
     {
         var startPosX = _gameState.GridStartPosX;
@@ -190,6 +279,11 @@ public class TicTacTwoBrain
         
         return _gameState.CreateGrid(DimX, DimY, startPosX, startPosY, endPosX, endPosY);
     }
+    
+    private int GridMovingLowerBoundX { get; set; }
+    private int GridMovingLowerBoundY { get; set; }
+    private int GridMovingUpperBoundX { get; set; }
+    private int GridMovingUpperBoundY { get; set; }
 
     private void SetGridMovingBounds()
     {
@@ -219,334 +313,6 @@ public class TicTacTwoBrain
         GridMovingLowerBoundY = startPosY;
         GridMovingUpperBoundX = endPosX;
         GridMovingUpperBoundY = endPosY;
-    }
-
-    private int GridMovingLowerBoundX { get; set; }
-    private int GridMovingLowerBoundY { get; set; }
-    private int GridMovingUpperBoundX { get; set; }
-    private int GridMovingUpperBoundY { get; set; }
-
-    public EGamePiece GetNextMoveBy()
-    {
-        return _gameState.NextMoveBy;
-    }
-        
-    public bool HasGamePiece(EGamePiece piece)
-    {
-        return piece switch
-        {
-            EGamePiece.X => _gameState.NumberOfPiecesLeftX > 0,
-            EGamePiece.O => _gameState.NumberOfPiecesLeftO > 0,
-            _ => false
-        };
-    }
-    
-    public int GamePiecesLeft(EGamePiece piece)
-    {
-        return piece switch
-        {
-            EGamePiece.X => _gameState.NumberOfPiecesLeftX,
-            EGamePiece.O => _gameState.NumberOfPiecesLeftO,
-            _ => 0
-        };
-    }
-    
-    public bool MakeAMove(int x, int y)
-    {
-        if (MovePieceModeOn && 
-            x == _gameState.RemovedPieceLocation[0] && 
-            y == _gameState.RemovedPieceLocation[1])
-        {
-            return false;
-        }
-        
-        if (_gameState.GameBoard[x][y] != EGamePiece.Empty)
-        {
-            return false;
-        }
-        _gameState.GameBoard[x][y] = _gameState.NextMoveBy;
-        
-        switch (_gameState.NextMoveBy)
-        {
-            case EGamePiece.X:
-                _gameState.NumberOfPiecesLeftX--;
-                break;
-            case EGamePiece.O:
-                _gameState.NumberOfPiecesLeftO--;
-                break;
-        }
-
-        CountAsMove();
-
-        return true;
-    }
-
-    public void CancelMove(int x, int y)
-    {
-        _gameState.GameBoard[x][y] = EGamePiece.Empty;
-        _gameState.NextMoveBy = _gameState.NextMoveBy == EGamePiece.X ? EGamePiece.O : EGamePiece.X;
-        
-        switch (_gameState.NextMoveBy)
-        {
-            case EGamePiece.X:
-                _gameState.NumberOfPiecesLeftX++;
-                break;
-            case EGamePiece.O:
-                _gameState.NumberOfPiecesLeftO++;
-                _gameState.GameRoundNumber--;
-                _gameState.GameRoundsLeft++;
-                break;
-        }
-    }
-
-    public bool RemovedPieceCoordinateClash(int x, int y)
-    {
-        if (!MovePieceModeOn) return false;
-        return x == _gameState.RemovedPieceLocation[0] && 
-               y == _gameState.RemovedPieceLocation[1];
-    }
-    
-    public bool RemovePiece(int x, int y)
-    {
-        if (_gameState.GameBoard[x][y] != _gameState.NextMoveBy) return false;
-        _gameState.GameBoard[x][y] = EGamePiece.Empty;
-        _gameState.RemovedPieceLocation[0] = x;
-        _gameState.RemovedPieceLocation[1] = y;
-        
-        switch (_gameState.NextMoveBy)
-        {
-            case EGamePiece.X:
-                _gameState.NumberOfPiecesLeftX++;
-                break;
-            case EGamePiece.O:
-                _gameState.NumberOfPiecesLeftO++;
-                break;
-        }
-        return true;
-
-    }
-
-    private void CountAsMove()
-    {
-        if (_gameState.NextMoveBy == EGamePiece.O)
-        {
-            _gameState.GameRoundNumber++;
-            _gameState.GameRoundsLeft--;
-        }
-        _gameState.NextMoveBy = _gameState.NextMoveBy == EGamePiece.X ? EGamePiece.O : EGamePiece.X;
-    }
-    
-    public int GameRoundNumber
-    {
-        get => GetRoundNumber();
-        private set => _gameState.GameRoundNumber = value;
-    }
-
-    public int GetRoundsLeft()
-    {
-        return _gameState.GameRoundsLeft;
-    }
-
-    private int GetRoundNumber()
-    {
-        return _gameState.GameRoundNumber;
-    }
-
-    public bool CheckForDraw()
-    {
-        return CheckForWinnerByPlayer(EGamePiece.X) && CheckForWinnerByPlayer(EGamePiece.O);
-    }
-
-    public EGamePiece CheckForWinner()
-    {
-        if (CheckForWinnerByPlayer(EGamePiece.X))
-        {
-            return EGamePiece.X;
-        }
-        if (CheckForWinnerByPlayer(EGamePiece.O))
-        {
-            return EGamePiece.O;
-        }
-
-        return EGamePiece.Empty;
-    }
-
-    private bool CheckForWinnerByPlayer(EGamePiece player)
-    {
-        // TODO: stop strike check when so little rows or columns left that can't make strike anymore anyway
-        var countRowStrike = 0;
-        var countColStrike = 0;
-
-        for (int x = 0; x < DimX; x++)
-        {
-            countRowStrike = 0;
-            for (int y = 0; y < DimY; y++)
-            {
-                countRowStrike = CountRowOrColumnStrike(player, countRowStrike, x, y);
-                // if (y < DimX && x < DimY)
-                // {
-                //     countColStrike = CountRowOrColumnStrike(player, countColStrike, y, x);
-                // }
-                if (countRowStrike == _gameConfiguration.WinCondition ||
-                    // countColStrike == _gameConfiguration.WinCondition ||
-                    CheckDiagonalStreaks(player, x, y, (i) => i + 1) ||
-                    CheckDiagonalStreaks(player, x, y, (i) => i - 1)) 
-                {
-                    // Console.WriteLine($"Row: {countRowStrike}");
-                    // Console.WriteLine($"Col: {countColStrike}");
-                    // Console.WriteLine($"Dia 1: {CheckDiagonalStreaks(player, x, y, (i) => i + 1)}");
-                    // Console.WriteLine($"Dia 2: {CheckDiagonalStreaks(player, x, y, (i) => i - 1)}");
-                    
-                    return true;
-                }
-            }
-        }
-        
-        for (int y = 0; y < DimY; y++)
-        {
-            countColStrike = 0;
-            for (int x = 0; x < DimX; x++)
-            {
-                countColStrike = CountRowOrColumnStrike(player, countColStrike, x, y);
-                // if (x < DimX && y < DimY)
-                // {
-                //     countColStrike = CountRowOrColumnStrike(player, countColStrike, x, y);
-                // }
-                if (
-                    // countRowStrike == _gameConfiguration.WinCondition ||
-                    countColStrike == _gameConfiguration.WinCondition
-                    // CheckDiagonalStreaks(player, y, x, (i) => i + 1) ||
-                    // CheckDiagonalStreaks(player, y, x, (i) => i - 1)
-                    ) 
-                {
-                    // Console.WriteLine($"Row: {countRowStrike}");
-                    // Console.WriteLine($"Col: {countColStrike}");
-                    // Console.WriteLine($"Dia 1: {CheckDiagonalStreaks(player, x, y, (i) => i + 1)}");
-                    // Console.WriteLine($"Dia 2: {CheckDiagonalStreaks(player, x, y, (i) => i - 1)}");
-                    
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    private int CountRowOrColumnStrike(EGamePiece player, int countStrike, int x, int y)
-    {
-        if (_gameState.GameGrid[x][y])
-        {
-            if (_gameState.GameBoard[x][y] == player) countStrike++;
-            else countStrike = 0;
-        }
-        else countStrike = 0;
-
-        return countStrike;
-    }
-    
-    private bool CheckDiagonalStreaks(EGamePiece player, int x, int y, Func<int, int> action)
-    {
-        var countStrike = 0;
-        while (true)
-        {
-            try
-            {
-                if (_gameState.GameGrid[x][y] && _gameState.GameBoard[x][y] == player) countStrike++;
-                if (countStrike == _gameConfiguration.WinCondition) return true;
-                x++;
-                y = action(y);
-            }
-            catch (Exception e)
-            {
-                return false;
-            }
-        }
-    }
-
-    public int GameBoardEmptySpacesCount()
-    {
-        var count = 0;
-        for (int x = 0; x < DimX; x++)
-        {
-            for (int y = 0; y < DimY; y++)
-            {
-                if (_gameState.GameBoard[x][y] == EGamePiece.Empty)
-                {
-                    count++;
-                }
-            }
-        }
-
-        return count;
-    }
-
-    public bool CanMoveGrid()
-    {
-        return GameRoundNumber > _gameConfiguration.MoveGridAfterNMoves &&
-               (
-                   _gameConfiguration.BoardSizeWidth > _gameConfiguration.GridSizeWidth ||
-                   _gameConfiguration.BoardSizeHeight > _gameConfiguration.GridSizeHeight
-                )
-               && !MovePieceModeOn;
-    }
-    
-    public bool CanMovePiece()
-    {
-        return GameRoundNumber > _gameConfiguration.MovePieceAfterNMoves;
-    }
-    
-    public bool RemovePieceModeOn
-    {
-        get => _gameState.RemovePieceModeOn;
-        set => _gameState.RemovePieceModeOn = value;
-    }
-    
-    public void ActivateRemovePieceMode()
-    {
-        _gameState.RemovePieceModeOn = true;
-    }
-    
-    public void DeActivateRemovePieceMode()
-    {
-        _gameState.RemovePieceModeOn = false;
-    }
-    
-    public bool MovePieceModeOn
-    {
-        get => _gameState.MovePieceModeOn;
-        set => _gameState.MovePieceModeOn = value;
-    }
-    
-    public void ActivateMovePieceMode()
-    {
-        _gameState.MovePieceModeOn = true;
-    }
-    
-    public void DeActivateMovePieceMode()
-    {
-        _gameState.MovePieceModeOn = false;
-    }
-
-    private void SaveCurrentGridState()
-    {
-        _gameState.MoveGridStartState = GetGrid();
-        _gameState.MoveGridStartStateLocation[0] = _gameState.GridStartPosX;
-        _gameState.MoveGridStartStateLocation[1] = _gameState.GridStartPosY;
-    }
-
-    public bool GridWasMoved()
-    {
-        for (int x = 0; x < DimX; x++)
-        {
-            for (int y = 0; y < DimY; y++)
-            {
-                if (_gameState.MoveGridStartState[x][y] != GameGrid[x][y])
-                {
-                    return true;
-                }
-            }
-        }
-
-        return false;
     }
 
     public void MoveGrid(EMoveGridDirection direction)
@@ -595,39 +361,207 @@ public class TicTacTwoBrain
         _gameState.GridStartPosX = startPosX;
         _gameState.GridStartPosY = startPosY;
     }
-
-    public EChosenMove GetChosenMove()
+    
+    public bool GridWasMoved()
     {
-        if (_gameState.MoveGridModeOn)
+        for (int x = 0; x < DimX; x++)
         {
-            return EChosenMove.MoveGrid;
+            for (int y = 0; y < DimY; y++)
+            {
+                if (_gameState.MoveGridStartState[x][y] != GameGrid[x][y])
+                {
+                    return true;
+                }
+            }
         }
-        if (_gameState.RemovePieceModeOn)
+
+        return false;
+    }
+    
+    public bool CanMovePiece()
+    {
+        return GameRoundNumber > _gameConfiguration.MovePieceAfterNMoves;
+    }
+    
+    public bool RemovePieceModeOn => _gameState.RemovePieceModeOn;
+    
+    public void ActivateRemovePieceMode()
+    {
+        _gameState.RemovePieceModeOn = true;
+    }
+    
+    public void DeActivateRemovePieceMode()
+    {
+        _gameState.RemovePieceModeOn = false;
+    }
+    
+    public bool RemovedPieceCoordinateClash(int x, int y)
+    {
+        if (!MovePieceModeOn) return false;
+        return x == _gameState.RemovedPieceLocation[0] && 
+               y == _gameState.RemovedPieceLocation[1];
+    }
+    
+    public bool RemovePiece(int x, int y)
+    {
+        if (_gameState.GameBoard[x][y] != _gameState.NextMoveBy) return false;
+        _gameState.GameBoard[x][y] = EGamePiece.Empty;
+        _gameState.RemovedPieceLocation[0] = x;
+        _gameState.RemovedPieceLocation[1] = y;
+        
+        switch (_gameState.NextMoveBy)
         {
-            return EChosenMove.RemovePiece;
+            case EGamePiece.X:
+                _gameState.NumberOfPiecesLeftX++;
+                break;
+            case EGamePiece.O:
+                _gameState.NumberOfPiecesLeftO++;
+                break;
         }
-        if (_gameState.MovePieceModeOn)
-        {
-            return EChosenMove.MovePiece;
-        }
-        return EChosenMove.PlacePiece;
+        return true;
+    }
+    
+    public bool MovePieceModeOn => _gameState.MovePieceModeOn;
+
+    public void ActivateMovePieceMode()
+    {
+        _gameState.MovePieceModeOn = true;
+    }
+    
+    public void DeActivateMovePieceMode()
+    {
+        _gameState.MovePieceModeOn = false;
+    }
+    
+        public bool GameOver()
+    {
+        return !string.IsNullOrEmpty(GetWinnerName()) || IsGameOverAnyway();
+    }
+    
+    public int GameRoundNumber => _gameState.GameRoundNumber;
+
+    public int GetRoundsLeft()
+    {
+        return _gameState.GameRoundsLeft;
     }
 
-    public bool PlacePieceModeOn()
+    private string GetWinnerName()
     {
-        return GetChosenMove() == EChosenMove.PlacePiece;
+        return CheckForWinner() switch
+        {
+            EGamePiece.X => _gameState.PlayerXName,
+            EGamePiece.O => _gameState.PlayerOName,
+            _ => ""
+        };
+    }
+    
+    public bool CheckForDraw()
+    {
+        return CheckForWinnerByPlayer(EGamePiece.X) && CheckForWinnerByPlayer(EGamePiece.O);
     }
 
-    public void MakeAiMove()
+    public EGamePiece CheckForWinner()
     {
-        var player = _gameState.NextMoveBy;
-        var opponent = _gameState.NextMoveBy == EGamePiece.X ? EGamePiece.O : EGamePiece.X;
-        var ai = new Ai(this, player, opponent);
-        ai.FindBestMove();
-        // Console.WriteLine($"AI chose <{bestMove[0]}, {bestMove[1]}>");
-        // MakeAMove(bestMove[0], bestMove[1]);
+        if (CheckForWinnerByPlayer(EGamePiece.X))
+        {
+            return EGamePiece.X;
+        }
+        if (CheckForWinnerByPlayer(EGamePiece.O))
+        {
+            return EGamePiece.O;
+        }
+
+        return EGamePiece.Empty;
+    }
+    
+    private bool CheckForWinnerByPlayer(EGamePiece player)
+    {
+        for (int x = 0; x < DimX; x++)
+        {
+            var countRowStrike = 0;
+            for (int y = 0; y < DimY; y++)
+            {
+                countRowStrike = CountRowOrColumnStrike(player, countRowStrike, x, y);
+                if (countRowStrike == _gameConfiguration.WinCondition ||
+                    CheckDiagonalStreaks(player, x, y, (i) => i + 1) ||
+                    CheckDiagonalStreaks(player, x, y, (i) => i - 1)) 
+                {
+                    return true;
+                }
+            }
+        }
+        
+        for (int y = 0; y < DimY; y++)
+        {
+            var countColStrike = 0;
+            for (int x = 0; x < DimX; x++)
+            {
+                countColStrike = CountRowOrColumnStrike(player, countColStrike, x, y);
+                if (
+                    countColStrike == _gameConfiguration.WinCondition
+                ) 
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
+    private int CountRowOrColumnStrike(EGamePiece player, int countStrike, int x, int y)
+    {
+        if (_gameState.GameGrid[x][y])
+        {
+            if (_gameState.GameBoard[x][y] == player) countStrike++;
+            else countStrike = 0;
+        }
+        else countStrike = 0;
+
+        return countStrike;
+    }
+    
+    private bool CheckDiagonalStreaks(EGamePiece player, int x, int y, Func<int, int> action)
+    {
+        var countStrike = 0;
+        while (true)
+        {
+            try
+            {
+                if (_gameState.GameGrid[x][y] && _gameState.GameBoard[x][y] == player) countStrike++;
+                if (countStrike == _gameConfiguration.WinCondition) return true;
+                x++;
+                y = action(y);
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+        }
     }
 
+    public bool IsGameOverAnyway()
+    {
+        return (_gameState.GameRoundsLeft == 0 && _gameState.NextMoveBy == EGamePiece.X) ||
+               (GameBoardEmptySpacesCount() == 0 && !CanMoveGrid());
+    }
+    
+    private int GameBoardEmptySpacesCount()
+    {
+        var count = 0;
+        for (int x = 0; x < DimX; x++)
+        {
+            for (int y = 0; y < DimY; y++)
+            {
+                if (_gameState.GameBoard[x][y] == EGamePiece.Empty)
+                {
+                    count++;
+                }
+            }
+        }
+
+        return count;
+    }
+    
     public string GetGameOverMessage()
     {
         if (CheckForDraw())

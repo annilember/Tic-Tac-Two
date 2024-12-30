@@ -81,7 +81,7 @@ public static class OptionsController
                 }
             }
             else if (propertyInfo.PropertyType == typeof(string) &&
-                     propertyInfo.Name.Equals("Name", StringComparison.InvariantCultureIgnoreCase))
+                     propertyInfo.Name.Equals(ControllerHelper.PropertyName, StringComparison.InvariantCultureIgnoreCase))
             {
                 if (!_configRepository.ConfigurationExists(input))
                     return SetNewStringValueProperty(config, propertyInfo, input);
@@ -291,7 +291,7 @@ public static class OptionsController
             gameMenuItems.Add(new MenuItem()
             {
                 Shortcut = (i + 1).ToString(),
-                Title = _gameRepository.GetGameNames()[i] + " --> " + modeName,
+                Title = _gameRepository.GetGameNames()[i] + VisualizerHelper.GameNameToModeArrow + modeName,
                 MenuItemAction = () => returnValue
             });
         }

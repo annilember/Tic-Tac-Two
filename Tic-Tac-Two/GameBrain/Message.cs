@@ -57,6 +57,11 @@ public static class Message
     {
         return $"{propertyName} value has to range from {min} to {max}!";
     }
+
+    public static string GetInvalidCoordinatesError(int x, int y)
+    {
+        return $"Coordinates <{x},{y}> do not contain your piece! Choose again!";
+    }
     
     public static string GamePieceAsString(EGamePiece piece) =>
         piece switch

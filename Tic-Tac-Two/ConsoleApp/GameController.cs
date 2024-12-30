@@ -132,6 +132,18 @@ public static class GameController
 
         do
         {
+            if (gameInstance.GameOver())
+            {
+                var returnValue = GameOverLoop(gameInstance);
+                switch (returnValue)
+                {
+                    case ControllerHelper.ReturnValue:
+                        return ControllerHelper.ReturnValue;
+                    case ControllerHelper.ResetGameValue:
+                        gameInstance.ResetGame();
+                        break;
+                }
+            }
             Visualizer.DrawBoard(gameInstance);
             if (gameInstance.GetRoundsLeft() == 1)
             {
@@ -149,19 +161,6 @@ public static class GameController
             {
                 Visualizer.WriteAisTurnMessage(gameInstance);
                 gameInstance.MakeAiMove();
-            }
-
-            if (gameInstance.GameOver())
-            {
-                var returnValue = GameOverLoop(gameInstance);
-                switch (returnValue)
-                {
-                    case ControllerHelper.ReturnValue:
-                        return ControllerHelper.ReturnValue;
-                    case ControllerHelper.ResetGameValue:
-                        gameInstance.ResetGame();
-                        break;
-                }
             }
 
         } while (true);
@@ -198,7 +197,6 @@ public static class GameController
             _gameRepository.SaveGame(gameInstance);
         }
         else if (input.Equals(ControllerHelper.ReturnValue, StringComparison.InvariantCultureIgnoreCase)
-                 // && !gameInstance.MoveGridModeOn
                  )
         {
             if (gameInstance.RemovePieceModeOn)
@@ -258,7 +256,7 @@ public static class GameController
             {
                 if (!gameInstance.RemovePiece(inputX, inputY))
                 {
-                    return $"Coordinates <{inputX},{inputY}> do not contain your piece! Choose again!";
+                    return Message.GetInvalidCoordinatesError(inputX, inputY);
                 }
                 gameInstance.DeActivateRemovePieceMode();
                 gameInstance.ActivateMovePieceMode();

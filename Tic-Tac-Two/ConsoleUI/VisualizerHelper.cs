@@ -67,4 +67,6 @@ public static class VisualizerHelper
     public const string ChooseGameModeMenuHeader = "TIC-TAC-TWO - choose game mode";
 
     public const string ChoosePropertyMenuHeader = "TIC-TAC-TWO - choose property to change";
+
+    public const string GameNameToModeArrow = " --> ";
 }

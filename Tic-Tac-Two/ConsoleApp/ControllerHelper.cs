@@ -15,4 +15,6 @@ public static class ControllerHelper
     public const string MoveGridValue = "G";
 
     public const string MovePieceValue = "P";
+
+    public const string PropertyName = "Name";
 }
