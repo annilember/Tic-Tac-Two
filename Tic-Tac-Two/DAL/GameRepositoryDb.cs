@@ -40,17 +40,11 @@ public class GameRepositoryDb(AppDbContext db) : IGameRepository
     {
         return GetGameNames().Any(gameName => name == gameName);
     }
-    
-    public void SaveGame(SavedGame savedGame)
-    {
-        // .Update works, but not .Add !?
-        db.SavedGames.Update(savedGame);
-        db.SaveChanges();
-    }
 
-    public void SaveGame(TicTacTwoBrain gameInstance, string name)
+    public void SaveGame(TicTacTwoBrain gameInstance)
     {
-        var savedGame = CreateNewSavedGame(gameInstance, name);
+        var savedGame = gameInstance.SavedGame;
+        savedGame.State = gameInstance.GetGameStateJson();
         
         // .Update works, but not .Add !?
         db.SavedGames.Update(savedGame);
@@ -69,39 +63,54 @@ public class GameRepositoryDb(AppDbContext db) : IGameRepository
         db.SavedGames.Remove(savedGame);
         db.SaveChanges();
     }
-
-    public async void CreateGame(SavedGame savedGame)
+    
+    public SavedGame CreateGame(GameConfiguration config, EGameMode gameMode, string playerXName, string playerOName)
     {
-        // TODO: for WebApp, check that it works.
-        db.SavedGames.Update(savedGame);
-        await db.SaveChangesAsync();
+        return CreateGame(config, gameMode, "", playerXName, playerOName, playerXName, playerOName);
+    }
 
+    public SavedGame CreateGame(
+        GameConfiguration config, 
+        EGameMode gameMode, 
+        string gameName,
+        string playerXName, 
+        string playerOName,
+        string playerXPassword,
+        string playerOPassword)
+    {
+        var createdAtDateTime = DateTime.Now.ToString("O");
+        if (gameName == "")
+        {
+            gameName = playerXName + " & " + playerOName + " " + createdAtDateTime;
+        }
+        
+        var savedGame = new SavedGame
+        {
+            Name = gameName,
+            ModeName = GameMode.GetModeName(gameMode.ToString()),
+            PlayerXName = playerXName,
+            PlayerOName = playerOName,
+            PlayerXPassword = playerXPassword,
+            PlayerOPassword = playerOPassword,
+            CreatedAtDateTime = createdAtDateTime,
+            State = new GameState(
+                config,
+                gameMode,
+                playerXName,
+                playerOName
+            ).ToString(),
+            Configuration = config
+        };
+        
+        // Update vs Add ???
+        db.SavedGames.Update(savedGame);
+        db.SaveChangesAsync();
+        
+        return savedGame;
     }
 
     public GameConfiguration GetGameConfiguration(SavedGame savedGame)
     {
         return db.Configurations.Find(savedGame.ConfigurationId)!;
-    }
-
-    private SavedGame CreateNewSavedGame(TicTacTwoBrain gameInstance, string name)
-    {
-        var savedGame = new SavedGame
-        {
-            Name = name,
-            ModeName = gameInstance.GetGameModeName(),
-            PlayerXName = gameInstance.GetPlayerName(EGamePiece.X),
-            PlayerOName = gameInstance.GetPlayerName(EGamePiece.O),
-            PlayerXPassword = gameInstance.GetPlayerName(EGamePiece.X),
-            PlayerOPassword = gameInstance.GetPlayerName(EGamePiece.O),
-            CreatedAtDateTime = DateTime.Now.ToString("O"),
-            State = gameInstance.GetGameStateJson(),
-            Configuration = gameInstance.GetGameConfig()
-        };
-        
-        if (name == "")
-        {
-            savedGame.Name = gameInstance.GetGameConfigName() + " " + savedGame.CreatedAtDateTime;
-        }
-        return savedGame;
     }
 }

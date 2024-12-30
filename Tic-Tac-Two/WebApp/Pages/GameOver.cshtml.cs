@@ -50,10 +50,9 @@ public class GameOverModel : PageModel
         SavedGame = _gameRepository.GetSavedGameByName(GameName);
         GameInstance = new TicTacTwoBrain(SavedGame, SavedGame.Configuration!);
         GameInstance.ResetGame();
-        SavedGame.State = GameInstance.GetGameStateJson();
         
         //TODO: check if saves correctly.
-        _gameRepository.SaveGame(SavedGame);
+        _gameRepository.SaveGame(GameInstance);
         
         return Task.FromResult<IActionResult>(RedirectToPage(
             "./Game", 

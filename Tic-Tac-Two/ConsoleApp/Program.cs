@@ -15,6 +15,3 @@ var gameRepository = new GameRepositoryDb(db);
 
 Menus.Init(configRepository, gameRepository);
 Menus.MainMenu.Run();
-
-Console.WriteLine("Exit game worked as planned!");
-Console.WriteLine(FileHelper.BasePath);

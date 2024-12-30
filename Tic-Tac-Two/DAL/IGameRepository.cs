@@ -12,10 +12,19 @@ public interface IGameRepository
     GameState GetSavedGameState(SavedGame savedGame);
     string GetSavedGameJsonByName(string name);
     bool GameExists(string name);
-    void SaveGame(SavedGame savedGame);
-    void SaveGame(TicTacTwoBrain gameInstance, string name);
+    void SaveGame(TicTacTwoBrain gameInstance);
     void RenameGame(SavedGame savedGame, string newName);
     void DeleteGame(string name);
-    void CreateGame(SavedGame savedGame);
+    SavedGame CreateGame(GameConfiguration config, EGameMode gameMode, string playerXName, string playerOName);
+
+    SavedGame CreateGame(
+        GameConfiguration config,
+        EGameMode gameMode,
+        string gameName,
+        string playerXName,
+        string playerOName,
+        string playerXPassword,
+        string playerOPassword);
+    
     GameConfiguration GetGameConfiguration(SavedGame savedGame);
 }

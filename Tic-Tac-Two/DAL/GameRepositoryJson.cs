@@ -45,15 +45,12 @@ public class GameRepositoryJson : IGameRepository
         return File.Exists(FileHelper.BasePath + name + FileHelper.GameExtension);
     }
     
-    public void SaveGame(SavedGame savedGame)
+    public void SaveGame(TicTacTwoBrain gameInstance)
     {
+        var savedGame = gameInstance.SavedGame;
+        savedGame.State = gameInstance.GetGameStateJson();
+        
         //TODO: added this because of DB, but haven't checked if works.
-        CreateNewSavedGameFile(savedGame);
-    }
-    
-    public void SaveGame(TicTacTwoBrain gameInstance, string name)
-    {
-        var savedGame = CreateNewSavedGame(gameInstance, name);
         CreateNewSavedGameFile(savedGame);
     }
 
@@ -70,10 +67,48 @@ public class GameRepositoryJson : IGameRepository
         File.Delete(FileHelper.BasePath + name + FileHelper.GameExtension);
     }
     
-    public void CreateGame(SavedGame savedGame)
+    public SavedGame CreateGame(GameConfiguration config, EGameMode gameMode, string playerXName, string playerOName)
     {
-        // TODO: added with WebApp. Check that it works.
+        return CreateGame(config, gameMode, "", playerXName, playerOName, playerXName, playerOName);
+    }
+
+    public SavedGame CreateGame(
+        GameConfiguration config, 
+        EGameMode gameMode, 
+        string gameName,
+        string playerXName, 
+        string playerOName,
+        string playerXPassword,
+        string playerOPassword)
+    {
+        var createdAtDateTime = DateTime.Now.ToString("O");
+        if (gameName == "")
+        {
+            gameName = playerXName + " & " + playerOName + " " + createdAtDateTime;
+        }
+        
+        var savedGame = new SavedGame
+        {
+            Name = gameName,
+            ModeName = GameMode.GetModeName(gameMode.ToString()),
+            PlayerXName = playerXName,
+            PlayerOName = playerOName,
+            PlayerXPassword = playerXPassword,
+            PlayerOPassword = playerOPassword,
+            CreatedAtDateTime = createdAtDateTime,
+            State = new GameState(
+                config,
+                gameMode,
+                playerXName,
+                playerOName
+            ).ToString(),
+            Configuration = config
+        };
+        
+        // TODO: Check that it works with files.
         CreateNewSavedGameFile(savedGame);
+        
+        return savedGame;
     }
 
     public GameConfiguration GetGameConfiguration(SavedGame savedGame)
@@ -87,28 +122,6 @@ public class GameRepositoryJson : IGameRepository
         {
             Directory.CreateDirectory(FileHelper.BasePath);
         }
-    }
-    
-    private SavedGame CreateNewSavedGame(TicTacTwoBrain gameInstance, string name)
-    {
-        var savedGame = new SavedGame
-        {
-            Name = name,
-            ModeName = gameInstance.GetGameModeName(),
-            PlayerXName = gameInstance.GetPlayerName(EGamePiece.X),
-            PlayerOName = gameInstance.GetPlayerName(EGamePiece.O),
-            PlayerXPassword = "xxx",
-            PlayerOPassword = "ooo",
-            CreatedAtDateTime = DateTime.Now.ToString("O"),
-            State = gameInstance.GetGameStateJson(),
-            Configuration = gameInstance.GetGameConfig()
-        };
-        
-        if (name == "")
-        {
-            savedGame.Name = gameInstance.GetGameConfigName() + " " + savedGame.CreatedAtDateTime;
-        }
-        return savedGame;
     }
 
     private void CreateNewSavedGameFile(SavedGame savedGame)

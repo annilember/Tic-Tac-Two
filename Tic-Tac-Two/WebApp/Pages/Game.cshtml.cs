@@ -38,7 +38,9 @@ public class GameModel : PageModel
 
     public IActionResult OnGet()
     {
-        SetMainProperties();
+        SavedGame = _gameRepository.GetSavedGameByName(GameName);
+        GameInstance = new TicTacTwoBrain(SavedGame, SavedGame.Configuration!);
+        
         if (!GameInstance.MoveGridModeOn && GameInstance.GameOver())
         {
             return RedirectToPage(
@@ -63,10 +65,14 @@ public class GameModel : PageModel
 
     public Task<IActionResult> OnPostAsync(string handler)
     {
+        SavedGame = _gameRepository.GetSavedGameByName(GameName);
+        GameInstance = new TicTacTwoBrain(SavedGame, SavedGame.Configuration!);
         var action = Enum.Parse<GameAction>(handler);
-        SetMainProperties();
         var errorMessage = DoOnPostAction(action);
-        SaveGameState();
+
+        //TODO: check if saves correctly.
+        _gameRepository.SaveGame(GameInstance);
+        
         if (errorMessage != null)
         {
             TempData["ErrorMessage"] = errorMessage;
@@ -121,20 +127,6 @@ public class GameModel : PageModel
                 break;
         }
         return null;
-    }
-
-    private void SetMainProperties()
-    {
-        SavedGame = _gameRepository.GetSavedGameByName(GameName);
-        GameInstance = new TicTacTwoBrain(SavedGame, SavedGame.Configuration!);
-    }
-    
-    private void SaveGameState()
-    {
-        SavedGame.State = GameInstance.GetGameStateJson();
-
-        //TODO: check if saves correctly.
-        _gameRepository.SaveGame(SavedGame);
     }
     
     private void HandleMoveGrid()

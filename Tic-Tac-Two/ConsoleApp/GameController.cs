@@ -58,8 +58,10 @@ public static class GameController
             input = GetStringInputWithCancelOption();
             if (input == ControllerHelper.CancelValue) continue;
             var playerOName = input;
+            
+            var savedGame = _gameRepository.CreateGame(chosenConfig, gameMode, playerXName, playerOName);
         
-            return MainGameLoop(new TicTacTwoBrain(chosenConfig, gameMode, playerXName, playerOName));
+            return MainGameLoop(new TicTacTwoBrain(savedGame, chosenConfig));
         } while (true);
     }
     
@@ -193,7 +195,7 @@ public static class GameController
             !gameInstance.RemovePieceModeOn &&
             !gameInstance.MoveGridModeOn)
         {
-            _gameRepository.SaveGame(gameInstance, "");
+            _gameRepository.SaveGame(gameInstance);
         }
         else if (input.Equals(ControllerHelper.ReturnValue, StringComparison.InvariantCultureIgnoreCase)
                  // && !gameInstance.MoveGridModeOn
@@ -302,7 +304,6 @@ public static class GameController
     private static void MoveGridMode(TicTacTwoBrain gameInstance)
     {
         gameInstance.ActivateMoveGridMode();
-        // gameInstance.SaveCurrentGridState(); // panin selle ActivateMoveGridMode() sisse
         var errorMessage = "";
         
         do

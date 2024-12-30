@@ -287,10 +287,11 @@ public static class OptionsController
         for (var i = 0; i < _gameRepository.GetGameNames().Count; i++)
         {
             var returnValue = i.ToString();
+            var modeName = _gameRepository.GetSavedGameByName(_gameRepository.GetGameNames()[i]).ModeName;
             gameMenuItems.Add(new MenuItem()
             {
                 Shortcut = (i + 1).ToString(),
-                Title = _gameRepository.GetGameNames()[i],
+                Title = _gameRepository.GetGameNames()[i] + " --> " + modeName,
                 MenuItemAction = () => returnValue
             });
         }

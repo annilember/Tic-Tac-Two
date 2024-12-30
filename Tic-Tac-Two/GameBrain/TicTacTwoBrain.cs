@@ -8,24 +8,16 @@ public class TicTacTwoBrain
 {
     private readonly GameState _gameState;
     private readonly GameConfiguration _gameConfiguration;
+    public readonly SavedGame SavedGame;
 
-    public TicTacTwoBrain(GameConfiguration gameConfiguration, EGameMode mode, string playerXName, string playerOName)
-    {
-        _gameConfiguration = gameConfiguration;
-        _gameState = new GameState(
-            gameConfiguration,
-            mode,
-            playerXName,
-            playerOName);
-    }
-    
     public TicTacTwoBrain(SavedGame savedGame, GameConfiguration config)
     {
         _gameConfiguration = config;
         _gameState = JsonSerializer.Deserialize<GameState>(savedGame.State)!;
+        SavedGame = savedGame;
     }
     
-    public string GetGameModeName() => _gameState.GameMode.ToString();
+    public string GetGameModeName() => GameMode.GetModeName(_gameState.GameMode.ToString());
 
     public string GetGameStateJson() => _gameState.ToString();
 

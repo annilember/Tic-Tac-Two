@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using DAL;
-using Domain;
 using DTO;
 using GameBrain;
 using Microsoft.Build.Framework;
@@ -94,36 +93,22 @@ namespace WebApp.Pages
                 TempData["ErrorMessage"] = Message.GameNameAlreadyInUseMessage;
                 return Task.FromResult<IActionResult>(RedirectToPage());
             }
-
-            var savedGame = CreateSavedGame();
-            _gameRepository.CreateGame(savedGame);
+            
+            var config = _configRepository.GetConfigurationByName(ConfigurationName);
+            var savedGame = _gameRepository.CreateGame(
+                config, 
+                GameMode.GetMode(ModeName), 
+                GameName, 
+                PlayerXName, 
+                PlayerOName, 
+                PlayerXPassword, 
+                PlayerOPassword
+                );
 
             return Task.FromResult<IActionResult>(RedirectToPage(
                 "./StartGame",
                 new { gameName = savedGame.Name }
             ));
-        }
-
-        public SavedGame CreateSavedGame()
-        {
-            var config = _configRepository.GetConfigurationByName(ConfigurationName);
-            return new SavedGame
-            {
-                Name = GameName,
-                ModeName = ModeName,
-                PlayerXName = PlayerXName,
-                PlayerOName = PlayerOName,
-                PlayerXPassword = PlayerXPassword,
-                PlayerOPassword = PlayerOPassword,
-                CreatedAtDateTime = DateTime.Now.ToString("O"),
-                State = new GameState(
-                    config,
-                    GameMode.GetMode(ModeName),
-                    PlayerXName,
-                    PlayerOName
-                ).ToString(),
-                Configuration = config
-            };
         }
     }
 }
