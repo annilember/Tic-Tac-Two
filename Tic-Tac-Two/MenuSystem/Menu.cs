@@ -1,39 +1,32 @@
-using System.Globalization;
 using ConsoleUI;
 
 namespace MenuSystem;
 
 public class Menu
 {
-    private string MenuHeader { get; set; }
-    private static string _menuDivider = "======================";
-    private List<MenuItem> MenuItems { get; set; }
-    private MenuItem _menuItemExit = new MenuItem()
+    private string MenuHeader { get; }
+    private const string MenuDivider = "======================";
+    private List<MenuItem> MenuItems { get; }
+    private readonly MenuItem _menuItemExit = new()
     {
         Shortcut = "E",
         Title = "Exit",
         MenuItemAction = null
     };
-    private MenuItem _menuItemReturn = new MenuItem()
+    private readonly MenuItem _menuItemReturn = new()
     {
         Shortcut = "R",
         Title = "Return",
         MenuItemAction = null
     };
-    private MenuItem _menuItemReturnMain = new MenuItem()
+    private readonly MenuItem _menuItemReturnMain = new()
     {
         Shortcut = "M",
         Title = "Return to Main Menu",
         MenuItemAction = null
     };
     
-    private EMenuLevel _menuLevel { get; set; }
-
-    public void SetMenuItemAction(string shortCut, Func<string> action)
-    {
-        var menuItem = MenuItems.Single(m => m.Shortcut == shortCut);
-        menuItem.MenuItemAction = action;
-    }
+    private EMenuLevel MenuLevel { get; }
     
     public Menu(EMenuLevel menuLevel, string menuHeader, List<MenuItem> menuItems)
     {
@@ -51,13 +44,13 @@ public class Menu
         
         MenuItems = menuItems;
         
-        _menuLevel = menuLevel;
+        MenuLevel = menuLevel;
         
-        if (_menuLevel != EMenuLevel.Main)
+        if (MenuLevel != EMenuLevel.Main)
         {
             MenuItems.Add(_menuItemReturn);
         }
-        if (_menuLevel == EMenuLevel.Deep)
+        if (MenuLevel == EMenuLevel.Deep)
         {
             MenuItems.Add(_menuItemReturnMain);
         }
@@ -102,7 +95,7 @@ public class Menu
             
             if ((menuItem.Shortcut == _menuItemReturnMain.Shortcut || 
                  menuReturnValue == _menuItemReturnMain.Shortcut) && 
-                _menuLevel != EMenuLevel.Main)
+                MenuLevel != EMenuLevel.Main)
             {
                 return _menuItemReturnMain.Shortcut;
             }
@@ -159,7 +152,7 @@ public class Menu
     {
         Console.Clear();
         Console.WriteLine(MenuHeader);
-        Console.WriteLine(_menuDivider);
+        Console.WriteLine(MenuDivider);
         
         foreach (var t in MenuItems)
         {

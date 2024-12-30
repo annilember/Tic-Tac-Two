@@ -13,5 +13,6 @@ using var db = new AppDbContext(options);
 var configRepository = new ConfigRepositoryDb(db);
 var gameRepository = new GameRepositoryDb(db);
 
-Menus.Init(configRepository, gameRepository);
+OptionsController.Init(configRepository, gameRepository);
+GameController.Init(configRepository, gameRepository);
 Menus.MainMenu.Run();

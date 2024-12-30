@@ -1,22 +1,10 @@
-using DAL;
 using MenuSystem;
 
 namespace ConsoleApp;
 
 public static class Menus
 {
-    private static IConfigRepository _configRepository = default!;
-    private static IGameRepository _gameRepository = default!;
-    
-    public static void Init(IConfigRepository configRepository, IGameRepository gameRepository)
-    {
-        _configRepository = configRepository;
-        _gameRepository = gameRepository;
-        OptionsController.Init(_configRepository, _gameRepository);
-        GameController.Init(_configRepository, _gameRepository);
-    }
-    
-    public static readonly Menu ConfigOptionsMenu = new Menu(
+    private static readonly Menu ConfigOptionsMenu = new Menu(
         EMenuLevel.Deep,
         "TIC-TAC-TWO - Config options", [
             new MenuItem()
@@ -40,8 +28,8 @@ public static class Menus
                 MenuItemAction = OptionsController.DeleteExistingConfiguration
             }
         ]);
-    
-    public static readonly Menu GameOptionsMenu = new Menu(
+
+    private static readonly Menu GameOptionsMenu = new Menu(
         EMenuLevel.Deep,
         "TIC-TAC-TWO - Game options", [
             new MenuItem()
@@ -58,8 +46,8 @@ public static class Menus
                 MenuItemAction = OptionsController.RenameSavedGame
             }
         ]);
-    
-    public static readonly Menu OptionsMenu = new Menu(
+
+    private static readonly Menu OptionsMenu = new Menu(
         EMenuLevel.Secondary,
         "TIC-TAC-TWO Options", [
             new MenuItem()

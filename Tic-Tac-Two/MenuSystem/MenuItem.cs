@@ -2,15 +2,15 @@
 
 public class MenuItem
 {
-    private string _title = default!;
-    private string _shortcut = default!;
+    private readonly string _title = default!;
+    private readonly string _shortcut = default!;
     
     public Func<string>? MenuItemAction { get; set; }
 
     public string Title
     {
         get => _title;
-        set
+        init
         {
             if (string.IsNullOrEmpty(value))
             {
@@ -23,7 +23,7 @@ public class MenuItem
     public string Shortcut
     {
         get => _shortcut;
-        set
+        init
         {
             if (string.IsNullOrEmpty(value))
             {
