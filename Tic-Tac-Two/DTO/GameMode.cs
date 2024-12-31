@@ -1,6 +1,6 @@
 namespace DTO;
 
-public record GameMode
+public static class GameMode
 {
     private const string HumanPlayerTypeName = "Human";
     private const string AiPlayerTypeName = "AI";
