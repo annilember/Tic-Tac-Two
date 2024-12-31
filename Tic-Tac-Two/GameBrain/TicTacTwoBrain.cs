@@ -99,8 +99,6 @@ public class TicTacTwoBrain
         var opponent = _gameState.NextMoveBy == EGamePiece.X ? EGamePiece.O : EGamePiece.X;
         var ai = new Ai(this, player, opponent);
         ai.FindBestMove();
-        // Console.WriteLine($"AI chose <{bestMove[0]}, {bestMove[1]}>");
-        // MakeAMove(bestMove[0], bestMove[1]);
     }
     
     public bool MakeAMove(int x, int y)

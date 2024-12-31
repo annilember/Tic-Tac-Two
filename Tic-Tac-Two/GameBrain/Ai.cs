@@ -6,309 +6,234 @@ public class Ai(TicTacTwoBrain gameInstance, EGamePiece maximizer, EGamePiece mi
 {
     private const int MaxDepth = 3;
 
-    public void FindBestMove() 
-    { 
-        var bestVal = -1000; 
-        // int[] bestMove = [-1,-1]; 
-        var bestMove = new Dictionary<string, int>
+    public void FindBestMove()
+    {
+        if (gameInstance.GameOver())
+        {
+            return;
+        }
+        
+        const int bestVal = -1000;
+        var bestPlacePieceMove = new Dictionary<string, int>
         {
             { "Value", bestVal },
             { "X", -1 },
             { "Y", -1 }
         };
-        bestMove = FindBestPlacePieceMove(bestMove);
-        bestVal = bestMove["Value"];
-        var moveType = "Place piece";
+        if (gameInstance.HasGamePiece(gameInstance.NextMoveBy))
+        {
+            bestPlacePieceMove = FindBestPlacePieceMove(bestPlacePieceMove);
+        }
 
-        var bestGridVal = -1000;
-        var bestGridMove = new Dictionary<string, int>();
+        var bestGridMove = new Dictionary<string, int>()
+        {
+            { "Value", bestVal },
+            { "Direction", 0 }
+        };
         if (gameInstance.CanMoveGrid())
         {
-            bestGridMove = FindBestGridMove(bestVal);
-            bestGridVal = bestGridMove["Value"];
-        }
-        
-        bestVal = Math.Max(bestVal, bestGridVal);
-        if (bestGridVal > bestVal)
-        {
-            moveType = "Move grid";
+            bestGridMove = FindBestGridMove(bestGridMove);
         }
 
-        switch (moveType)
+        if (gameInstance.HasGamePiece(gameInstance.NextMoveBy) && 
+            bestPlacePieceMove["Value"] > bestGridMove["Value"] || 
+            !gameInstance.CanMoveGrid())
         {
-            case "Place piece":
-                gameInstance.MakeAMove(bestMove["X"], bestMove["Y"]);
-                break;
-            case "Move grid":
-            {
-                var direction = (EMoveGridDirection)Enum
-                    .ToObject(typeof(EMoveGridDirection), bestGridMove["Direction"]);
-                gameInstance.MakeGridMove(direction);
-                break;
-            }
+            gameInstance.MakeAMove(bestPlacePieceMove["X"], bestPlacePieceMove["Y"]);
+        }
+        else
+        {
+            var direction = (EMoveGridDirection)Enum
+                .ToObject(typeof(EMoveGridDirection), bestGridMove["Direction"]);
+            gameInstance.MakeGridMove(direction);
         }
     }
-    
-    private Dictionary<string, int> FindBestGridMove(int bestVal)
+
+    private Dictionary<string, int> FindBestGridMove(Dictionary<string, int> bestMove)
     {
         var directions = Enum
-            .GetValues(typeof(EMoveGridDirection))
-            .Cast<EMoveGridDirection>().ToList();
-        var bestDirection = 0;
+            .GetValues<EMoveGridDirection>().ToList();
         var i = 0;
 
         foreach (var direction in directions)
         {
             gameInstance.MakeGridMove(direction);
-            var moveVal = Minimax(MaxDepth, -1000, +1000, false);
-            gameInstance.CancelGridMove();
-                
-            if (moveVal > bestVal)
+            if (gameInstance.GridWasMoved())
             {
-                bestVal = moveVal;
-                bestDirection = i;
+                var moveVal = Minimax(MaxDepth, -1000, +1000, false);
+                if (moveVal > bestMove["Value"])
+                {
+                    bestMove["Value"] = moveVal;
+                    bestMove["Direction"] = i;
+                }
             }
+            gameInstance.CancelGridMove();
             i++;
-        }
-
-        return new Dictionary<string, int>
-        {
-            { "Value", bestVal },
-            { "Direction",  bestDirection }
-        };
-    }
-
-    private Dictionary<string, int> FindBestPlacePieceMove(Dictionary<string, int> bestMove)
-    {
-        for (int x = 0; x < gameInstance.DimX; x++) 
-        { 
-            for (int y = 0; y < gameInstance.DimY; y++) 
-            { 
-                if (
-                    gameInstance.GameBoard[x][y] == EGamePiece.Empty &&
-                    gameInstance.GameGrid[x][y]
-                ) 
-                { 
-                    gameInstance.MakeAMove(x, y);
-                    var moveVal = Minimax(MaxDepth, -1000, +1000, false);
-                    // Console.WriteLine($"<{x}, {y}> value: {moveVal}");
-                    // Console.WriteLine($"Evaluation: {Evaluate()}");
-                    // DrawBoard(gameInstance);
-                    gameInstance.CancelMove(x, y);
-                    
-                    if (moveVal > bestMove["Value"]) 
-                    { 
-                        bestMove["X"] = x; 
-                        bestMove["Y"] = y; 
-                        bestMove["Value"] = moveVal; 
-                    } 
-                } 
-            } 
         }
 
         return bestMove;
     }
-    
+
+    private Dictionary<string, int> FindBestPlacePieceMove(Dictionary<string, int> bestMove)
+    {
+        for (int x = 0; x < gameInstance.DimX; x++)
+        {
+            for (int y = 0; y < gameInstance.DimY; y++)
+            {
+                if (
+                    gameInstance.GameBoard[x][y] == EGamePiece.Empty &&
+                    gameInstance.GameGrid[x][y]
+                )
+                {
+                    gameInstance.MakeAMove(x, y);
+                    var moveVal = Minimax(MaxDepth, -1000, +1000, false);
+                    gameInstance.CancelMove(x, y);
+
+                    if (moveVal > bestMove["Value"])
+                    {
+                        bestMove["X"] = x;
+                        bestMove["Y"] = y;
+                        bestMove["Value"] = moveVal;
+                    }
+                }
+            }
+        }
+
+        return bestMove;
+    }
+
     private int Minimax(int depth, int alpha, int beta, bool isMaximizer)
     {
         var boardVal = Evaluate();
-        // Console.WriteLine($"Evaluation: {boardVal}");
         if (
-            Math.Abs(boardVal) == 10 || 
-            depth == 0 || 
-            gameInstance.CheckForDraw() || 
+            Math.Abs(boardVal) == 10 ||
+            depth == 0 ||
+            gameInstance.CheckForDraw() ||
             gameInstance.IsGameOverAnyway()
-            ) {
+        )
+        {
             return boardVal;
         }
         
-        var directions = Enum
-            .GetValues(typeof(EMoveGridDirection))
-            .Cast<EMoveGridDirection>().ToList();
-        
-        
+        var random = new Random();
+        var canPlacePiece = gameInstance.HasGamePiece(gameInstance.NextMoveBy);
+        var shouldMoveGrid = gameInstance.CanMoveGrid() && (!canPlacePiece || random.Next(2) == 0);
+
         if (isMaximizer)
-        { 
+        {
             var highestVal = -1000;
             
-            for (int x = 0; x < gameInstance.DimX; x++) 
-            { 
-                for (int y = 0; y < gameInstance.DimY; y++)
+            if (shouldMoveGrid && gameInstance.CanMoveGrid())
+            {
+                var directions = Enum.GetValues<EMoveGridDirection>().ToList();
+                foreach (var direction in directions)
                 {
-                    if (
-                        gameInstance.GameBoard[x][y] == EGamePiece.Empty &&
-                        gameInstance.GameGrid[x][y]
-                    )
+                    gameInstance.MakeGridMove(direction);
+                    if (gameInstance.GridWasMoved())
                     {
-                        gameInstance.MakeAMove(x, y);
-                        highestVal = Math.Max(highestVal, Minimax(depth - 1, alpha, beta, !isMaximizer)); 
-                        gameInstance.CancelMove(x, y);
+                        highestVal = Math.Max(highestVal, Minimax(depth - 1, alpha, beta, !isMaximizer));
                         alpha = Math.Max(alpha, highestVal);
-                        if (alpha >= beta) {
-                            return highestVal;
-                        }
                     }
-                } 
-            }
-
-            if (!gameInstance.CanMoveGrid()) return highestVal;
-            
-            foreach (var direction in directions)
-            {
-                gameInstance.MakeGridMove(direction);
-                highestVal = Math.Max(highestVal, Minimax(depth - 1, alpha, beta, !isMaximizer)); 
-                gameInstance.CancelGridMove();
-                alpha = Math.Max(alpha, highestVal);
-                if (alpha >= beta) {
-                    return highestVal;
-                }
-            }
-
-            return highestVal; 
-        } 
-        
-        else
-        { 
-            var lowestVal = 1000; 
-            
-            for (int x = 0; x < gameInstance.DimX; x++) 
-            { 
-                for (int y = 0; y < gameInstance.DimY; y++)
-                {
-                    if (
-                        gameInstance.GameBoard[x][y] == EGamePiece.Empty &&
-                        gameInstance.GameGrid[x][y]
-                    )
+                    gameInstance.CancelGridMove();
+                    if (alpha >= beta)
                     {
-                        gameInstance.MakeAMove(x, y);
-                        lowestVal = Math.Min(lowestVal, Minimax(depth - 1, alpha, beta, !isMaximizer)); 
-                        gameInstance.CancelMove(x, y);
-                        beta = Math.Min(beta, lowestVal);
-                        if (beta <= alpha) {
-                            return lowestVal;
+                        return highestVal;
+                    }
+                }
+            }
+            else if (canPlacePiece)
+            {
+                for (int x = 0; x < gameInstance.DimX; x++)
+                {
+                    for (int y = 0; y < gameInstance.DimY; y++)
+                    {
+                        if (
+                            gameInstance.GameBoard[x][y] == EGamePiece.Empty &&
+                            gameInstance.GameGrid[x][y]
+                        )
+                        {
+                            gameInstance.MakeAMove(x, y);
+                            highestVal = Math.Max(highestVal, Minimax(depth - 1, alpha, beta, !isMaximizer));
+                            gameInstance.CancelMove(x, y);
+                            alpha = Math.Max(alpha, highestVal);
+                            if (alpha >= beta)
+                            {
+                                return highestVal;
+                            }
                         }
                     }
-                } 
-            }
-
-            if (!gameInstance.CanMoveGrid()) return lowestVal;
-            
-            foreach (var direction in directions)
-            {
-                gameInstance.MakeGridMove(direction);
-                lowestVal = Math.Min(lowestVal, Minimax(depth - 1, alpha, beta, !isMaximizer)); 
-                gameInstance.CancelGridMove();
-                beta = Math.Min(beta, lowestVal);
-                if (beta <= alpha) {
-                    return lowestVal;
                 }
             }
 
+            return highestVal;
+        }
+        else
+        {
+            var lowestVal = 1000;
 
-            return lowestVal; 
-        } 
+            if (shouldMoveGrid && gameInstance.CanMoveGrid())
+            {
+                var directions = Enum.GetValues<EMoveGridDirection>().ToList();
+                foreach (var direction in directions)
+                {
+                    gameInstance.MakeGridMove(direction);
+                    if (gameInstance.GridWasMoved())
+                    {
+                        lowestVal = Math.Min(lowestVal, Minimax(depth - 1, alpha, beta, !isMaximizer));
+                        beta = Math.Min(beta, lowestVal);
+                    }
+                    gameInstance.CancelGridMove();
+                    if (beta <= alpha)
+                    {
+                        return lowestVal;
+                    }
+                }
+            }
+            else if (canPlacePiece)
+            {
+                for (int x = 0; x < gameInstance.DimX; x++)
+                {
+                    for (int y = 0; y < gameInstance.DimY; y++)
+                    {
+                        if (
+                            gameInstance.GameBoard[x][y] == EGamePiece.Empty &&
+                            gameInstance.GameGrid[x][y]
+                        )
+                        {
+                            gameInstance.MakeAMove(x, y);
+                            lowestVal = Math.Min(lowestVal, Minimax(depth - 1, alpha, beta, !isMaximizer));
+                            gameInstance.CancelMove(x, y);
+                            beta = Math.Min(beta, lowestVal);
+                            if (beta <= alpha)
+                            {
+                                return lowestVal;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return lowestVal;
+        }
     }
 
     private int Evaluate()
     {
         if (gameInstance.CheckForDraw() || gameInstance.IsGameOverAnyway())
         {
-            // Console.WriteLine($"Draw! or Game over!");
             return 0;
         }
+
         if (gameInstance.CheckForWinner() == maximizer)
         {
-            // Console.WriteLine($"Maximizer won");
             return +10;
         }
+
         if (gameInstance.CheckForWinner() == minimizer)
         {
-            // Console.WriteLine($"Minimizer won");
             return -10;
         }
-        
-        // Console.WriteLine($"None of the above!");
-        // Console.WriteLine("Check for winner returns: " + gameInstance.CheckForWinner());
+
         return 0;
-    }
-    
-    public static void DrawBoard(TicTacTwoBrain gameInstance)
-    {
-
-        Console.Write("   ");
-        for (int x = 0; x < gameInstance.DimX; x++)
-        {
-            if (x < 10)
-            {
-                Console.Write(" ");
-            }
-            Console.Write($" {x} ");
-        }
-        Console.ResetColor();
-        Console.WriteLine("");
-        
-        Console.Write($"   +");
-        for (int x = 0; x < gameInstance.DimX; x++)
-        {
-            Console.Write("---");
-            if (x != gameInstance.DimX - 1)
-            {
-                Console.Write("+");
-            }
-        }
-        Console.WriteLine("+");
-        
-        
-
-        for (int y = 0; y < gameInstance.DimY; y++)
-        {
-            if (y < 10)
-            {
-                Console.Write(" ");
-            }
-            Console.Write($"{y}");
-            Console.ResetColor();
-            Console.Write($" |");
-            for (int x = 0; x < gameInstance.DimX; x++)
-            {
-                if (gameInstance.MoveGridModeOn && gameInstance.GridMovingArea[x][y])
-                {
-                    Console.BackgroundColor = ConsoleColor.DarkYellow;
-                }
-                if (gameInstance.GameGrid[x][y])
-                {
-                    Console.BackgroundColor = ConsoleColor.DarkYellow;
-                }
-                Console.Write(" " + gameInstance.GameBoard[x][y] + " ");
-                Console.ResetColor();
-                Console.Write("---");
-            }
-            Console.WriteLine();
-            if (y == gameInstance.DimY - 1) break;
-            
-            Console.Write($"   +");
-            for (int x = 0; x < gameInstance.DimX; x++)
-            {
-                Console.Write("---");
-                if (x != gameInstance.DimX - 1)
-                {
-                    Console.Write("+");
-                }
-            }
-            Console.WriteLine("+");
-        }
-        
-        
-        
-        Console.Write($"   +");
-        for (int x = 0; x < gameInstance.DimX; x++)
-        {
-            Console.Write("---");
-            if (x != gameInstance.DimX - 1)
-            {
-                Console.Write("+");
-            }
-        }
-        Console.WriteLine("+");
     }
 }
