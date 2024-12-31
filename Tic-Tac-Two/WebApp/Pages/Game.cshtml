@@ -1,5 +1,4 @@
 @page
-@using Domain
 @using DTO
 @using GameBrain
 @model WebApp.Pages.GameModel
@@ -24,9 +23,14 @@
 }
 <hr/>
 
-<div class="d-flex gap-3" id="gameLayout">
-    <div class="container-md d-flex justify-content-center justify-content-lg-end" id="gameBoard">
-        <div class="bg-dark rounded d-inline-block p-5">
+<div id="gameLayout" class="d-flex flex-lg-row flex-column gap-5">
+    @* <div id="gameBoard" *@
+    @*      class="container-md d-flex justify-content-center justify-content-lg-end" *@
+    @*      style="--game-columns: @(Model.GameInstance.DimX);"> *@
+        <div id="gameBoard"
+             class="flex-grow-1 flex-shrink-0 d-flex justify-content-center justify-content-lg-end"
+             style="--game-columns: @(Model.GameInstance.DimX); min-width: 400px; max-width: none;">
+        <div id="gameBoard-bg" class="bg-dark rounded d-inline-block p-4 p-sm-5">
             @for (int y = 0; y < Model.GameInstance.DimY; y++)
             {
                 <div class="row py-1">
@@ -99,7 +103,8 @@
             }
         </div>
     </div>
-    <div class="container-md" id="moveOptions">
+    @* <div class="container-md" id="moveOptions"> *@
+    <div class="flex-grow-1 flex-shrink-0" id="moveOptions" style="min-width: 250px; max-width: 400px;">
         <div class="row py-1">
             <div class="col px-1 col-auto">
                 @if (Model.YourTurn())

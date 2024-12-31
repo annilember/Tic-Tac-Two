@@ -181,6 +181,43 @@ public class GameModel : PageModel
             GameInstance.ActivateMoveGridMode();
         }
     }
+    
+    public string YourName()
+    {
+        if (Password == SavedGame.PlayerXPassword)
+        {
+            return SavedGame.PlayerXName;
+        }
+        if (Password == SavedGame.PlayerOPassword)
+        {
+            return SavedGame.PlayerOName;
+        }
+        return Message.UnknownPlayerName;
+    }
+    
+    public bool YourTurn()
+    {
+        if (AiTurn())
+        {
+            return false;
+        }
+        if (Password == SavedGame.PlayerXPassword && GameInstance.NextMoveBy == EGamePiece.X)
+        {
+            return true;
+        }
+        if (Password == SavedGame.PlayerOPassword && GameInstance.NextMoveBy == EGamePiece.O)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    public bool AiTurn()
+    {
+        var gameMode = GameMode.GetMode(SavedGame.ModeName);
+        var playerType = GameMode.GetPlayerType(gameMode, GameInstance.NextMoveBy);
+        return playerType == EPlayerType.Ai;
+    }
 
     public string StyleOccupiedSpot(int x, int y)
     {
@@ -215,42 +252,5 @@ public class GameModel : PageModel
         }
 
         return style;
-    }
-
-    public bool YourTurn()
-    {
-        if (AiTurn())
-        {
-            return false;
-        }
-        if (Password == SavedGame.PlayerXPassword && GameInstance.NextMoveBy == EGamePiece.X)
-        {
-            return true;
-        }
-        if (Password == SavedGame.PlayerOPassword && GameInstance.NextMoveBy == EGamePiece.O)
-        {
-            return true;
-        }
-        return false;
-    }
-
-    public string YourName()
-    {
-        if (Password == SavedGame.PlayerXPassword)
-        {
-            return SavedGame.PlayerXName;
-        }
-        if (Password == SavedGame.PlayerOPassword)
-        {
-            return SavedGame.PlayerOName;
-        }
-        return Message.UnknownPlayerName;
-    }
-
-    public bool AiTurn()
-    {
-        var gameMode = GameMode.GetMode(SavedGame.ModeName);
-        var playerType = GameMode.GetPlayerType(gameMode, GameInstance.NextMoveBy);
-        return playerType == EPlayerType.Ai;
     }
 }
