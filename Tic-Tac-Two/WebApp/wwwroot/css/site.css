@@ -57,18 +57,6 @@ body {
   padding: 0;
 }
 
-/*@media (max-width: 576px) {*/
-/*  #gameLayout {*/
-/*    if(var(--game-columns) < 5) {*/
-/*    flex-direction: row;*/
-/*  }*/
-/*  }*/
-/*  #gameLayout[--game-columns = 3],*/
-/*  #gameLayout[style*="--game-columns: 4"] {*/
-/*    --dynamic-direction: row;*/
-/*  }*/
-/*}*/
-
 .chosen-move-button {
   width: 10rem;
 }

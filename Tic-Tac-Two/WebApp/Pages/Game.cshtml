@@ -24,9 +24,6 @@
 <hr/>
 
 <div id="gameLayout" class="d-flex flex-lg-row flex-column gap-5">
-    @* <div id="gameBoard" *@
-    @*      class="container-md d-flex justify-content-center justify-content-lg-end" *@
-    @*      style="--game-columns: @(Model.GameInstance.DimX);"> *@
         <div id="gameBoard"
              class="flex-grow-1 flex-shrink-0 d-flex justify-content-center justify-content-lg-end"
              style="--game-columns: @(Model.GameInstance.DimX); min-width: 400px; max-width: none;">
@@ -103,7 +100,6 @@
             }
         </div>
     </div>
-    @* <div class="container-md" id="moveOptions"> *@
     <div class="flex-grow-1 flex-shrink-0" id="moveOptions" style="min-width: 250px; max-width: 400px;">
         <div class="row py-1">
             <div class="col px-1 col-auto">
