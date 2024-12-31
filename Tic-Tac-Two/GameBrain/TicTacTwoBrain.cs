@@ -92,6 +92,16 @@ public class TicTacTwoBrain
             _ => 0
         };
     }
+
+    public int GamePiecesPlaced(EGamePiece piece)
+    {
+        return piece switch
+        {
+            EGamePiece.X => _gameConfiguration.NumberOfPieces - _gameState.NumberOfPiecesLeftX,
+            EGamePiece.O => _gameConfiguration.NumberOfPieces - _gameState.NumberOfPiecesLeftO,
+            _ => 0
+        };
+    }
     
     public void MakeAiMove()
     {
@@ -419,6 +429,20 @@ public class TicTacTwoBrain
         }
         return true;
     }
+
+    public void CancelRemovePiece(int x, int y)
+    {
+        _gameState.GameBoard[x][y] = _gameState.NextMoveBy;
+        switch (_gameState.NextMoveBy)
+        {
+            case EGamePiece.X:
+                _gameState.NumberOfPiecesLeftX--;
+                break;
+            case EGamePiece.O:
+                _gameState.NumberOfPiecesLeftO--;
+                break;
+        }
+    }
     
     public bool MovePieceModeOn => _gameState.MovePieceModeOn;
 
@@ -541,7 +565,7 @@ public class TicTacTwoBrain
                (GameBoardEmptySpacesCount() == 0 && !CanMoveGrid());
     }
     
-    private int GameBoardEmptySpacesCount()
+    public int GameBoardEmptySpacesCount()
     {
         var count = 0;
         for (int x = 0; x < DimX; x++)

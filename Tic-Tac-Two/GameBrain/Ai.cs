@@ -18,6 +18,11 @@ public class Ai(TicTacTwoBrain gameInstance, EGamePiece maximizer, EGamePiece mi
             return;
         }
 
+        if (gameInstance.CanMovePiece() && MakeWinningMovePieceMove())
+        {
+            return;
+        }
+
         const int bestVal = -1000;
         var bestPlacePieceMove = new Dictionary<string, int>
         {
@@ -29,12 +34,19 @@ public class Ai(TicTacTwoBrain gameInstance, EGamePiece maximizer, EGamePiece mi
         {
             bestPlacePieceMove = FindBestPlacePieceMove(bestPlacePieceMove);
             gameInstance.MakeAMove(bestPlacePieceMove["X"], bestPlacePieceMove["Y"]);
+            return;
         }
-        else if (gameInstance.CanMoveGrid())
+        
+        var rnd = new Random();
+        var chosenMove  = rnd.Next(0, 2);
+        if (chosenMove == 0 && gameInstance.CanMoveGrid() || !gameInstance.CanMovePiece())
         {
             MakeRandomGridMove();
         }
-
+        else if (gameInstance.CanMovePiece())
+        {
+            MakeRandomMovePieceMove();
+        }
     }
 
     private bool MakeWinningGridMove()
@@ -55,29 +67,65 @@ public class Ai(TicTacTwoBrain gameInstance, EGamePiece maximizer, EGamePiece mi
         }
         return false;
     }
-
-    private void MakeRandomGridMove()
+    
+    private bool MakeWinningMovePieceMove()
     {
-        var directions = GetGridMoveDirections();
-        var rnd = new Random();
-        var direction  = rnd.Next(0, directions.Length);
-        gameInstance.MakeAiGridMove(directions[direction][0], directions[direction][1]);
+        var player = gameInstance.NextMoveBy;
+
+        for (int x = 0; x < gameInstance.DimX; x++)
+        {
+            for (int y = 0; y < gameInstance.DimY; y++)
+            {
+                if (
+                    gameInstance.GameBoard[x][y] == player
+                )
+                {
+                    gameInstance.ActivateRemovePieceMode();
+                    gameInstance.RemovePiece(x, y);
+                    gameInstance.DeActivateRemovePieceMode();
+
+                    if (PlaceWinningPiece())
+                    {
+                        return true;
+                    }
+                    
+                    gameInstance.CancelRemovePiece(x, y);
+                }
+            }
+        }
+        
+        return false;
     }
 
-    private EMoveGridDirection[][] GetGridMoveDirections()
+    private bool PlaceWinningPiece()
     {
-        return [
-            [EMoveGridDirection.Left, EMoveGridDirection.None],
-            [EMoveGridDirection.Left, EMoveGridDirection.Up],
-            [EMoveGridDirection.Up, EMoveGridDirection.None],
-            [EMoveGridDirection.Up, EMoveGridDirection.Right],
-            [EMoveGridDirection.Right, EMoveGridDirection.None],
-            [EMoveGridDirection.Right, EMoveGridDirection.Down],
-            [EMoveGridDirection.Down, EMoveGridDirection.None],
-            [EMoveGridDirection.Down, EMoveGridDirection.Left]
-        ];
+        var player = gameInstance.NextMoveBy;
+        gameInstance.ActivateMovePieceMode();
+        for (int x = 0; x < gameInstance.DimX; x++)
+        {
+            for (int y = 0; y < gameInstance.DimY; y++)
+            {
+                if (
+                    gameInstance.GameBoard[x][y] == EGamePiece.Empty
+                )
+                {
+                    var moveMade = gameInstance.MakeAMove(x, y);
+                    switch (moveMade)
+                    {
+                        case true when gameInstance.CheckForWinnerByPlayer(player):
+                            gameInstance.DeActivateMovePieceMode();
+                            return true;
+                        case true:
+                            gameInstance.CancelMove(x, y);
+                            break;
+                    }
+                }
+            }
+        }
+        gameInstance.DeActivateMovePieceMode();
+        return false;
     }
-
+    
     private Dictionary<string, int> FindBestPlacePieceMove(Dictionary<string, int> bestMove)
     {
         for (int x = 0; x < gameInstance.DimX; x++)
@@ -194,5 +242,81 @@ public class Ai(TicTacTwoBrain gameInstance, EGamePiece maximizer, EGamePiece mi
         }
 
         return 0;
+    }
+    
+    private void MakeRandomGridMove()
+    {
+        var directions = GetGridMoveDirections();
+        var rnd = new Random();
+        var direction  = rnd.Next(0, directions.Length);
+        gameInstance.MakeAiGridMove(directions[direction][0], directions[direction][1]);
+    }
+    
+    private EMoveGridDirection[][] GetGridMoveDirections()
+    {
+        return [
+            [EMoveGridDirection.Left, EMoveGridDirection.None],
+            [EMoveGridDirection.Left, EMoveGridDirection.Up],
+            [EMoveGridDirection.Up, EMoveGridDirection.None],
+            [EMoveGridDirection.Up, EMoveGridDirection.Right],
+            [EMoveGridDirection.Right, EMoveGridDirection.None],
+            [EMoveGridDirection.Right, EMoveGridDirection.Down],
+            [EMoveGridDirection.Down, EMoveGridDirection.None],
+            [EMoveGridDirection.Down, EMoveGridDirection.Left]
+        ];
+    }
+    
+    private void MakeRandomMovePieceMove()
+    {
+        var player = gameInstance.NextMoveBy;
+        var rnd = new Random();
+        var chosenPiece  = rnd.Next(0, gameInstance.GamePiecesPlaced(player));
+        var pieceFinder = 0;
+
+        for (int x = 0; x < gameInstance.DimX; x++)
+        {
+            for (int y = 0; y < gameInstance.DimY; y++)
+            {
+                if (gameInstance.GameBoard[x][y] == player && pieceFinder == chosenPiece)
+                {
+                    
+                    gameInstance.ActivateRemovePieceMode();
+                    gameInstance.RemovePiece(x, y);
+                    gameInstance.DeActivateRemovePieceMode();
+                    PlacePieceInRandomSlot();
+                }
+                else if (gameInstance.GameBoard[x][y] == player)
+                {
+                    pieceFinder++;
+                }
+            }
+        }
+    }
+    
+    private void PlacePieceInRandomSlot()
+    {
+        var rnd = new Random();
+        var chosenSlot  = rnd.Next(0, gameInstance.GameBoardEmptySpacesCount() - 1);
+        var slotFinder = 0;
+        gameInstance.ActivateMovePieceMode();
+        
+        for (int x = 0; x < gameInstance.DimX; x++)
+        {
+            for (int y = 0; y < gameInstance.DimY; y++)
+            {
+                if (gameInstance.GameBoard[x][y] == EGamePiece.Empty && 
+                    !gameInstance.RemovedPieceCoordinateClash(x, y) &&
+                    slotFinder == chosenSlot)
+                {
+                    gameInstance.MakeAMove(x, y);
+                    gameInstance.DeActivateMovePieceMode();
+                }
+                else if (gameInstance.GameBoard[x][y] == EGamePiece.Empty && 
+                         !gameInstance.RemovedPieceCoordinateClash(x, y))
+                {
+                    slotFinder++;
+                }
+            }
+        }
     }
 }
