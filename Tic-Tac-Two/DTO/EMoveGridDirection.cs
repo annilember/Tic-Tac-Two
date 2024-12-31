@@ -5,5 +5,6 @@ public enum EMoveGridDirection
     Up, 
     Down,
     Left,
-    Right
+    Right,
+    None
 }

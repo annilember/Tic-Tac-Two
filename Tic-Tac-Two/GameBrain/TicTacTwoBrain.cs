@@ -194,10 +194,14 @@ public class TicTacTwoBrain
         _gameState.GridStartPosY = _gameState.MoveGridStartStateLocation[1];
     }
 
-    public void MakeGridMove(EMoveGridDirection direction)
+    public void MakeAiGridMove(EMoveGridDirection direction1, EMoveGridDirection direction2)
     {
         ActivateMoveGridMode();
-        MoveGrid(direction);
+        MoveGrid(direction1);
+        if (direction2 != EMoveGridDirection.None)
+        {
+            MoveGrid(direction2);
+        }
         DeActivateMoveGridMode();
     }
 
@@ -466,7 +470,7 @@ public class TicTacTwoBrain
         return EGamePiece.Empty;
     }
     
-    private bool CheckForWinnerByPlayer(EGamePiece player)
+    public bool CheckForWinnerByPlayer(EGamePiece player)
     {
         for (int x = 0; x < DimX; x++)
         {
