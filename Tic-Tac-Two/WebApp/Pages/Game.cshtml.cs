@@ -218,39 +218,4 @@ public class GameModel : PageModel
         var playerType = GameMode.GetPlayerType(gameMode, GameInstance.NextMoveBy);
         return playerType == EPlayerType.Ai;
     }
-
-    public string StyleRemovablePiece(int x, int y)
-    {
-        var style = "btn";
-        if (GameInstance.RemovePieceModeOn && GameInstance.GameBoard[x][y] == GameInstance.NextMoveBy)
-        {
-            style += "-outline";
-        }
-
-        return style + StyleSpot(x, y);
-    }
-
-    public string StyleFreeSpot(int x, int y)
-    {
-        return "btn-outline" + StyleSpot(x, y);
-    }
-
-    private string StyleSpot(int x, int y)
-    {
-        var style = "";
-        if (GameInstance.GameGrid[x][y])
-        {
-            style += "-warning";
-        }
-        else if (GameInstance.MoveGridModeOn && GameInstance.GridMovingArea[x][y])
-        {
-            style += "-info";
-        }
-        else
-        {
-            style += "-light";
-        }
-
-        return style;
-    }
 }

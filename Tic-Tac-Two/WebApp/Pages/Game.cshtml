@@ -49,7 +49,9 @@
                             {
                                 <form method="post" asp-page-handler="RemovePiece">
                                     <input id="slot-@xValue-@yValue" type="submit"
-                                           class="btn btn-lg game-board-slot @(Model.StyleRemovablePiece(xValue, yValue))"
+                                           class="btn btn-lg game-board-slot @(
+                                                GameBoardHelper.StyleRemovablePiece(Model.GameInstance, xValue, yValue)
+                                                                             )"
                                            value="@Model.GameInstance.GameBoard[xValue][yValue].ToString()"
                                            @(!Model.GameInstance.RemovePieceModeOn ||
                                              Model.GameInstance.GameBoard[xValue][yValue] != Model.GameInstance.NextMoveBy
@@ -69,7 +71,9 @@
                                            value="@(Model.GameInstance.RemovedPieceCoordinateClash(xValue, yValue)
                                                       ? " "
                                                       : Model.GameInstance.NextMoveBy.ToString())"
-                                           class="btn btn-lg game-board-slot @(Model.StyleFreeSpot(xValue, yValue))"
+                                           class="btn btn-lg game-board-slot @(
+                                                    GameBoardHelper.StyleFreeSpot(Model.GameInstance, xValue, yValue)
+                                                                             )"
                                            @(Model.GameInstance.RemovedPieceCoordinateClash(xValue, yValue) ? "disabled" : "")/>
 
                                     <input asp-for="GameName" type="hidden" value="@Model.GameName"/>
@@ -85,7 +89,9 @@
                                            value="@(Model.GameInstance.PlacePieceModeOn()
                                                       ? Model.GameInstance.NextMoveBy.ToString()
                                                       : " ")"
-                                           class="btn btn-lg game-board-slot @(Model.StyleFreeSpot(xValue, yValue))"
+                                           class="btn btn-lg game-board-slot @(
+                                                    GameBoardHelper.StyleFreeSpot(Model.GameInstance, xValue, yValue)
+                                                                             )"
                                            @(Model.GameInstance.PlacePieceModeOn() ? "" : "disabled")/>
 
                                     <input asp-for="GameName" type="hidden" value="@Model.GameName"/>

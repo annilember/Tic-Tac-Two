@@ -24,4 +24,10 @@
       <StaticWebAssetEndpoint Remove="js\site.js" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Update="Pages\GameBoardHelper.cs">
+        <DependentUpon>Game.cshtml</DependentUpon>
+      </Compile>
+    </ItemGroup>
+
 </Project>
