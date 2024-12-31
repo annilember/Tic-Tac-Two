@@ -30,4 +30,17 @@
       </Compile>
     </ItemGroup>
 
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Pages\Configurations\Create.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\Configurations\Delete.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\Configurations\Details.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\Configurations\Edit.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\Configurations\Index.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\SavedGames\Create.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\SavedGames\Delete.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\SavedGames\Details.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\SavedGames\Edit.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\SavedGames\Index.cshtml" />
+    </ItemGroup>
+
 </Project>

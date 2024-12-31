@@ -127,7 +127,10 @@
                     </div>
                     <form method="post" asp-page-handler="JoinGame">
                         <input asp-for="GameName" type="hidden" value="@item.Name"/>
-                        <input asp-for="Password" type="hidden" value="@item.PlayerXPassword"/>
+                        <input asp-for="Password" type="hidden" value="@(
+                                item.ModeName == GameMode.GetModeName(EGameMode.AiVsHuman.ToString()) ? 
+                                item.PlayerOPassword : item.PlayerXPassword
+                                )"/>
                         <button type="submit" class="btn btn-outline-dark join-as-button px-2"
                         >@(item.ModeName == GameMode.GetModeName(EGameMode.AiVsHuman.ToString()) ? 
                              item.PlayerOName : item.PlayerXName)</button>
