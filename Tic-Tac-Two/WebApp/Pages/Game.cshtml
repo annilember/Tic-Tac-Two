@@ -49,7 +49,7 @@
                             {
                                 <form method="post" asp-page-handler="RemovePiece">
                                     <input id="slot-@xValue-@yValue" type="submit"
-                                           class="btn btn-lg game-board-slot @(Model.StyleOccupiedSpot(xValue, yValue))"
+                                           class="btn btn-lg game-board-slot @(Model.StyleRemovablePiece(xValue, yValue))"
                                            value="@Model.GameInstance.GameBoard[xValue][yValue].ToString()"
                                            @(!Model.GameInstance.RemovePieceModeOn ||
                                              Model.GameInstance.GameBoard[xValue][yValue] != Model.GameInstance.NextMoveBy

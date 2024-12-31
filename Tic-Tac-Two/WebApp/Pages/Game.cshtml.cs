@@ -219,7 +219,7 @@ public class GameModel : PageModel
         return playerType == EPlayerType.Ai;
     }
 
-    public string StyleOccupiedSpot(int x, int y)
+    public string StyleRemovablePiece(int x, int y)
     {
         var style = "btn";
         if (GameInstance.RemovePieceModeOn && GameInstance.GameBoard[x][y] == GameInstance.NextMoveBy)
