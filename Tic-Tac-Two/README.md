@@ -1,3 +1,7 @@
+This is a Tic-Tac-Two game with 2 different UI implementations - ConsoleApp and WebApp.
+
+--- --- ---
+
 Migration commands, run from solution folder:
 ~~~sh
 dotnet ef migrations add InitialDbCreation
